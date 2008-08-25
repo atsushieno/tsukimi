@@ -2,6 +2,8 @@
 SOURCES = \
 	driver.cs \
 	ProcessingParser.cs \
+	ProcessingAst.cs \
+	ProcessingAstExpression.cs \
 	ProcessingTokenizer.cs
 
 all: driver.exe

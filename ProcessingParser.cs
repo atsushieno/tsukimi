@@ -3,75 +3,16 @@
 #line 3 "ProcessingParser.jay"
 using System;
 using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Collections.Generic;
+using ProcessingDlr.Ast;
 
 namespace ProcessingDlr
 {
-	public class PdlrClass
-	{
-		string name, base_type;
-		List<string> interfaces;
-		List<PdlrMember> members;
-
-		public PdlrClass (string name, string baseType, List<string> interfaces, List<PdlrMember> members)
-		{
-			this.name = name;
-			this.base_type = baseType;
-			this.interfaces = interfaces;
-			this.members = members;
-		}
-	}
-
-	public class AstFunction
-	{
-		public AstFunction (string typeName, AstFunctionBase funcBase)
-		{
-		}
-	}
-
-	public class AstConstructor
-	{
-		public AstConstructor (AstFunctionBase funcBase)
-		{
-		}
-	}
-
-	public class AstFunctionBase
-	{
-		public AstFunctionBase (string name, List<AstFunctionArgument> args, List<Expression> body)
-		{
-			Name = name;
-			Arguments = args;
-			Body = body;
-		}
-
-		public string Name;
-		public List<AstFunctionArgument> Arguments;
-		public List<Expression> Body;
-	}
-
-	public class AstFunctionArgument
-	{
-		public string Type;
-		public string Name;
-	}
-
-	public class VariableDeclarationPair
-	{
-		public string Name;
-		public Expression Initializer;
-	}
-
-	public abstract class PdlrMember
-	{
-	}
 
 	public class ProcessingParser
 	{
 		string filename;
-		bool yacc_verbose_flag;
+		int yacc_verbose_flag;
 
 		public ProcessingParser (string filename)
 		{
@@ -490,51 +431,51 @@ namespace ProcessingDlr
         yyVal = yyDefault(yyV > yyTop ? null : yyVals[yyV]);
         switch (yyN) {
 case 2:
-#line 167 "ProcessingParser.jay"
+#line 108 "ProcessingParser.jay"
   {
-		return new List<Expression> ();
+		yyVal = new List<ITopLevelContent> ();
 	}
   break;
 case 3:
-#line 171 "ProcessingParser.jay"
+#line 112 "ProcessingParser.jay"
   {
-		var l = (List<Expression>) yyVals[0+yyTop];
-		l.Insert (0, (Expression) yyVals[-1+yyTop]);
+		var l = (List<ITopLevelContent>) yyVals[0+yyTop];
+		l.Insert (0, (ITopLevelContent) yyVals[-1+yyTop]);
 		yyVal = l;
 	}
   break;
 case 8:
-#line 193 "ProcessingParser.jay"
+#line 134 "ProcessingParser.jay"
   {
 		var name = (string) yyVals[-5+yyTop];
 		var baseType = (string) yyVals[-4+yyTop];
 		var interfaces = (List<string>) yyVals[-3+yyTop];
-		var members = (List<PdlrMember>) yyVals[-2+yyTop];
-		yyVal = new PdlrClass (name, baseType, interfaces, members);
+		var members = (List<MemberDefinition>) yyVals[-2+yyTop];
+		yyVal = new ClassDefinition (name, baseType, interfaces, members);
 	}
   break;
 case 9:
-#line 202 "ProcessingParser.jay"
+#line 143 "ProcessingParser.jay"
   { yyVal = null; }
   break;
 case 11:
-#line 207 "ProcessingParser.jay"
+#line 148 "ProcessingParser.jay"
   { yyVal = null; }
   break;
 case 13:
-#line 213 "ProcessingParser.jay"
+#line 154 "ProcessingParser.jay"
   {
 		yyVal = yyVals[0+yyTop];
 	}
   break;
 case 14:
-#line 220 "ProcessingParser.jay"
+#line 161 "ProcessingParser.jay"
   {
 	 	yyVal = yyVals[0+yyTop];
 	 }
   break;
 case 15:
-#line 226 "ProcessingParser.jay"
+#line 167 "ProcessingParser.jay"
   {
 		var l = new List<string> ();
 		l.Add ((string) yyVals[0+yyTop]);
@@ -542,7 +483,7 @@ case 15:
 	}
   break;
 case 16:
-#line 232 "ProcessingParser.jay"
+#line 173 "ProcessingParser.jay"
   {
 		var l = (List<string>) yyVals[0+yyTop];
 		l.Insert (0, (string) yyVals[-2+yyTop]);
@@ -550,161 +491,162 @@ case 16:
 	}
   break;
 case 17:
-#line 240 "ProcessingParser.jay"
+#line 181 "ProcessingParser.jay"
   { yyVal = null; }
   break;
 case 18:
-#line 242 "ProcessingParser.jay"
+#line 183 "ProcessingParser.jay"
   {
-		var l = (List<PdlrMember>) yyVals[0+yyTop] ?? new List<PdlrMember> ();
-		l.Insert (0, (PdlrMember) yyVals[-1+yyTop]);
+		var l = (List<MemberDefinition>) yyVals[0+yyTop] ?? new List<MemberDefinition> ();
+		l.Insert (0, (MemberDefinition) yyVals[-1+yyTop]);
 		yyVal = l;
 	}
   break;
 case 22:
-#line 254 "ProcessingParser.jay"
+#line 195 "ProcessingParser.jay"
   { yyVal = yyVals[-1+yyTop]; }
   break;
 case 23:
-#line 258 "ProcessingParser.jay"
+#line 199 "ProcessingParser.jay"
   {
-		yyVal = new AstConstructor ((AstFunctionBase) yyVals[0+yyTop]);
+		yyVal = new ConstructorDefinition ((FunctionBase) yyVals[0+yyTop]);
 	}
   break;
 case 24:
-#line 264 "ProcessingParser.jay"
+#line 205 "ProcessingParser.jay"
   {
-		yyVal = new AstFunction ((string) yyVals[-1+yyTop], (AstFunctionBase) yyVals[0+yyTop]);
+		yyVal = new FunctionDefinition ((string) yyVals[-1+yyTop], (FunctionBase) yyVals[0+yyTop]);
 	}
   break;
 case 25:
-#line 270 "ProcessingParser.jay"
+#line 211 "ProcessingParser.jay"
   {
-		yyVal = new AstFunctionBase ((string) yyVals[-4+yyTop], (List<AstFunctionArgument>) yyVals[-2+yyTop], (List<Expression>) yyVals[0+yyTop]);
+		yyVal = new FunctionBase ((string) yyVals[-4+yyTop], (List<FunctionArgument>) yyVals[-2+yyTop], Statement.Block ((List<Statement>) yyVals[0+yyTop]));
 	}
   break;
 case 26:
-#line 275 "ProcessingParser.jay"
+#line 216 "ProcessingParser.jay"
   { yyVal = null; }
   break;
 case 27:
-#line 277 "ProcessingParser.jay"
+#line 218 "ProcessingParser.jay"
   {
-		var l = (List<AstFunctionArgument>) yyVals[0+yyTop] ?? new List<AstFunctionArgument> ();
-		l.Insert (0, (AstFunctionArgument) yyVals[-2+yyTop]);
+		var l = (List<FunctionArgument>) yyVals[0+yyTop] ?? new List<FunctionArgument> ();
+		l.Insert (0, (FunctionArgument) yyVals[-2+yyTop]);
 		yyVal = l;
 	}
   break;
 case 28:
-#line 285 "ProcessingParser.jay"
+#line 226 "ProcessingParser.jay"
   {
-		yyVal = new AstFunctionArgument () { Type = (string) yyVals[-1+yyTop], Name = (string) yyVals[0+yyTop]};
+		yyVal = new FunctionArgument () { Type = (string) yyVals[-1+yyTop], Name = (string) yyVals[0+yyTop]};
 	}
   break;
 case 29:
-#line 293 "ProcessingParser.jay"
+#line 234 "ProcessingParser.jay"
   {
 		yyVal = yyVals[-1+yyTop];
 	}
   break;
 case 30:
-#line 298 "ProcessingParser.jay"
+#line 239 "ProcessingParser.jay"
   { yyVal = null; }
   break;
 case 31:
-#line 300 "ProcessingParser.jay"
+#line 241 "ProcessingParser.jay"
   {
-		var l = (List<Expression>) yyVals[0+yyTop] ?? new List<Expression> ();
-		l.Insert (0, (Expression) yyVals[-1+yyTop]);
+		var l = (List<Statement>) yyVals[0+yyTop] ?? new List<Statement> ();
+		l.Insert (0, (Statement) yyVals[-1+yyTop]);
 		yyVal = l;
 	}
   break;
 case 32:
-#line 307 "ProcessingParser.jay"
+#line 248 "ProcessingParser.jay"
   { yyVal = yyVals[-1+yyTop]; }
   break;
 case 49:
-#line 333 "ProcessingParser.jay"
+#line 274 "ProcessingParser.jay"
   {
 		var e1 = (Expression) yyVals[-2+yyTop];
 		var e2 = (Expression) yyVals[0+yyTop];
-		yyVal = Expression.Assign (e1, Expression.AddChecked (e1, e2));
+		yyVal = Statement.Assign (e1, Expression.AddChecked (e1, e2));
 	}
   break;
 case 50:
-#line 341 "ProcessingParser.jay"
+#line 282 "ProcessingParser.jay"
   {
 		var e1 = (Expression) yyVals[-2+yyTop];
 		var e2 = (Expression) yyVals[0+yyTop];
-		yyVal = Expression.Assign (e1, Expression.SubtractChecked (e1, e2));
+		yyVal = Statement.Assign (e1, Expression.SubtractChecked (e1, e2));
 	}
   break;
 case 51:
-#line 349 "ProcessingParser.jay"
+#line 290 "ProcessingParser.jay"
   {
 		var e1 = (Expression) yyVals[-1+yyTop];
-		yyVal = Expression.Assign (e1, Expression.AddChecked (e1, Expression.Constant (1)));
+		yyVal = Statement.Assign (e1, Expression.AddChecked (e1, Expression.Constant (1)));
 	}
   break;
 case 52:
-#line 356 "ProcessingParser.jay"
+#line 297 "ProcessingParser.jay"
   {
 		var e1 = (Expression) yyVals[-1+yyTop];
-		yyVal = Expression.Assign (e1, Expression.SubtractChecked (e1, Expression.Constant (1)));
+		yyVal = Statement.Assign (e1, Expression.SubtractChecked (e1, Expression.Constant (1)));
 	}
   break;
 case 53:
-#line 363 "ProcessingParser.jay"
+#line 304 "ProcessingParser.jay"
   {
 		/* FIXME: get current type, find base constructor, and call it.*/
 	}
   break;
 case 54:
-#line 369 "ProcessingParser.jay"
+#line 310 "ProcessingParser.jay"
   {
-		yyVal = Expression.Return ((Expression) yyVals[0+yyTop]);
+		yyVal = Statement.Return ((Expression) yyVals[0+yyTop]);
 	}
   break;
 case 55:
-#line 375 "ProcessingParser.jay"
+#line 316 "ProcessingParser.jay"
   {
-		yyVal = Expression.Assign ((Expression) yyVals[-2+yyTop], (Expression) yyVals[-1+yyTop]);
+		yyVal = Statement.Assign ((Expression) yyVals[-2+yyTop], (Expression) yyVals[-1+yyTop]);
 	}
   break;
 case 56:
-#line 381 "ProcessingParser.jay"
+#line 322 "ProcessingParser.jay"
   {
-		yyVal = Expression.Loop ((Expression) yyVals[-2+yyTop], null, Expression.Block (null, (List<Expression>) yyVals[0+yyTop]), Expression.Break (null), null);
+		yyVal = Statement.Loop ((Expression) yyVals[-2+yyTop], Statement.Block ((List<Statement>) yyVals[0+yyTop]));
 	}
   break;
 case 57:
-#line 385 "ProcessingParser.jay"
-  { yyVal = Expression.Break (null); }
+#line 326 "ProcessingParser.jay"
+  { yyVal = Statement.Break (); }
   break;
 case 58:
-#line 391 "ProcessingParser.jay"
+#line 332 "ProcessingParser.jay"
   {
 		/* FIXME: CreateType() is not likely possible here.*/
-		var l = new List<VariableExpression> ();
-		Type t = CreateType ((string) yyVals[-2+yyTop], (bool) yyVals[-1+yyTop]);
-		foreach (VariableDeclarationPair p in yyVals[0+yyTop])
-			l.Add (Expression.Variable (t, p)); /* FIXME from here*/
+		var l = new List<Statement> ();
+		string type = (string) yyVals[-2+yyTop];
+		foreach (VariableDeclarationPair p in (List<VariableDeclarationPair>) yyVals[-1+yyTop])
+			l.Add (Statement.DeclareVariable (type, p.Name, p.Initializer));
+		yyVal = l;
 	}
   break;
 case 59:
-#line 401 "ProcessingParser.jay"
+#line 343 "ProcessingParser.jay"
   {
 		/* FIXME: implement*/
 	}
   break;
 case 60:
-#line 405 "ProcessingParser.jay"
+#line 347 "ProcessingParser.jay"
   {
 		/* FIXME: implement*/
 	}
   break;
 case 62:
-#line 414 "ProcessingParser.jay"
+#line 356 "ProcessingParser.jay"
   {
 		var l = new List<VariableDeclarationPair> ();
 		l.Add ((VariableDeclarationPair) yyVals[0+yyTop]);
@@ -712,7 +654,7 @@ case 62:
 	}
   break;
 case 63:
-#line 420 "ProcessingParser.jay"
+#line 362 "ProcessingParser.jay"
   {
 		var l = (List<VariableDeclarationPair>) yyVals[0+yyTop];
 		l.Insert (0, (VariableDeclarationPair) yyVals[-2+yyTop]);
@@ -720,60 +662,56 @@ case 63:
 	}
   break;
 case 64:
-#line 428 "ProcessingParser.jay"
+#line 370 "ProcessingParser.jay"
   {
-		yyVal = new VariableDeclarationPair ((string) yyVals[-1+yyTop], (Expression) yyVals[0+yyTop]);
+		yyVal = new VariableDeclarationPair () {Name = (string) yyVals[-1+yyTop], Initializer = (Expression) yyVals[0+yyTop]};
 	}
   break;
 case 65:
-#line 433 "ProcessingParser.jay"
+#line 375 "ProcessingParser.jay"
   { yyVal = null; }
   break;
 case 67:
-#line 438 "ProcessingParser.jay"
+#line 380 "ProcessingParser.jay"
   {
 		yyVal = yyVals[0+yyTop];
 	}
   break;
 case 68:
-#line 446 "ProcessingParser.jay"
+#line 388 "ProcessingParser.jay"
   {
 		var cond = (Expression) yyVals[-3+yyTop];
-		var tb = (List<Expression>) yyVals[-1+yyTop];
-		var fb = (List<Expression>) yyVals[0+yyTop];
-		yyVal = eb != null ?
-			Expression.IfThenElse (cond, Expression.Block (tb), Expression.Block (fb)) :
-			Expression.IfThen (cond, Expression.Block (tb));
+		var tb = (List<Statement>) yyVals[-1+yyTop];
+		var fb = (List<Statement>) yyVals[0+yyTop];
+		yyVal = fb != null ?
+			Statement.IfThenElse (cond, Statement.Block (tb), Statement.Block (fb)) :
+			Statement.IfThen (cond, Statement.Block (tb));
 	}
   break;
 case 69:
-#line 456 "ProcessingParser.jay"
+#line 398 "ProcessingParser.jay"
   { yyVal = null; }
   break;
 case 71:
-#line 460 "ProcessingParser.jay"
+#line 402 "ProcessingParser.jay"
   { yyVal = yyVals[0+yyTop]; }
   break;
 case 72:
-#line 467 "ProcessingParser.jay"
+#line 409 "ProcessingParser.jay"
   {
 		var init = (List<Expression>) yyVals[-6+yyTop];
 		var cond = (Expression) yyVals[-4+yyTop];
 		var cont = (List<Expression>) yyVals[-2+yyTop];
-		var loop = Expression.Loop (cond,
-			cont != null ? Expression.Block (cont) : null,
-			Expression.Block ((List<Expression>) yyVals[0+yyTop]),
-			Expression.Break (null),
-			new LabelTarget (null));
-		yyVal = init != null ? Expression.Block (init, loop) : loop;
+		var body = Statement.Block ((List<Statement>) yyVals[0+yyTop]);
+		yyVal = Statement.For (init, cond, cont, body);
 	}
   break;
 case 73:
-#line 480 "ProcessingParser.jay"
+#line 418 "ProcessingParser.jay"
   { yyVal = null; }
   break;
 case 76:
-#line 486 "ProcessingParser.jay"
+#line 424 "ProcessingParser.jay"
   {
 		var l = new List<Expression> ();
 		l.Add ((Expression) yyVals[0+yyTop]);
@@ -781,7 +719,7 @@ case 76:
 	}
   break;
 case 77:
-#line 492 "ProcessingParser.jay"
+#line 430 "ProcessingParser.jay"
   {
 		var l = (List<Expression>) yyVals[0+yyTop];
 		l.Insert (0, (Expression) yyVals[-2+yyTop]);
@@ -789,17 +727,17 @@ case 77:
 	}
   break;
 case 79:
-#line 505 "ProcessingParser.jay"
+#line 443 "ProcessingParser.jay"
   {
-		yyVal = Expression.Switch (null, null, (Expression) yyVals[-4+yyTop], ((List<SwitchCase>) yyVals[-1+yyTop]).ToArray ());
+		yyVal = Statement.Switch ((Expression) yyVals[-4+yyTop], ((List<SwitchCase>) yyVals[-1+yyTop]).ToArray ());
 	}
   break;
 case 80:
-#line 510 "ProcessingParser.jay"
+#line 448 "ProcessingParser.jay"
   { yyVal = new List<SwitchCase> (); }
   break;
 case 81:
-#line 513 "ProcessingParser.jay"
+#line 451 "ProcessingParser.jay"
   {
 		var l = (List<SwitchCase>) yyVals[0+yyTop];
 		l.Insert (0, (SwitchCase) yyVals[-1+yyTop]);
@@ -807,60 +745,60 @@ case 81:
 	}
   break;
 case 84:
-#line 525 "ProcessingParser.jay"
+#line 463 "ProcessingParser.jay"
   {
-		var l = (List<Expression>) yyVals[0+yyTop];
+		var l = (List<Statement>) yyVals[0+yyTop];
 		/* must end with break_statement*/
-		if (!(l [l.Length - 1] is BreakExpression))
-			l.Add (Expression.Break (null));
-		yyVal = Expression.SwitchCase (GetIntValue ((ConstantExpression) yyVals[-2+yyTop]), Expression.Block (l));
+		if (!(l [l.Count - 1] is BreakStatement))
+			l.Add (Statement.Break ());
+		yyVal = new SwitchCase ((ConstantExpression) yyVals[-2+yyTop], l);
 	}
   break;
 case 85:
-#line 535 "ProcessingParser.jay"
+#line 473 "ProcessingParser.jay"
   {
-		var l = (List<Expression>) yyVals[0+yyTop];
+		var l = (List<Statement>) yyVals[0+yyTop];
 		/* must end with break_statement*/
-		if (!(l [l.Length - 1] is BreakExpression))
-			l.Add (Expression.Break (null));
-		yyVal = Expression.DefaultCase (Expression.Block (l));
+		if (!(l [l.Count - 1] is BreakStatement))
+			l.Add (Statement.Break ());
+		yyVal = new DefaultCase (l);
 	}
   break;
 case 98:
-#line 561 "ProcessingParser.jay"
+#line 499 "ProcessingParser.jay"
   {
 		/* FIXME: how can I distinguish variable and field-or-property?*/
 		/* FIXME: how can I instantiate an Expression for varref?*/
 	}
   break;
 case 101:
-#line 574 "ProcessingParser.jay"
+#line 512 "ProcessingParser.jay"
   {
 		/* FIXME: CreateType() is unlikely possible*/
 		var fcb = (KeyValuePair<string, List<Expression>>) yyVals[0+yyTop];
 		/* FIXME: no CallSiteBinder?*/
-		yyVal = Expression.New (CreateType (fcb.Key), null, fcb.Value);
+		yyVal = Expression.New (fcb.Key, fcb.Value);
 	}
   break;
 case 102:
-#line 583 "ProcessingParser.jay"
+#line 521 "ProcessingParser.jay"
   {
 		/* FIXME: CreateType() is unlikely possible*/
-		yyVal = Expression.NewArrayBounds (CreateType ((string) yyVals[-3+yyTop]), (Expression) yyVals[-1+yyTop]);
+		yyVal = Expression.NewArrayBounds ((string) yyVals[-3+yyTop], (Expression) yyVals[-1+yyTop]);
 	}
   break;
 case 106:
-#line 598 "ProcessingParser.jay"
+#line 536 "ProcessingParser.jay"
   {
 		yyVal = new KeyValuePair<string, List<Expression>> ((string) yyVals[-3+yyTop], (List<Expression>) yyVals[-1+yyTop]);
 	}
   break;
 case 107:
-#line 603 "ProcessingParser.jay"
+#line 541 "ProcessingParser.jay"
   { yyVal = new List<Expression> (); }
   break;
 case 109:
-#line 608 "ProcessingParser.jay"
+#line 546 "ProcessingParser.jay"
   {
 		var l = new List<Expression> ();
 		l.Add ((Expression) yyVals[0+yyTop]);
@@ -868,7 +806,7 @@ case 109:
 	}
   break;
 case 110:
-#line 614 "ProcessingParser.jay"
+#line 552 "ProcessingParser.jay"
   {
 		var l = (List<Expression>) yyVals[0+yyTop];
 		l.Insert (0, (Expression) yyVals[-2+yyTop]);
@@ -876,130 +814,130 @@ case 110:
 	}
   break;
 case 115:
-#line 626 "ProcessingParser.jay"
+#line 564 "ProcessingParser.jay"
   { yyVal = Expression.True (); }
   break;
 case 116:
-#line 628 "ProcessingParser.jay"
+#line 566 "ProcessingParser.jay"
   { yyVal = Expression.False (); }
   break;
 case 143:
-#line 678 "ProcessingParser.jay"
+#line 616 "ProcessingParser.jay"
   {
 		yyVal = Expression.PropertyOrField ((Expression) yyVals[-2+yyTop], (string) yyVals[0+yyTop]);
 	}
   break;
 case 144:
-#line 684 "ProcessingParser.jay"
+#line 622 "ProcessingParser.jay"
   {
 		var inst = (Expression) yyVals[-2+yyTop];
 		var fcb = (KeyValuePair<string, List<Expression>>) yyVals[0+yyTop];
 		/* FIXME: GetMethod() is unlikely possible*/
-		yyVal = Expression.Call (inst, GetMethod (inst, fcb.Key), fcb.Value.ToArray ());
+		yyVal = Expression.Call (inst, fcb.Key, fcb.Value);
 	}
   break;
 case 145:
-#line 693 "ProcessingParser.jay"
+#line 631 "ProcessingParser.jay"
   {
 		/* FIXME: needs current type context, Type, and then base type*/
 	}
   break;
 case 146:
-#line 697 "ProcessingParser.jay"
+#line 635 "ProcessingParser.jay"
   { }
   break;
 case 147:
-#line 701 "ProcessingParser.jay"
+#line 639 "ProcessingParser.jay"
   {
 		yyVal = Expression.ArrayIndex ((Expression) yyVals[-3+yyTop], (Expression) yyVals[-1+yyTop]);
 	}
   break;
 case 148:
-#line 705 "ProcessingParser.jay"
+#line 643 "ProcessingParser.jay"
   { yyVal = Expression.Null (); }
   break;
 case 149:
-#line 707 "ProcessingParser.jay"
+#line 645 "ProcessingParser.jay"
   { yyVal = yyVals[-1+yyTop]; }
   break;
 case 150:
-#line 711 "ProcessingParser.jay"
+#line 649 "ProcessingParser.jay"
   { yyVal = Expression.LessThan ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 151:
-#line 715 "ProcessingParser.jay"
+#line 653 "ProcessingParser.jay"
   { yyVal = Expression.LessThanOrEqual ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 152:
-#line 719 "ProcessingParser.jay"
+#line 657 "ProcessingParser.jay"
   { yyVal = Expression.GreaterThan ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 153:
-#line 723 "ProcessingParser.jay"
+#line 661 "ProcessingParser.jay"
   { yyVal = Expression.GreaterThanOrEqual ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 154:
-#line 727 "ProcessingParser.jay"
+#line 665 "ProcessingParser.jay"
   { yyVal = Expression.Equal ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 155:
-#line 731 "ProcessingParser.jay"
+#line 669 "ProcessingParser.jay"
   { yyVal = Expression.NotEqual ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 156:
-#line 735 "ProcessingParser.jay"
+#line 673 "ProcessingParser.jay"
   { yyVal = Expression.Condition ((Expression) yyVals[-4+yyTop], (Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 157:
-#line 739 "ProcessingParser.jay"
+#line 677 "ProcessingParser.jay"
   { yyVal = Expression.OrElse ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 158:
-#line 743 "ProcessingParser.jay"
+#line 681 "ProcessingParser.jay"
   { yyVal = Expression.AndAlso ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 159:
-#line 747 "ProcessingParser.jay"
+#line 685 "ProcessingParser.jay"
   { yyVal = Expression.Not ((Expression) yyVals[-1+yyTop]); }
   break;
 case 160:
-#line 751 "ProcessingParser.jay"
+#line 689 "ProcessingParser.jay"
   { yyVal = Expression.AddChecked ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 161:
-#line 755 "ProcessingParser.jay"
+#line 693 "ProcessingParser.jay"
   { yyVal = Expression.SubtractChecked ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 162:
-#line 759 "ProcessingParser.jay"
+#line 697 "ProcessingParser.jay"
   { yyVal = Expression.MultiplyChecked ((Expression) yyVals[-1+yyTop], Expression.Constant (-1)); }
   break;
 case 163:
-#line 763 "ProcessingParser.jay"
+#line 701 "ProcessingParser.jay"
   { yyVal = Expression.MultiplyChecked ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 164:
-#line 767 "ProcessingParser.jay"
+#line 705 "ProcessingParser.jay"
   { yyVal = Expression.DivideChecked ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 165:
-#line 771 "ProcessingParser.jay"
+#line 709 "ProcessingParser.jay"
   { yyVal = Expression.ModuloChecked ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 166:
-#line 775 "ProcessingParser.jay"
+#line 713 "ProcessingParser.jay"
   { yyVal = Expression.And ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 167:
-#line 779 "ProcessingParser.jay"
+#line 717 "ProcessingParser.jay"
   { yyVal = Expression.Or ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 168:
-#line 783 "ProcessingParser.jay"
+#line 721 "ProcessingParser.jay"
   { yyVal = Expression.LeftShift ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 case 169:
-#line 787 "ProcessingParser.jay"
+#line 725 "ProcessingParser.jay"
   { yyVal = Expression.RightShift ((Expression) yyVals[-2+yyTop], (Expression) yyVals[0+yyTop]); }
   break;
 #line default
@@ -1460,7 +1398,7 @@ case 169:
   307,  308,  309,  310,  311,
   };
 
-#line 791 "ProcessingParser.jay"
+#line 729 "ProcessingParser.jay"
 } // end of class
 #line default
 namespace yydebug {

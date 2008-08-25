@@ -2,70 +2,11 @@
 %{
 using System;
 using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Collections.Generic;
+using ProcessingDlr.Ast;
 
 namespace ProcessingDlr
 {
-	public class PdlrClass
-	{
-		string name, base_type;
-		List<string> interfaces;
-		List<PdlrMember> members;
-
-		public PdlrClass (string name, string baseType, List<string> interfaces, List<PdlrMember> members)
-		{
-			this.name = name;
-			this.base_type = baseType;
-			this.interfaces = interfaces;
-			this.members = members;
-		}
-	}
-
-	public class AstFunction
-	{
-		public AstFunction (string typeName, AstFunctionBase funcBase)
-		{
-		}
-	}
-
-	public class AstConstructor
-	{
-		public AstConstructor (AstFunctionBase funcBase)
-		{
-		}
-	}
-
-	public class AstFunctionBase
-	{
-		public AstFunctionBase (string name, List<AstFunctionArgument> args, List<Expression> body)
-		{
-			Name = name;
-			Arguments = args;
-			Body = body;
-		}
-
-		public string Name;
-		public List<AstFunctionArgument> Arguments;
-		public List<Expression> Body;
-	}
-
-	public class AstFunctionArgument
-	{
-		public string Type;
-		public string Name;
-	}
-
-	public class VariableDeclarationPair
-	{
-		public string Name;
-		public Expression Initializer;
-	}
-
-	public abstract class PdlrMember
-	{
-	}
 
 	public class ProcessingParser
 	{
@@ -165,12 +106,12 @@ identifier : IDENTIFIER
 top_level_contents
 	: // empty
 	{
-		return new List<Expression> ();
+		$$ = new List<ITopLevelContent> ();
 	}
 	| top_level_contents top_level_content
 	{
-		var l = (List<Expression>) $2;
-		l.Insert (0, (Expression) $1);
+		var l = (List<ITopLevelContent>) $2;
+		l.Insert (0, (ITopLevelContent) $1);
 		$$ = l;
 	}
 	;
@@ -194,8 +135,8 @@ class_declaration
 		var name = (string) $2;
 		var baseType = (string) $3;
 		var interfaces = (List<string>) $4;
-		var members = (List<PdlrMember>) $5;
-		$$ = new PdlrClass (name, baseType, interfaces, members);
+		var members = (List<MemberDefinition>) $5;
+		$$ = new ClassDefinition (name, baseType, interfaces, members);
 	}
 
 opt_derivation_indication
@@ -240,8 +181,8 @@ class_member_definitions
 	: { $$ = null; } // empty
 	| class_member_definition class_member_definitions
 	{
-		var l = (List<PdlrMember>) $2 ?? new List<PdlrMember> ();
-		l.Insert (0, (PdlrMember) $1);
+		var l = (List<MemberDefinition>) $2 ?? new List<MemberDefinition> ();
+		l.Insert (0, (MemberDefinition) $1);
 		$$ = l;
 	}
 
@@ -256,34 +197,34 @@ field_definition
 constructor_definition
 	: function_definition_base
 	{
-		$$ = new AstConstructor ((AstFunctionBase) $1);
+		$$ = new ConstructorDefinition ((FunctionBase) $1);
 	}
 
 function_definition
 	: type_name function_definition_base
 	{
-		$$ = new AstFunction ((string) $1, (AstFunctionBase) $2);
+		$$ = new FunctionDefinition ((string) $1, (FunctionBase) $2);
 	}
 
 function_definition_base
 	: identifier OPEN_PAREN argument_definitions CLOSE_PAREN statement_block
 	{
-		$$ = new AstFunctionBase ((string) $1, (List<AstFunctionArgument>) $3, (List<Expression>) $5);
+		$$ = new FunctionBase ((string) $1, (List<FunctionArgument>) $3, Statement.Block ((List<Statement>) $5));
 	}
 
 argument_definitions
 	: { $$ = null; } // empty
 	| argument_definition COMMA argument_definitions
 	{
-		var l = (List<AstFunctionArgument>) $3 ?? new List<AstFunctionArgument> ();
-		l.Insert (0, (AstFunctionArgument) $1);
+		var l = (List<FunctionArgument>) $3 ?? new List<FunctionArgument> ();
+		l.Insert (0, (FunctionArgument) $1);
 		$$ = l;
 	}
 
 argument_definition
 	: type_name identifier
 	{
-		$$ = new AstFunctionArgument () { Type = (string) $1, Name = (string) $2};
+		$$ = new FunctionArgument () { Type = (string) $1, Name = (string) $2};
 	}
 
 // Statements
@@ -298,8 +239,8 @@ statements
 	: { $$ = null; } // empty
 	| statement statements
 	{
-		var l = (List<Expression>) $2 ?? new List<Expression> ();
-		l.Insert (0, (Expression) $1);
+		var l = (List<Statement>) $2 ?? new List<Statement> ();
+		l.Insert (0, (Statement) $1);
 		$$ = l;
 	}
 
@@ -333,7 +274,7 @@ add_assignment_statement
 	{
 		var e1 = (Expression) $1;
 		var e2 = (Expression) $3;
-		$$ = Expression.Assign (e1, Expression.AddChecked (e1, e2));
+		$$ = Statement.Assign (e1, Expression.AddChecked (e1, e2));
 	}
 
 subtract_assignment_statement
@@ -341,21 +282,21 @@ subtract_assignment_statement
 	{
 		var e1 = (Expression) $1;
 		var e2 = (Expression) $3;
-		$$ = Expression.Assign (e1, Expression.SubtractChecked (e1, e2));
+		$$ = Statement.Assign (e1, Expression.SubtractChecked (e1, e2));
 	}
 
 increment_statement
 	: variable_or_member_reference PLUS_PLUS // FIXME: no pre-positioned increment?
 	{
 		var e1 = (Expression) $1;
-		$$ = Expression.Assign (e1, Expression.AddChecked (e1, Expression.Constant (1)));
+		$$ = Statement.Assign (e1, Expression.AddChecked (e1, Expression.Constant (1)));
 	}
 
 decrement_statement
 	: variable_or_member_reference MINUS_MINUS // FIXME: no pre-positioned increment?
 	{
 		var e1 = (Expression) $1;
-		$$ = Expression.Assign (e1, Expression.SubtractChecked (e1, Expression.Constant (1)));
+		$$ = Statement.Assign (e1, Expression.SubtractChecked (e1, Expression.Constant (1)));
 	}
 
 call_super_statement
@@ -367,22 +308,22 @@ call_super_statement
 return_statement
 	: RETURN expression
 	{
-		$$ = Expression.Return ((Expression) $2);
+		$$ = Statement.Return ((Expression) $2);
 	}
 
 assignment_statement
 	: variable_or_member_reference EQUAL expression
 	{
-		$$ = Expression.Assign ((Expression) $1, (Expression) $2);
+		$$ = Statement.Assign ((Expression) $1, (Expression) $2);
 	}
 
 while_statement
 	: WHILE OPEN_PAREN expression CLOSE_PAREN statement_block
 	{
-		$$ = Expression.Loop ((Expression) $3, null, Expression.Block (null, (List<Expression>) $5), Expression.Break (null), null);
+		$$ = Statement.Loop ((Expression) $3, Statement.Block ((List<Statement>) $5));
 	}
 
-break_statement : BREAK { $$ = Expression.Break (null); }
+break_statement : BREAK { $$ = Statement.Break (); }
 
 /// variable-declaration
 
@@ -390,10 +331,11 @@ variable_declaration_statement
 	: type_name variable_declaration_pairs SEMICOLON
 	{
 		// FIXME: CreateType() is not likely possible here.
-		var l = new List<VariableExpression> ();
-		Type t = CreateType ((string) $1, (bool) $2);
-		foreach (VariableDeclarationPair p in $3)
-			l.Add (Expression.Variable (t, p)); // FIXME from here
+		var l = new List<Statement> ();
+		string type = (string) $1;
+		foreach (VariableDeclarationPair p in (List<VariableDeclarationPair>) $2)
+			l.Add (Statement.DeclareVariable (type, p.Name, p.Initializer));
+		$$ = l;
 	}
 
 type_name :
@@ -426,7 +368,7 @@ variable_declaration_pairs
 variable_declaration_pair
 	: identifier opt_variable_initializer
 	{
-		$$ = new VariableDeclarationPair ((string) $1, (Expression) $2);
+		$$ = new VariableDeclarationPair () {Name = (string) $1, Initializer = (Expression) $2};
 	}
 
 opt_variable_initializer
@@ -445,11 +387,11 @@ if_statement
 	: IF OPEN_PAREN expression CLOSE_PAREN statement_block opt_else_block
 	{
 		var cond = (Expression) $3;
-		var tb = (List<Expression>) $5;
-		var fb = (List<Expression>) $6;
-		$$ = eb != null ?
-			Expression.IfThenElse (cond, Expression.Block (tb), Expression.Block (fb)) :
-			Expression.IfThen (cond, Expression.Block (tb));
+		var tb = (List<Statement>) $5;
+		var fb = (List<Statement>) $6;
+		$$ = fb != null ?
+			Statement.IfThenElse (cond, Statement.Block (tb), Statement.Block (fb)) :
+			Statement.IfThen (cond, Statement.Block (tb));
 	}
 
 opt_else_block
@@ -468,12 +410,8 @@ for_statement
 		var init = (List<Expression>) $3;
 		var cond = (Expression) $5;
 		var cont = (List<Expression>) $7;
-		var loop = Expression.Loop (cond,
-			cont != null ? Expression.Block (cont) : null,
-			Expression.Block ((List<Expression>) $9),
-			Expression.Break (null),
-			new LabelTarget (null));
-		$$ = init != null ? Expression.Block (init, loop) : loop;
+		var body = Statement.Block ((List<Statement>) $9);
+		$$ = Statement.For (init, cond, cont, body);
 	}
 
 for_initializer
@@ -503,7 +441,7 @@ switch_statement
 	: SWITCH OPEN_PAREN expression CLOSE_PAREN
 	  OPEN_CURLY switch_case_list CLOSE_CURLY
 	{
-		$$ = Expression.Switch (null, null, (Expression) $3, ((List<SwitchCase>) $6).ToArray ());
+		$$ = Statement.Switch ((Expression) $3, ((List<SwitchCase>) $6).ToArray ());
 	}
 
 switch_case_list
@@ -523,21 +461,21 @@ switch_case_default
 switch_case
 	: CASE literal COLON statements
 	{
-		var l = (List<Expression>) $4;
+		var l = (List<Statement>) $4;
 		// must end with break_statement
-		if (!(l [l.Length - 1] is BreakExpression))
-			l.Add (Expression.Break (null));
-		$$ = Expression.SwitchCase (GetIntValue ((ConstantExpression) $2), Expression.Block (l));
+		if (!(l [l.Count - 1] is BreakStatement))
+			l.Add (Statement.Break ());
+		$$ = new SwitchCase ((ConstantExpression) $2, l);
 	}
 
 switch_default
 	: DEFAULT COLON statements
 	{
-		var l = (List<Expression>) $3;
+		var l = (List<Statement>) $3;
 		// must end with break_statement
-		if (!(l [l.Length - 1] is BreakExpression))
-			l.Add (Expression.Break (null));
-		$$ = Expression.DefaultCase (Expression.Block (l));
+		if (!(l [l.Count - 1] is BreakStatement))
+			l.Add (Statement.Break ());
+		$$ = new DefaultCase (l);
 	}
 
 // Expressions
@@ -575,14 +513,14 @@ new_object_expression
 		// FIXME: CreateType() is unlikely possible
 		var fcb = (KeyValuePair<string, List<Expression>>) $2;
 		// FIXME: no CallSiteBinder?
-		$$ = Expression.New (CreateType (fcb.Key), null, fcb.Value);
+		$$ = Expression.New (fcb.Key, fcb.Value);
 	}
 
 new_array_expression
 	: NEW identifier OPEN_BRACE expression CLOSE_BRACE
 	{
 		// FIXME: CreateType() is unlikely possible
-		$$ = Expression.NewArrayBounds (CreateType ((string) $2), (Expression) $4);
+		$$ = Expression.NewArrayBounds ((string) $2, (Expression) $4);
 	}
 
 // callable expressions
@@ -685,7 +623,7 @@ function_access_expression
 		var inst = (Expression) $1;
 		var fcb = (KeyValuePair<string, List<Expression>>) $3;
 		// FIXME: GetMethod() is unlikely possible
-		$$ = Expression.Call (inst, GetMethod (inst, fcb.Key), fcb.Value.ToArray ());
+		$$ = Expression.Call (inst, fcb.Key, fcb.Value);
 	}
 
 super_expression
