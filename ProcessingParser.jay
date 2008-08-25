@@ -20,11 +20,12 @@ namespace ProcessingDlr
 
 		public void Parse ()
 		{
-			using (var reader = new StreamReader (filename)) {
-				yyparse (new Tokenizer (reader));
-			}
+			yyparse (new Tokenizer (filename));
 		}
 %}
+
+%token ERROR
+%token EOF
 
 %token IDENTIFIER
 %token NUMERIC_LITERAL
