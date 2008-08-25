@@ -1,0 +1,16 @@
+* What's this
+
+It is / will be a couple of attempt to achieve support for processing under
+moonlight
+http://processing.org/
+http://mono-project.com/Moonlight
+
+** Files
+
+processing_syntax.txt is my analysis on processing syntax. It is based on
+1.0 beta.
+
+ProcessingGrammar.cs and ProcessingAstVisitor.cs are some old attempt to
+implement a parser using Irony: http://www.codeplex.com/irony
+
+skeleton.cs : taken from mcs (jay).

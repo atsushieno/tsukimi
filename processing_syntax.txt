@@ -1,0 +1,852 @@
+* Pseudo syntax for Processing
+
+	This text is an attempt to describe the syntax for "processing"
+	programming language. I have never touched it though.
+
+	Seealso: processing syntax reference
+	http://processing.org/reference/index_ext.html
+
+** Mapping from "processing reference" to BNF components
+
+*** components filtered at tokenization phase
+
+	/* ... */ : multiline comment
+	/** ... */ : doc comment
+	// : single line comment
+
+*** Structure
+
+	. (dot) : {expression part}
+		field_access_expression := expression "." identifier
+		function_access_expression :=
+			expression "." function_call_expression
+	super : expression keyword
+		super_expression := "super"
+	setup() : function
+	exit() : function
+	class : declaration
+		class_declaration :=
+			"class" identifier ... "{" class_member_list "}"
+	void : type_name
+	size() : function
+	false : expression keyword
+		false_expression := "false"
+	noLoop() : function
+	this : expression keyword
+		this_expression := "this"
+	true : expression keyword
+		true_expression := "true"
+	new : expression part
+		new_expression := "new" function_call_expression
+	comma : expression part
+	delay() : function
+	{} (curly braces) : expression part
+	draw() : function
+	loop() : function
+	implements : declaration part
+		implementation_indications := "implements" identifier_list_comma
+	redraw() : function
+	; (semicolon) : expression part
+	[] (array access) : expression part
+		array_access_expression := "[" expression "]"
+	extends : declaration part
+		derivation_indication := "extends" identifier
+	null : expression keyword
+		null_expression := "null"
+	() (parenthesis) : expression part
+	return : statement part
+		return_statement := "return" expression
+	= (assign) : statement part
+		assignment_statement := variable "=" expression
+
+*** Environment
+
+	function -> frameRate(), noCursor(), cursor()
+	static variable -> online, focused, frameRate, screen, width, height,
+		frameCount
+
+*** Data
+
+	type name -> color, char, float, int, boolean, byte,
+		String, Array, Object
+	function -> (everything else)
+
+*** Control
+
+	< (less than) : expression part
+		less_than_expression := expression "<" expression
+	<= (less than or equal to) : expression part
+		less_eq_expression := expression "<=" expression
+	> (greater than) : expression part
+		greater_than_expression := expression ">" expression
+	>= (greater than or equal to) : expression part
+		greater_eq_expression := expression ">=" expression
+	== (equality) : expression part
+		eq_expression := expression "==" expression
+	!= (inequality) : expression part
+		eq_expression := expression "!=" expression
+
+	for : statement part
+		for_statement := "for" "(" for_initializers ";" expression 
+		";" for_continuations ")" statement_block
+
+	while : statement part
+		while_statement := "while" "(" expression ")" statement_block
+
+	?: (conditional) : expression part
+		conditional_expression :=
+			expression "?" expression ":" expression
+
+	break : statement
+		break_statement := "break"
+
+	switch : statement part
+		switch_statement :=
+			"switch" "(" expression ")" "{" switch_case_list "}"
+
+	case : statement part
+		switch_case := "case" constant ":" statement_list
+			// must end with break_statement
+
+	default : statement part
+		switch_default := "default" ":" statement_list
+			// must end with break_statement
+
+	else : statement part
+		else_block := "else" statement_block
+
+	if : statement part
+		if_statement :=
+			"if" "(" expression ")" statement_block opt_else_block
+
+	|| (logical or) : expression
+		logical_or_expression := expression "||" expression
+	&& (logical and) : expression
+		logical_and_expression := expression "&&" expression
+	! (logical not) : expression
+		logical_not_expression := "!" expression
+
+*** Shape
+
+	function -> everything
+
+*** Input
+
+	static variable -> mouseButton, mousePressed, mouseX, mouseY,
+		pmouseX, pmouseY, keyCode, key, keyPressed
+	function -> everything else
+
+*** Output 
+
+	PrintWriter : type name
+	function -> everything else
+
+*** Transform, Color
+
+	function -> everything
+
+*** Image
+
+	PImage : type name
+	pixels : static variable (array)
+	function -> everything else
+
+*** Rendering
+
+	PGraphics : type name
+	function -> everything else
+
+*** Typography
+
+	PFont : type name
+	function -> everything else
+
+*** Math
+
+	+ (plus) : expression part
+		add_expression := expression "+" expression
+	- (minus) : expression part / expression part
+		subtract_expression := expression "-" expression
+		numeric_negation_expression := "-" expression
+	* (multiply) : expression part
+		multiply_expression := expression "*" expression
+	/ (divide) : expression part
+		divide_expression := expression "/" expression
+	% (modulo) : expression part
+		modulo_expression := expression "%" expression
+	+= (add assign) : statement
+		add_assignment_statement := expression "+=" expression
+	-= (subtract assign) : statement
+		subtract_assignment_statement := expression "-=" expression
+	++ (increment) : statement
+		increment_statement := expression "++"
+			// FIXME: no pre-positioned increment?
+	-- (decrement) : statement
+		decrement_statement := expression "--"
+			// FIXME: no pre-positioned increment?
+
+	& (bitwise and) : expression part
+		bitwise_and_expression := expression "&" expression
+	| (bitwise or) : expression part
+		bitwise_or_expression := expression "|" expression
+	<< (left shift) : expression part
+		left_shift_expression := expression "<<" expression
+	>> (right shift) : expression part
+		right_shift_expression := expression ">>" expression
+
+	static variable -> HALF_PI, TWO_PI, PI
+
+	function -> everything else
+
+
+** BNF syntax
+
+*** top-level contents
+
+	top_level_contents :=
+		// empty
+		| top_level_content top_level_contents
+
+	top_level_content :=
+		statements
+		| callable_expression
+		| class_declaration
+		| global_function_definition
+
+*** declarations and definitions
+
+	global_function_definition := function_definition
+
+	class_declaration :=
+		"class" identifier
+		opt_derivation_indication opt_implementation_indications
+		"{" class_member_definitions "}"
+
+	opt_derivation_indication :=
+		// empty
+		: derivation_indication
+
+	opt_implementation_indications :=
+		// empty
+		: implementation_indications
+
+	derivation_indication := "extends" identifier
+	implementation_indications := "implements" identifier_list_comma
+
+	identifier_list_comma :=
+		identifier
+		| identifier "," identifier_list_comma
+
+	class_member_definitions :=
+		// empty
+		| class_member_definition class_member_definitions
+
+	class_member_definition :=
+		field_definition
+		| constructor_definition
+		| function_definition
+
+	field_definition := variable_declaration_statement ";"
+
+	constructor_definition :=
+		function_definition_base
+
+	function_definition :=
+		type_name function_definition_base
+
+	function_definition_base :=
+		identifier "(" argment_definitions ")" statement_block
+
+	argument_definitions :=
+		// empty
+		| argument_definition "," argument_definitions
+
+	argument_definition :=
+		type_name identifier
+
+*** statements
+
+	statement_block :=
+		"{" statements "}"
+
+	statements :=
+		// empty
+		| statement statements
+
+	statement :=
+		statement_with_semicolon ";"
+		| statement_without_semicolon
+
+	statement_with_semicolon :=
+		return_statement
+		| abstract_assignment_statement
+		| break_statement
+		| increment_statement
+		| decrement_statement
+		| variable_declaration_statement
+		| call_super_statement
+
+	statement_without_semicolon :=
+		if_statement
+		| for_statement
+		| while_statement
+		| switch_statement
+
+	abstract_assignment_statement :=
+		assignment_statement
+		| add_assignment_statement
+		| subtract_assignment_statement
+
+	add_assignment_statement := expression "+=" expression
+	subtract_assignment_statement := expression "-=" expression
+	increment_statement := expression "++"
+		// FIXME: no pre-positioned increment?
+	decrement_statement := expression "--"
+		// FIXME: no pre-positioned increment?
+	call_super_statement := "super" "(" function_args ")"
+		// valid only in constructor
+	return_statement := "return" expression
+	assignment_statement := variable "=" expression
+	while_statement := "while" "(" expression ")" statement_block
+	break_statement := "break"
+
+	// variable-declaration
+
+	variable_declaration_statement :=
+		type_name opt_array_indicator variable_declaration_pairs ";"
+
+	type_name := identifier
+
+	opt_array_type_indicator :=
+		// empty
+		| "[" "]"
+
+	variable_declaration_pairs :=
+		variable_declaration_pair
+		| variable_declaration_pair "," variable_declaration_pairs 
+
+	variable_declaration_pair :=
+		identifier opt_variable_initializer
+
+	opt_variable_initializer :=
+		// empty
+		| variable_initializer
+
+	variable_initializer :=
+		"=" expression
+
+	// if-else
+
+	if_statement :=
+		"if" "(" expression ")" statement_block opt_else_block
+
+	opt_else_block :=
+		// empty
+		| else_block
+
+	else_block := "else" statement_block
+
+	// for
+
+	for_statement :=
+		"for" "(" for_initializer ";" expression ";"
+		for_continuations ")" statement_block
+
+	for_initializer :=
+		// empty
+		| variable_declaration_statement
+		| abstract_assignment_list
+
+	abstract_assignment_list :=
+		abstract_assignment_statement
+		| abstract_assignment_statement "," abstract_assignment_list
+
+	for_continuations := statements // FIXME: no constraints?
+
+	// switch-case
+
+	switch_statement := "switch" "(" expression ")" "{" switch_case_list "}"
+
+	switch_case_list :=
+		// empty
+		| switch_case_default switch_case_list
+			// switch_default cannot appear twice
+
+	switch_case_default :=
+		switch_case
+		| switch_default
+
+	switch_case := "case" constant ":" statement_list
+		// must end with break_statement
+	switch_default := "default" ":" statement_list
+		// must end with break_statement
+
+*** expressions
+
+	expression :=
+		callable_expression
+		| operation_expression
+		| variable
+		| literal
+		| field_access_expression
+		| super_expression
+		| false_expression
+		| this_expression
+		| true_expression
+		| new_expression
+		| array_access_expression
+		| null_expression
+		| parenthesized_expression
+		| numeric_negation_expression
+
+	variable :=
+		identifier
+
+	// new
+
+	new_expression :=
+		new_object_expression
+		| new_array_expression
+
+	new_object_expression :=
+		"new" function_call_base
+
+	new_array_expression :=
+		"new" identifier "[" expression "]"
+
+	// callable expressions
+
+	callable_expression :=
+		funccation_call_expression
+		| function_access_expression
+
+	function_call_expression := function_call_base
+
+	function_call_base :=
+		identifier "(" function_args ")"
+
+	function_args :=
+		// empty
+		| function_arg_list
+
+	function_arg_list :=
+		expression
+		| expression "," function_arg_list
+
+	// operation expressions
+
+	operation_expression :=
+		comparison_expression
+		| logical_operation_expression
+		| arithmetic_expression
+
+	comparison_expression :=
+		less_than_expression
+		| less_eq_expression
+		| greater_than_expression
+		| greater_eq_expression
+		| eq_expression
+		| not_eq_expression
+		| conditional_expression
+
+	logical_operation_expression :=
+		| logical_or_expression
+		| logical_and_expression
+		| logical_not_expression
+
+	arithmetic_expression :=
+		additive_expression
+		| multiplicative_expression
+
+	additive_expression :=
+		add_expression
+		| subtract_expression
+		| bitwise_and_expression
+		| bitwise_or_expression
+		| left_shift_expression
+		| right_shift_expression
+
+	multiplicative_expression :=
+		multiply_expression
+		| divide_expression
+		| modulo_expression
+
+	// FIXME: "expression" in below items need to be more specific.
+	// For example, First expression in "additive_expression" is 
+	// "multiplicative_expression" (for operator priority)
+
+	field_access_expression := expression "." identifier
+	function_access_expression := expression "." function_call_expression
+	super_expression := "super"
+	false_expression := "false"
+	this_expression := "this"
+	true_expression := "true"
+	array_access_expression := expression "[" expression "]"
+	null_expression := "null"
+	parenthesized_expression := "(" expression ")"
+	less_than_expression := expression "<" expression
+	less_eq_expression := expression "<=" expression
+	greater_than_expression := expression ">" expression
+	greater_eq_expression := expression ">=" expression
+	eq_expression := expression "==" expression
+	not_eq_expression := expression "!=" expression
+	conditional_expression := expression "?" expression ":" expression
+	logical_or_expression := expression "||" expression
+	logical_and_expression := expression "&&" expression
+	logical_not_expression := "!" expression
+	add_expression := expression "+" expression
+	subtract_expression := expression "-" expression
+	numeric_negation_expression := "-" expression
+	multiply_expression := expression "*" expression
+	divide_expression := expression "/" expression
+	modulo_expression := expression "%" expression
+	bitwise_and_expression := expression "&" expression
+	bitwise_or_expression := expression "|" expression
+	left_shift_expression := expression "<<" expression
+	right_shift_expression := expression ">>" expression
+
+
+** Standard libraries
+
+*** Library components
+
+	- types
+	- static variables
+	- functions
+
+*** fundamentals (Structure, Data and Constants)
+
+	type:
+		color
+		char
+		float
+		int
+		boolean
+		byte
+		String
+		Array
+		Object
+
+	static variable:
+		PI
+		HALF_PI
+		TWO_PI
+
+	function:
+		setup()
+		exit()
+		size()
+		noLoop()
+		delay()
+		draw()
+		loop()
+		redraw()
+
+		unbinary()
+		char()
+		int()
+		hex()
+		binary()
+		unhex()
+		byte()
+		str()
+		boolean()
+		float()
+
+		split()
+		join()
+		splitTokens()
+		nf()
+		match()
+		trim()
+		nfc()
+		nfs()
+		nfp()
+
+		shorten()
+		concat()
+		subset()
+		append()
+		sort()
+		arraycopy()
+		reverse()
+		splice()
+		expand()
+
+*** Environment
+
+	static variables
+		online
+		focused
+		frameRate
+		screen
+		width
+		height
+		frameCount
+
+	function:
+		frameRate()
+		noCursor()
+		cursor()
+
+*** Shape
+
+	function:
+		triangle()
+		line()
+		arc()
+		point()
+		quad()
+		ellipse()
+		rect()
+
+		bezierDetail()
+		bezierTangent()
+		curveTightness()
+		bezierPoint()
+		curveDetail()
+		curvePoint()
+		curve()
+		bezier()
+
+		box()
+		sphere()
+		sphereDetail()
+		Attributes
+		strokeWeight()
+		smooth()
+		strokeJoin()
+		noSmooth()
+		ellipseMode()
+		rectMode()
+		strokeCap()
+
+		vertex()
+		bezierVertex()
+		textureMode()
+		beginShape()
+		texture()
+		curveVertex()
+		endShape()
+
+*** Input
+
+	static variable:
+		keyCode
+		key
+		keyPressed
+		mouseButton
+		mouseX
+		pmouseX
+		mouseY
+		mousePressed
+		pmouseY
+
+	function:
+		mouseDragged()
+		mouseMoved()
+		mouseReleased()
+		mousePressed()
+		mouseClicked()
+
+		keyTyped()
+		keyReleased()
+		keyPressed()
+
+		openStream()
+		open()
+		loadStrings()
+		loadBytes()
+
+		status()
+		link()
+		param()
+
+		hour()
+		millis()
+		year()
+		minute()
+		month()
+		day()
+		second()
+
+*** Output
+
+	type:
+		PrintWriter
+
+	function:
+		println()
+		print()
+
+		saveFrame()
+		save()
+
+		endRecord()
+		saveStrings()
+		saveBytes()
+		createWriter()
+		createReader()
+		beginRecord()
+
+*** Transform
+
+	function:
+		rotateY()
+		printMatrix()
+		pushMatrix()
+		rotateZ()
+		applyMatrix()
+		scale()
+		popMatrix()
+		translate()
+		resetMatrix()
+		rotate()
+		rotateX()
+
+*** Lights, Camera
+
+	function:
+		noLights()
+		directionalLight()
+		lightFalloff()
+		pointLight()
+		lights()
+		lightSpecular()
+		ambientLight()
+		normal()
+		spotLight()
+
+		camera()
+		ortho()
+		endCamera()
+		printCamera()
+		perspective()
+		frustum()
+		printProjection()
+		beginCamera()
+
+		modelZ()
+		screenZ()
+		modelX()
+		screenX()
+		modelY()
+		screenY()
+
+		shininess()
+		specular()
+		ambient()
+		emissive()
+
+*** Color
+
+	function:
+		background()
+		colorMode()
+		stroke()
+		noFill()
+		noStroke()
+		fill()
+
+		blendColor()
+		red()
+		brightness()
+		blue()
+		saturation()
+		lerpColor()
+		green()
+		hue()
+		alpha()
+		color()
+
+*** Image
+
+	type:
+		PImage
+
+	static variable:
+		pixels (of Array)
+
+	function:
+		createImage()
+
+		loadImage()
+		image()
+		noTint()
+		imageMode()
+		tint()
+
+		filter()
+		copy()
+		set()
+		updatePixels()
+		blend()
+		loadPixels()
+		get()
+
+*** Rendering
+
+	type:
+		PGraphics
+
+	function:
+		hint()
+		unhint()
+		createGraphics()
+
+*** Typography
+
+	type:
+		PFont
+
+	function:
+		text()
+		createFont()
+		loadFont()
+		textFont()
+
+		textMode()
+		textSize()
+		textAlign()
+		textLeading()
+		textWidth()
+
+		textDescent()
+		textAscent()
+
+*** Math
+
+	function:
+		min()
+		max()
+		round()
+		dist()
+		exp()
+		pow()
+		floor()
+		sqrt()
+		abs()
+		constrain()
+		norm()
+		mag()
+		log()
+		lerp()
+		sq()
+		ceil()
+		map()
+
+		acos()
+		tan()
+		sin()
+		cos()
+		degrees()
+		atan2()
+		atan()
+		radians()
+		asin()
+
+		noise()
+		noiseSeed()
+		randomSeed()
+		noiseDetail()
+		random()

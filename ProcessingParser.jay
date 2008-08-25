@@ -1,0 +1,771 @@
+
+%{
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Collections.Generic;
+
+namespace ProcessingDlr
+{
+	public class PdlrClass
+	{
+		string name, base_type;
+		List<string> interfaces;
+		List<PdlrMember> members;
+
+		public PdlrClass (string name, string baseType, List<string> interfaces, List<PdlrMember> members)
+		{
+			this.name = name;
+			this.base_type = baseType;
+			this.interfaces = interfaces;
+			this.members = members;
+		}
+	}
+
+	public class PdlrFunction
+	{
+		public PdlrFunction (string typeName, PdlrFunctionBase funcBase)
+		{
+		}
+	}
+
+	public class PdlrConstructor
+	{
+		public PdlrConstructor (PdlrFunctionBase funcBase)
+		{
+		}
+	}
+
+	public class PdlrFunctionBase
+	{
+		public PdlrFunctionBase (string name, List<FunctionArgument> args, List<Expression> body)
+		{
+			Name = name;
+			Arguments = args;
+			Body = body;
+		}
+
+		public string Name;
+		public List<FunctionArgument> Arguments;
+		public List<Expression> Body;
+	}
+
+	public class VariableDeclarationPair
+	{
+		public string Name;
+		public Expression Initializer;
+	}
+
+	public abstract class PdlrMember
+	{
+	}
+
+	public class PdlrParser
+	{
+
+%}
+
+%token IDENTIFIER
+%token NUMERIC_LITERAL
+%token STRING_LITERAL
+%token CLASS			//"class"
+%token EXTENDS			//"extends"
+%token IMPLEMENTS		//"implements"
+%token WHILE			//"while"
+%token BREAK			//"break"
+%token RETURN			//"return"
+%token IF			//"if"
+%token ELSE			//"else"
+%token FOR			//"for"
+%token SWITCH			//"switch"
+%token CASE			//"case"
+%token DEFAULT			//"default"
+%token NEW			//"new"
+%token TRUE			//"true"
+%token FALSE			//"false"
+%token THIS			//"this"
+%token SUPER			//"super"
+%token NULL			//"null"
+%token PLUS			//"+"
+%token MINUS			//"-"
+%token ASTERISK			//"*"
+%token SLASH			//"/"
+%token PERCENT			//"%"
+%token PLUS_EQUAL		//"+="
+%token MINUS_EQUAL		//"-="
+%token PLUS_PLUS		//"++"
+%token MINUS_MINUS		//"--"
+%token EQUAL			//"="
+%token EQUAL2			//"=="
+%token COMMA 			//","
+%token DOT 			//"."
+%token COLON 			//":"
+%token SEMICOLON		//";"
+%token QUESTION			//"?"
+%token EXCLAIM			//"!"
+%token EXCLAIM_EQUAL		//"!="
+%token AND 			//"&"
+%token AND2 			//"&&"
+%token BAR			//"|"
+%token BAR2			//"||"
+%token OPEN_CURLY		//"{"
+%token CLOSE_CURLY		//"}"
+%token OPEN_PAREN		//"("
+%token CLOSE_PAREN		//")"
+%token OPEN_BRACE		//"["
+%token CLOSE_BRACE		//"]"
+%token OPEN_ANGLE		//"<"
+%token OPEN_ANGLE2		//"<<"
+%token OPEN_ANGLE_EQUAL		//"<="
+%token CLOSE_ANGLE		//">"
+%token CLOSE_ANGLE2		//">>"
+%token CLOSE_ANGLE_EQUAL	//">="
+
+%left PLUS MINUS
+%left ASTERISK SLASH PERCENT
+%left EQUAL2 EXCLAIM_EQUAL
+%left AND BAR
+%left AND2 BAR2
+%left QUESTION
+%left COLON
+%left DOT
+%left OPEN_ANGLE OPEN_ANGLE_EQUAL CLOSE_ANGLE CLOSE_ANGLE_EQUAL
+%left OPEN_ANGLE2 CLOSE_ANGLE2
+%left OPEN_BRACE
+%left OPEN_PAREN
+%right EXCLAIM
+%nonassoc PLUS2 MINUS2
+
+
+%start top_level_contents
+%%
+
+identifier : IDENTIFIER
+
+top_level_contents
+	: // empty
+	{
+		return new List<Expression> ();
+	}
+	| top_level_contents top_level_content
+	{
+		var l = (List<Expression>) $2;
+		l.Insert (0, (Expression) $1);
+		$$ = l;
+	}
+	;
+
+top_level_content
+	: statement
+	| class_declaration
+	| global_function_definition
+	;
+
+
+global_function_definition
+	: function_definition
+	;
+
+class_declaration
+	: CLASS identifier
+	  opt_derivation_indication opt_implementation_indications
+	  OPEN_CURLY class_member_definitions CLOSE_CURLY
+	{
+		var name = (string) $2;
+		var baseType = (string) $3;
+		var interfaces = (List<string>) $4;
+		var members = (List<PdlrMember>) $5;
+		$$ = new PdlrClass (name, baseType, interfaces, members);
+	}
+
+opt_derivation_indication
+	: { $$ = null; } // empty
+	| derivation_indication
+	;
+
+opt_implementation_indications
+	: { $$ = null; } // empty
+	| implementation_indications
+	;
+
+derivation_indication
+	: EXTENDS identifier
+	{
+		$$ = $2;
+	}
+	;
+
+implementation_indications
+	 : IMPLEMENTS identifier_list_comma
+	 {
+	 	$$ = $2;
+	 }
+
+identifier_list_comma
+	: identifier
+	{
+		var l = new List<string> ();
+		l.Add ((string) $1);
+		$$ = l;
+	}
+	| identifier COMMA identifier_list_comma
+	{
+		var l = (List<string>) $3;
+		l.Insert (0, (string) $1);
+		$$ = l;
+	}
+	;
+
+class_member_definitions
+	: { $$ = null; } // empty
+	| class_member_definition class_member_definitions
+	{
+		var l = (List<PdlrMember>) $2 ?? new List<PdlrMember> ();
+		l.Insert (0, (PdlrMember) $1);
+		$$ = l;
+	}
+
+class_member_definition
+	: field_definition
+	| constructor_definition
+	| function_definition
+
+field_definition
+	: variable_declaration_statement SEMICOLON { $$ = $1; }
+
+constructor_definition
+	: function_definition_base
+	{
+		$$ = new PdlrConstructor ((PdlrFunctionBase) $1);
+	}
+
+function_definition
+	: type_name function_definition_base
+	{
+		$$ = new PdlrFunction ((string) $1, (PdlrFunctionBase) $2);
+	}
+
+function_definition_base
+	: identifier OPEN_PAREN argument_definitions CLOSE_PAREN statement_block
+	{
+		$$ = new PdlrFunctionBase ((string) $1, (List<FunctionArgument>) $3, (List<Expression>) $5);
+	}
+
+argument_definitions
+	: { $$ = null; } // empty
+	| argument_definition COMMA argument_definitions
+	{
+		var l = (List<FunctionArgument>) $3 ?? new List<FunctionArgument> ();
+		l.Insert (0, (FunctionArgument) $1);
+		$$ = l;
+	}
+
+argument_definition
+	: type_name identifier
+	{
+		$$ = new FunctionArgument ((string) $1, (string) $2);
+	}
+
+// Statements
+
+statement_block
+	: OPEN_CURLY statements CLOSE_CURLY
+	{
+		$$ = $2;
+	}
+
+statements
+	: { $$ = null; } // empty
+	| statement statements
+	{
+		var l = (List<Expression>) $2 ?? new List<Expression> ();
+		l.Insert (0, (Expression) $1);
+		$$ = l;
+	}
+
+statement
+	: statement_with_semicolon SEMICOLON { $$ = $1; }
+	| statement_without_semicolon
+
+statement_with_semicolon
+	: return_statement
+	| abstract_assignment_statement
+	| break_statement
+	| increment_statement
+	| decrement_statement
+	| variable_declaration_statement
+	| call_super_statement // FIXME: allow it only as a top of constructor body statements.
+	| callable_expression
+
+statement_without_semicolon
+	: if_statement
+	| for_statement
+	| while_statement
+	| switch_statement
+
+abstract_assignment_statement
+	: assignment_statement
+	| add_assignment_statement
+	| subtract_assignment_statement
+
+add_assignment_statement
+	: variable_or_member_reference PLUS_EQUAL expression
+	{
+		var e1 = (Expression) $1;
+		var e2 = (Expression) $3;
+		$$ = Expression.Assign (e1, Expression.AddChecked (e1, e2));
+	}
+
+subtract_assignment_statement
+	: variable_or_member_reference MINUS_EQUAL expression
+	{
+		var e1 = (Expression) $1;
+		var e2 = (Expression) $3;
+		$$ = Expression.Assign (e1, Expression.SubtractChecked (e1, e2));
+	}
+
+increment_statement
+	: variable_or_member_reference PLUS_PLUS // FIXME: no pre-positioned increment?
+	{
+		var e1 = (Expression) $1;
+		$$ = Expression.Assign (e1, Expression.AddChecked (e1, Expression.Constant (1)));
+	}
+
+decrement_statement
+	: variable_or_member_reference MINUS_MINUS // FIXME: no pre-positioned increment?
+	{
+		var e1 = (Expression) $1;
+		$$ = Expression.Assign (e1, Expression.SubtractChecked (e1, Expression.Constant (1)));
+	}
+
+call_super_statement
+	: SUPER OPEN_PAREN function_args CLOSE_PAREN
+	{
+		// FIXME: get current type, find base constructor, and call it.
+	}
+
+return_statement
+	: RETURN expression
+	{
+		$$ = Expression.Return ((Expression) $2);
+	}
+
+assignment_statement
+	: variable_or_member_reference EQUAL expression
+	{
+		$$ = Expression.Assign ((Expression) $1, (Expression) $2);
+	}
+
+while_statement
+	: WHILE OPEN_PAREN expression CLOSE_PAREN statement_block
+	{
+		$$ = Expression.Loop ((Expression) $3, null, Expression.Block (null, (List<Expression>) $5), Expression.Break (null), null);
+	}
+
+break_statement : BREAK { $$ = Expression.Break (null); }
+
+/// variable-declaration
+
+variable_declaration_statement
+	: type_name variable_declaration_pairs SEMICOLON
+	{
+		// FIXME: CreateType() is not likely possible here.
+		var l = new List<VariableExpression> ();
+		Type t = CreateType ((string) $1, (bool) $2);
+		foreach (VariableDeclarationPair p in $3)
+			l.Add (Expression.Variable (t, p)); // FIXME from here
+	}
+
+type_name :
+	identifier
+	{
+		// FIXME: implement
+	}
+	| identifier array_indicator // array of array not allowed
+	{
+		// FIXME: implement
+	}
+
+array_indicator :
+	OPEN_BRACE CLOSE_BRACE
+
+variable_declaration_pairs
+	: variable_declaration_pair
+	{
+		var l = new List<VariableDeclarationPair> ();
+		l.Add ((VariableDeclarationPair) $1);
+		$$ = l;
+	}
+	| variable_declaration_pair COMMA variable_declaration_pairs
+	{
+		var l = (List<VariableDeclarationPair>) $3;
+		l.Insert (0, (VariableDeclarationPair) $1);
+		$$ = l;
+	}
+
+variable_declaration_pair
+	: identifier opt_variable_initializer
+	{
+		$$ = new VariableDeclarationPair ((string) $1, (Expression) $2);
+	}
+
+opt_variable_initializer
+	: { $$ = null; } // empty
+	| variable_initializer
+
+variable_initializer
+	: EQUAL expression
+	{
+		$$ = $2;
+	}
+
+/// if-else
+
+if_statement
+	: IF OPEN_PAREN expression CLOSE_PAREN statement_block opt_else_block
+	{
+		var cond = (Expression) $3;
+		var tb = (List<Expression>) $5;
+		var fb = (List<Expression>) $6;
+		$$ = eb != null ?
+			Expression.IfThenElse (cond, Expression.Block (tb), Expression.Block (fb)) :
+			Expression.IfThen (cond, Expression.Block (tb));
+	}
+
+opt_else_block
+	: { $$ = null; } // empty
+	| else_block
+
+else_block
+	: ELSE statement_block { $$ = $2; }
+
+/// for
+
+for_statement
+	: FOR OPEN_PAREN for_initializer SEMICOLON expression SEMICOLON
+	for_continuations CLOSE_PAREN statement_block
+	{
+		var init = (List<Expression>) $3;
+		var cond = (Expression) $5;
+		var cont = (List<Expression>) $7;
+		var loop = Expression.Loop (cond,
+			cont != null ? Expression.Block (cont) : null,
+			Expression.Block ((List<Expression>) $9),
+			Expression.Break (null),
+			new LabelTarget (null));
+		$$ = init != null ? Expression.Block (init, loop) : loop;
+	}
+
+for_initializer
+	: { $$ = null; } // empty
+	| variable_declaration_statement
+	| abstract_assignment_list
+
+abstract_assignment_list
+	: abstract_assignment_statement
+	{
+		var l = new List<Expression> ();
+		l.Add ((Expression) $1);
+		$$ = l;
+	}
+	| abstract_assignment_statement COMMA abstract_assignment_list
+	{
+		var l = (List<Expression>) $3;
+		l.Insert (0, (Expression) $1);
+		$$ = l;
+	}
+
+for_continuations : statements // FIXME: no constraints?
+
+/// switch-case
+
+switch_statement
+	: SWITCH OPEN_PAREN expression CLOSE_PAREN
+	  OPEN_CURLY switch_case_list CLOSE_CURLY
+	{
+		$$ = Expression.Switch (null, null, (Expression) $3, ((List<SwitchCase>) $6).ToArray ());
+	}
+
+switch_case_list
+	: { $$ = new List<SwitchCase> (); } // empty
+	| switch_case_default switch_case_list
+		// switch_default cannot appear twice
+	{
+		var l = (List<SwitchCase>) $2;
+		l.Insert (0, (SwitchCase) $1);
+		$$ = l;
+	}
+
+switch_case_default
+	: switch_case
+	| switch_default
+
+switch_case
+	: CASE literal COLON statements
+	{
+		var l = (List<Expression>) $4;
+		// must end with break_statement
+		if (!(l [l.Length - 1] is BreakExpression))
+			l.Add (Expression.Break (null));
+		$$ = Expression.SwitchCase (GetIntValue ((ConstantExpression) $2), Expression.Block (l));
+	}
+
+switch_default
+	: DEFAULT COLON statements
+	{
+		var l = (List<Expression>) $3;
+		// must end with break_statement
+		if (!(l [l.Length - 1] is BreakExpression))
+			l.Add (Expression.Break (null));
+		$$ = Expression.DefaultCase (Expression.Block (l));
+	}
+
+// Expressions
+
+expression
+	: callable_expression
+	| operation_expression
+	| variable_or_member_reference
+	| literal
+	| field_access_expression
+	| super_expression
+	| this_expression
+	| new_expression
+	| array_access_expression
+	| null_expression
+	| parenthesized_expression
+	| numeric_negation_expression
+
+variable_or_member_reference
+	: identifier
+	{
+		// FIXME: how can I distinguish variable and field-or-property?
+		// FIXME: how can I instantiate an Expression for varref?
+	}
+
+// new
+
+new_expression
+	: new_object_expression
+	| new_array_expression
+
+new_object_expression
+	: NEW function_call_base
+	{
+		// FIXME: CreateType() is unlikely possible
+		var fcb = (KeyValuePair<string, List<Expression>>) $2;
+		// FIXME: no CallSiteBinder?
+		$$ = Expression.New (CreateType (fcb.Key), null, fcb.Value);
+	}
+
+new_array_expression
+	: NEW identifier OPEN_BRACE expression CLOSE_BRACE
+	{
+		// FIXME: CreateType() is unlikely possible
+		$$ = Expression.NewArrayBounds (CreateType ((string) $2), (Expression) $4);
+	}
+
+// callable expressions
+
+callable_expression
+	: function_call_expression
+	| function_access_expression
+
+function_call_expression : function_call_base
+
+function_call_base
+	: identifier OPEN_PAREN function_args CLOSE_PAREN
+	{
+		$$ = new KeyValuePair<string, List<Expression>> ((string) $1, (List<Expression>) $3);
+	}
+
+function_args
+	: { $$ = new List<Expression> (); } // empty
+	| function_arg_list
+
+function_arg_list
+	: expression
+	{
+		var l = new List<Expression> ();
+		l.Add ((Expression) $1);
+		$$ = l;
+	}
+	| expression COMMA function_arg_list
+	{
+		var l = (List<Expression>) $3;
+		l.Insert (0, (Expression) $1);
+		$$ = l;
+	}
+
+literal
+	: string_literal
+	| numeric_literal
+	| true_expression
+	| false_expression
+
+true_expression : TRUE { $$ = Expression.True (); }
+
+false_expression : FALSE { $$ = Expression.False (); }
+
+numeric_literal : NUMERIC_LITERAL
+
+string_literal : STRING_LITERAL
+
+/// operation expressions
+
+operation_expression
+	: comparison_expression
+	| logical_operation_expression
+	| arithmetic_expression
+
+comparison_expression
+	: less_than_expression
+	| less_eq_expression
+	| greater_than_expression
+	| greater_eq_expression
+	| eq_expression
+	| not_eq_expression
+	| conditional_expression
+
+logical_operation_expression
+	: logical_or_expression
+	| logical_and_expression
+	| logical_not_expression
+
+arithmetic_expression
+	: additive_expression
+	| multiplicative_expression
+
+additive_expression
+	: add_expression
+	| subtract_expression
+	| bitwise_and_expression
+	| bitwise_or_expression
+	| left_shift_expression
+	| right_shift_expression
+
+multiplicative_expression
+	: multiply_expression
+	| divide_expression
+	| modulo_expression
+
+// FIXME: "expression" in below items need to be more specific.
+// For example, First expression in "additive_expression" is 
+// "multiplicative_expression" (for operator priority)
+
+field_access_expression
+	: expression DOT identifier
+	{
+		$$ = Expression.PropertyOrField ((Expression) $1, (string) $3);
+	}
+
+function_access_expression
+	: expression DOT function_call_base
+	{
+		var inst = (Expression) $1;
+		var fcb = (KeyValuePair<string, List<Expression>>) $3;
+		// FIXME: GetMethod() is unlikely possible
+		$$ = Expression.Call (inst, GetMethod (inst, fcb.Key), fcb.Value.ToArray ());
+	}
+
+super_expression
+	: SUPER
+	{
+		// FIXME: needs current type context, Type, and then base type
+	}
+
+this_expression : THIS { } // FIXME: how can I represent it?
+
+array_access_expression
+	: expression OPEN_BRACE expression CLOSE_BRACE
+	{
+		$$ = Expression.ArrayIndex ((Expression) $1, (Expression) $3);
+	}
+
+null_expression : NULL { $$ = Expression.Null (); }
+
+parenthesized_expression : OPEN_PAREN expression CLOSE_PAREN { $$ = $2; }
+
+less_than_expression
+	: expression OPEN_ANGLE expression
+	{ $$ = Expression.LessThan ((Expression) $1, (Expression) $3); }
+
+less_eq_expression
+	: expression OPEN_ANGLE_EQUAL expression
+	{ $$ = Expression.LessThanOrEqual ((Expression) $1, (Expression) $3); }
+
+greater_than_expression
+	:  expression CLOSE_ANGLE expression
+	{ $$ = Expression.GreaterThan ((Expression) $1, (Expression) $3); }
+
+greater_eq_expression
+	: expression CLOSE_ANGLE_EQUAL expression
+	{ $$ = Expression.GreaterThanOrEqual ((Expression) $1, (Expression) $3); }
+
+eq_expression
+	: expression EQUAL2 expression
+	{ $$ = Expression.Equal ((Expression) $1, (Expression) $3); }
+
+not_eq_expression
+	: expression EXCLAIM_EQUAL expression
+	{ $$ = Expression.NotEqual ((Expression) $1, (Expression) $3); }
+
+conditional_expression
+	: expression QUESTION expression COLON expression
+	{ $$ = Expression.Condition ((Expression) $1, (Expression) $3, (Expression) $5); }
+
+logical_or_expression
+	: expression BAR2 expression
+	{ $$ = Expression.OrElse ((Expression) $1, (Expression) $3); }
+
+logical_and_expression 
+	: expression AND2 expression
+	{ $$ = Expression.AndAlso ((Expression) $1, (Expression) $3); }
+
+logical_not_expression
+	: EXCLAIM expression
+	{ $$ = Expression.Not ((Expression) $1); }
+
+add_expression
+	: expression PLUS expression
+	{ $$ = Expression.AddChecked ((Expression) $1, (Expression) $3); }
+
+subtract_expression 
+	: expression MINUS expression
+	{ $$ = Expression.SubtractChecked ((Expression) $1, (Expression) $3); }
+
+numeric_negation_expression
+	: MINUS expression
+	{ $$ = Expression.MultiplyChecked ((Expression) $1, Expression.Constant (-1)); }
+
+multiply_expression
+	: expression ASTERISK expression
+	{ $$ = Expression.MultiplyChecked ((Expression) $1, (Expression) $3); }
+
+divide_expression
+	: expression SLASH expression
+	{ $$ = Expression.DivideChecked ((Expression) $1, (Expression) $3); }
+
+modulo_expression 
+	: expression PERCENT expression
+	{ $$ = Expression.ModuloChecked ((Expression) $1, (Expression) $3); }
+
+bitwise_and_expression 
+	: expression AND expression
+	{ $$ = Expression.And ((Expression) $1, (Expression) $3); }
+
+bitwise_or_expression 
+	: expression BAR expression
+	{ $$ = Expression.Or ((Expression) $1, (Expression) $3); }
+
+left_shift_expression 
+	: expression OPEN_ANGLE2 expression
+	{ $$ = Expression.LeftShift ((Expression) $1, (Expression) $3); }
+
+right_shift_expression
+	: expression CLOSE_ANGLE2 expression
+	{ $$ = Expression.RightShift ((Expression) $1, (Expression) $3); }
+
+
+%%
+} // end of class
