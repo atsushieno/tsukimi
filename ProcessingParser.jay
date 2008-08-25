@@ -1,6 +1,7 @@
 
 %{
 using System;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
@@ -22,23 +23,23 @@ namespace ProcessingDlr
 		}
 	}
 
-	public class PdlrFunction
+	public class AstFunction
 	{
-		public PdlrFunction (string typeName, PdlrFunctionBase funcBase)
+		public AstFunction (string typeName, AstFunctionBase funcBase)
 		{
 		}
 	}
 
-	public class PdlrConstructor
+	public class AstConstructor
 	{
-		public PdlrConstructor (PdlrFunctionBase funcBase)
+		public AstConstructor (AstFunctionBase funcBase)
 		{
 		}
 	}
 
-	public class PdlrFunctionBase
+	public class AstFunctionBase
 	{
-		public PdlrFunctionBase (string name, List<FunctionArgument> args, List<Expression> body)
+		public AstFunctionBase (string name, List<AstFunctionArgument> args, List<Expression> body)
 		{
 			Name = name;
 			Arguments = args;
@@ -46,8 +47,14 @@ namespace ProcessingDlr
 		}
 
 		public string Name;
-		public List<FunctionArgument> Arguments;
+		public List<AstFunctionArgument> Arguments;
 		public List<Expression> Body;
+	}
+
+	public class AstFunctionArgument
+	{
+		public string Type;
+		public string Name;
 	}
 
 	public class VariableDeclarationPair
@@ -60,9 +67,22 @@ namespace ProcessingDlr
 	{
 	}
 
-	public class PdlrParser
+	public class ProcessingParser
 	{
+		string filename;
+		int yacc_verbose_flag;
 
+		public ProcessingParser (string filename)
+		{
+			this.filename = filename;
+		}
+
+		public void Parse ()
+		{
+			using (var reader = new StreamReader (filename)) {
+				yyparse (new Tokenizer (reader));
+			}
+		}
 %}
 
 %token IDENTIFIER
@@ -236,34 +256,34 @@ field_definition
 constructor_definition
 	: function_definition_base
 	{
-		$$ = new PdlrConstructor ((PdlrFunctionBase) $1);
+		$$ = new AstConstructor ((AstFunctionBase) $1);
 	}
 
 function_definition
 	: type_name function_definition_base
 	{
-		$$ = new PdlrFunction ((string) $1, (PdlrFunctionBase) $2);
+		$$ = new AstFunction ((string) $1, (AstFunctionBase) $2);
 	}
 
 function_definition_base
 	: identifier OPEN_PAREN argument_definitions CLOSE_PAREN statement_block
 	{
-		$$ = new PdlrFunctionBase ((string) $1, (List<FunctionArgument>) $3, (List<Expression>) $5);
+		$$ = new AstFunctionBase ((string) $1, (List<AstFunctionArgument>) $3, (List<Expression>) $5);
 	}
 
 argument_definitions
 	: { $$ = null; } // empty
 	| argument_definition COMMA argument_definitions
 	{
-		var l = (List<FunctionArgument>) $3 ?? new List<FunctionArgument> ();
-		l.Insert (0, (FunctionArgument) $1);
+		var l = (List<AstFunctionArgument>) $3 ?? new List<AstFunctionArgument> ();
+		l.Insert (0, (AstFunctionArgument) $1);
 		$$ = l;
 	}
 
 argument_definition
 	: type_name identifier
 	{
-		$$ = new FunctionArgument ((string) $1, (string) $2);
+		$$ = new AstFunctionArgument () { Type = (string) $1, Name = (string) $2};
 	}
 
 // Statements
