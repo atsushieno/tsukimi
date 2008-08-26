@@ -554,19 +554,27 @@ switch_default
 
 expression
 	: callable_expression
-	| operation_expression
-	| variable_or_member_reference
-	| constant_expression
-	| field_access_expression
+	| unary_expression
+	| binary_expression
+	| conditional_expression
 	| super_expression
+	| cast_expression
+	;
+
+unary_expression
+	: primary_expression
+	| numeric_negation_expression
+	| logical_not_expression
+
+primary_expression
+	: variable_or_member_reference
+	| constant_expression
+	| null_expression
+	| field_access_expression
 	| this_expression
 	| new_expression
 	| array_access_expression
-	| null_expression
 	| parenthesized_expression
-	| cast_expression
-	| numeric_negation_expression
-	;
 
 constant_expression
 	: literal
@@ -665,13 +673,12 @@ string_literal : STRING_LITERAL;
 
 character_literal : CHARACTER_LITERAL;
 
-/// operation expressions
+/// binary expressions
 
-operation_expression
+binary_expression
 	: comparison_expression
-	| logical_operation_expression
+	| logical_comparison_expression
 	| arithmetic_expression
-	| conditional_expression
 	;
 
 comparison_expression
@@ -683,10 +690,9 @@ comparison_expression
 	| not_eq_expression
 	;
 
-logical_operation_expression
+logical_comparison_expression
 	: logical_or_expression
 	| logical_and_expression
-	| logical_not_expression
 	;
 
 arithmetic_expression
