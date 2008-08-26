@@ -11,13 +11,18 @@ namespace ProcessingDlr
 			: base (message)
 		{
 		}
+
+		public ParserException (string message, Exception innerException)
+			: base (message, innerException)
+		{
+		}
 	}
 
 	class Tokenizer : ProcessingDlr.yyParser.yyInput
 	{
 		TextReader source;
 		bool should_dispose;
-		int line, column, saved_line, saved_column;
+		int line = 1, column = 1, saved_line, saved_column;
 		string base_uri;
 
 		int current_token;
@@ -48,6 +53,10 @@ namespace ProcessingDlr
 
 		public string BaseUri {
 			get { return base_uri; }
+		}
+
+		public string Location {
+			get { return String.Format ("{0} ({1},{2})", BaseUri, Line, Column); }
 		}
 
 		public void Dispose ()
@@ -162,7 +171,8 @@ namespace ProcessingDlr
 				ret = peek_char;
 				peek_char = 0;
 			}
-			ret = source.Read ();
+			else
+				ret = source.Read ();
 
 			if (next_increment_line) {
 				line++;
@@ -406,6 +416,11 @@ namespace ProcessingDlr
 			case '*':
 				return Token.ASTERISK;
 			case '/':
+				if (PeekChar () == '*') {
+					ReadChar ();
+					ConsumeMultilineComment ();
+					return ParseToken (false);
+				}
 				return Token.SLASH;
 			case '%':
 				return Token.PERCENT;
@@ -495,6 +510,28 @@ namespace ProcessingDlr
 				default:
 					return Token.IDENTIFIER;
 				}
+			}
+		}
+
+		private void ConsumeMultilineComment ()
+		{
+			if (ReadChar () == '*') {
+				// documentation comment. For now skip it.
+				// If it's just "/**/", so no comment. Do not expect */ for this case.
+				if (PeekChar () == '/') {
+					ReadChar ();
+					return;
+				}
+			}
+			while (true) {
+				int c = ReadChar ();
+				if (c == '*') {
+					if (PeekChar () == '/') {
+						ReadChar ();
+						return;
+					}
+				} else if (c < 0)
+					throw new ParserException (String.Format ("Unmatched code comment started at line {0}, column {1}", saved_line, saved_column));
 			}
 		}
 

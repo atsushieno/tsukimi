@@ -20,7 +20,12 @@ namespace ProcessingDlr
 
 		public void Parse ()
 		{
-			yyparse (new Tokenizer (filename)/*, new yydebug.yyDebugSimple ()*/);
+			var t = new Tokenizer (filename);
+			try {
+				yyparse (t, new yydebug.yyDebugSimple ());
+			} catch (yyParser.yyException ex) {
+				throw new ParserException (String.Format ("Irrecoverable syntax error at {0}", t.Location), ex);
+			}
 		}
 %}
 
