@@ -274,12 +274,16 @@ statement
 
 statement_with_semicolon
 	: return_statement
-	| abstract_assignment_statement
-	| break_statement
-	| increment_statement
-	| decrement_statement
 	| variable_declaration_statement
 	| call_super_statement // FIXME: allow it only as a top of constructor body statements.
+	| break_statement
+	| flow_contextless_statement
+	;
+
+flow_contextless_statement
+	: abstract_assignment_statement
+	| increment_statement
+	| decrement_statement
 	| callable_expression
 	{
 		$$ = Statement.CallExpression ((Expression) $1);
@@ -495,7 +499,7 @@ abstract_assignment_list
 
 for_continuation
 	: { $$ = null; } // EMPTY
-	| statement  // FIXME: no constraints?
+	| flow_contextless_statement
 	;
 
 /// switch-case
@@ -560,6 +564,7 @@ expression
 	| array_access_expression
 	| null_expression
 	| parenthesized_expression
+	| cast_expression
 	| numeric_negation_expression
 	;
 
@@ -699,7 +704,7 @@ bitwise_operation_expression
 	: bitwise_and_expression
 	| bitwise_or_expression
 
-shift_operation
+shift_operation_expression
 	: left_shift_expression
 	| right_shift_expression
 
@@ -753,6 +758,13 @@ array_access_expression
 null_expression : NULL { $$ = Expression.Null (); };
 
 parenthesized_expression : OPEN_PAREN expression CLOSE_PAREN { $$ = $2; };
+
+cast_expression
+	: OPEN_PAREN type_name CLOSE_PAREN expression
+	{
+		$$ = Expression.Cast ((string) $2, (Expression) $4);
+	}
+	;
 
 less_than_expression
 	: expression OPEN_ANGLE expression

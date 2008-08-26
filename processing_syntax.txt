@@ -54,6 +54,7 @@
 	null : expression keyword
 		null_expression := "null"
 	() (parenthesis) : expression part
+		UNDOCUMENTED: it could also be used as "cast" expression
 	return : statement part
 		return_statement := "return" expression
 	= (assign) : statement part

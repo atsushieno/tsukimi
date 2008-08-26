@@ -159,6 +159,11 @@ namespace ProcessingDlr.Ast
 			return new NewArrayExpression (typeName, size);
 		}
 
+		public static Expression Cast (string typeName, Expression value)
+		{
+			return new CastExpression (typeName, value);
+		}
+
 		public static Expression Condition (Expression cond, Expression trueExpr, Expression falseExpr)
 		{
 			throw new NotImplementedException ();
@@ -263,6 +268,13 @@ namespace ProcessingDlr.Ast
 		public static Expression Or (Expression left, Expression right)
 		{
 			return new ArithmeticExpression (left, right, ArithmeticKind.BitwiseOr);
+		}
+	}
+
+	public class CastExpression : Expression
+	{
+		public CastExpression (string typeName, Expression value)
+		{
 		}
 	}
 
