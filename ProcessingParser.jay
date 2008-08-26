@@ -555,16 +555,18 @@ switch_default
 expression
 	: callable_expression
 	| unary_expression
-	| binary_expression
+	// | binary_expression
 	| conditional_expression
 	| super_expression
-	| cast_expression
 	;
 
 unary_expression
 	: primary_expression
-	| numeric_negation_expression
 	| logical_not_expression
+	| cast_expression
+
+prefixed_unary_expression
+	: numeric_negation_expression
 
 primary_expression
 	: variable_or_member_reference
@@ -675,49 +677,24 @@ character_literal : CHARACTER_LITERAL;
 
 /// binary expressions
 
-binary_expression
-	: comparison_expression
-	| logical_comparison_expression
-	| arithmetic_expression
-	;
-
-comparison_expression
-	: less_than_expression
-	| less_eq_expression
-	| greater_than_expression
-	| greater_eq_expression
-	| eq_expression
-	| not_eq_expression
-	;
-
-logical_comparison_expression
-	: logical_or_expression
-	| logical_and_expression
-	;
-
-arithmetic_expression
-	: additive_expression
-	| multiplicative_expression
-	| bitwise_operation_expression
-	| shift_operation_expression
-	;
-
 additive_expression
-	: add_expression
-	| subtract_expression
-
-bitwise_operation_expression
-	: bitwise_and_expression
-	| bitwise_or_expression
-
-shift_operation_expression
-	: left_shift_expression
-	| right_shift_expression
+	: multiplicative_expression
+	| additive_expression PLUS multiplicative_expression
+	{
+		$$ = Expression.AddChecked ((Expression) $1, (Expression) $3);
+	}
+	| additive_expression MINUS multiplicative_expression
+	{ $$ = Expression.SubtractChecked ((Expression) $1, (Expression) $3); }
+	;
 
 multiplicative_expression
-	: multiply_expression
-	| divide_expression
-	| modulo_expression
+	: prefixed_unary_expression
+	| multiplicative_expression ASTERISK prefixed_unary_expression
+	{ $$ = Expression.MultiplyChecked ((Expression) $1, (Expression) $3); }
+	| multiplicative_expression SLASH prefixed_unary_expression
+	{ $$ = Expression.DivideChecked ((Expression) $1, (Expression) $3); }
+	| multiplicative_expression PERCENT prefixed_unary_expression
+	{ $$ = Expression.ModuloChecked ((Expression) $1, (Expression) $3); }
 	;
 
 // FIXME: "expression" in below items need to be more specific.
@@ -772,85 +749,69 @@ cast_expression
 	}
 	;
 
-less_than_expression
-	: expression OPEN_ANGLE expression
-	{ $$ = Expression.LessThan ((Expression) $1, (Expression) $3); };
-
-less_eq_expression
-	: expression OPEN_ANGLE_EQUAL expression
-	{ $$ = Expression.LessThanOrEqual ((Expression) $1, (Expression) $3); };
-
-greater_than_expression
-	:  expression CLOSE_ANGLE expression
-	{ $$ = Expression.GreaterThan ((Expression) $1, (Expression) $3); };
-
-greater_eq_expression
-	: expression CLOSE_ANGLE_EQUAL expression
-	{ $$ = Expression.GreaterThanOrEqual ((Expression) $1, (Expression) $3); };
-
-eq_expression
-	: expression EQUAL2 expression
-	{ $$ = Expression.Equal ((Expression) $1, (Expression) $3); };
-
-not_eq_expression
-	: expression EXCLAIM_EQUAL expression
-	{ $$ = Expression.NotEqual ((Expression) $1, (Expression) $3); };
-
 conditional_expression
-	: expression QUESTION expression COLON expression
+	: logical_or_expression
+	| logical_or_expression QUESTION expression COLON expression
 	{ $$ = Expression.Condition ((Expression) $1, (Expression) $3, (Expression) $5); };
 
 logical_or_expression
-	: expression BAR2 expression
+	: logical_and_expression
+	| logical_or_expression BAR2 logical_and_expression
 	{ $$ = Expression.OrElse ((Expression) $1, (Expression) $3); };
 
-logical_and_expression 
-	: expression AND2 expression
+logical_and_expression
+	: bitwise_or_expression
+	| logical_and_expression AND2 bitwise_or_expression
 	{ $$ = Expression.AndAlso ((Expression) $1, (Expression) $3); };
 
-logical_not_expression
-	: EXCLAIM expression
-	{ $$ = Expression.Not ((Expression) $1); };
-
-add_expression
-	: expression PLUS expression
-	{ $$ = Expression.AddChecked ((Expression) $1, (Expression) $3); };
-
-subtract_expression 
-	: expression MINUS expression
-	{ $$ = Expression.SubtractChecked ((Expression) $1, (Expression) $3); };
-
-numeric_negation_expression
-	: MINUS expression
-	{ $$ = Expression.MultiplyChecked ((Expression) $1, Expression.Constant (-1)); };
-
-multiply_expression
-	: expression ASTERISK expression
-	{ $$ = Expression.MultiplyChecked ((Expression) $1, (Expression) $3); };
-
-divide_expression
-	: expression SLASH expression
-	{ $$ = Expression.DivideChecked ((Expression) $1, (Expression) $3); };
-
-modulo_expression 
-	: expression PERCENT expression
-	{ $$ = Expression.ModuloChecked ((Expression) $1, (Expression) $3); };
-
-bitwise_and_expression 
-	: expression AND expression
-	{ $$ = Expression.And ((Expression) $1, (Expression) $3); };
-
 bitwise_or_expression 
-	: expression BAR expression
+	: bitwise_and_expression
+	| bitwise_or_expression BAR bitwise_and_expression
 	{ $$ = Expression.Or ((Expression) $1, (Expression) $3); };
 
-left_shift_expression 
-	: expression OPEN_ANGLE2 expression
-	{ $$ = Expression.LeftShift ((Expression) $1, (Expression) $3); };
+bitwise_and_expression
+	: equality_expression
+	| bitwise_and_expression AND equality_expression
+	{ $$ = Expression.And ((Expression) $1, (Expression) $3); };
 
-right_shift_expression
-	: expression CLOSE_ANGLE2 expression
-	{ $$ = Expression.RightShift ((Expression) $1, (Expression) $3); };
+equality_expression
+	: relational_expression
+	| equality_expression EQUAL2 relational_expression
+	{
+		$$ = Expression.Equal ((Expression) $1, (Expression) $3);
+	}
+	| equality_expression EXCLAIM_EQUAL relational_expression
+	{
+		$$ = Expression.NotEqual ((Expression) $1, (Expression) $3);
+	}
+
+relational_expression
+	: shift_expression
+	| relational_expression OPEN_ANGLE shift_expression
+	{ $$ = Expression.LessThan ((Expression) $1, (Expression) $3); }
+	| relational_expression OPEN_ANGLE_EQUAL shift_expression
+	{ $$ = Expression.LessThanOrEqual ((Expression) $1, (Expression) $3); }
+	| relational_expression CLOSE_ANGLE shift_expression
+	{ $$ = Expression.GreaterThan ((Expression) $1, (Expression) $3); }
+	| relational_expression CLOSE_ANGLE_EQUAL shift_expression
+	{ $$ = Expression.GreaterThanOrEqual ((Expression) $1, (Expression) $3); }
+	;
+
+shift_expression
+	: additive_expression
+	| shift_expression OPEN_ANGLE2 additive_expression
+	{ $$ = Expression.LeftShift ((Expression) $1, (Expression) $3); }
+	| shift_expression CLOSE_ANGLE2 additive_expression
+	{ $$ = Expression.RightShift ((Expression) $1, (Expression) $3); }
+	;
+
+logical_not_expression
+	: EXCLAIM prefixed_unary_expression
+	{ $$ = Expression.Not ((Expression) $1); };
+
+numeric_negation_expression
+	: MINUS prefixed_unary_expression
+	{ $$ = Expression.MultiplyChecked ((Expression) $1, Expression.Constant (-1)); };
 
 
 %%
