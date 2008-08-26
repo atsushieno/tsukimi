@@ -20,7 +20,7 @@ namespace ProcessingDlr
 
 		public void Parse ()
 		{
-			yyparse (new Tokenizer (filename));
+			yyparse (new Tokenizer (filename)/*, new yydebug.yyDebugSimple ()*/);
 		}
 %}
 
@@ -139,6 +139,7 @@ class_declaration
 		var members = (List<MemberDefinition>) $5;
 		$$ = new ClassDefinition (name, baseType, interfaces, members);
 	}
+	;
 
 opt_derivation_indication
 	: { $$ = null; } // empty
@@ -162,6 +163,7 @@ implementation_indications
 	 {
 	 	$$ = $2;
 	 }
+	 ;
 
 identifier_list_comma
 	: identifier
@@ -186,11 +188,13 @@ class_member_definitions
 		l.Insert (0, (MemberDefinition) $1);
 		$$ = l;
 	}
+	;
 
 class_member_definition
 	: field_definition
 	| constructor_definition
 	| function_definition
+	;
 
 field_definition
 	: variable_declaration_statement SEMICOLON { $$ = $1; }
@@ -200,18 +204,21 @@ constructor_definition
 	{
 		$$ = new ConstructorDefinition ((FunctionBase) $1);
 	}
+	;
 
 function_definition
 	: type_name function_definition_base
 	{
 		$$ = new FunctionDefinition ((string) $1, (FunctionBase) $2);
 	}
+	;
 
 function_definition_base
 	: identifier OPEN_PAREN argument_definitions CLOSE_PAREN statement_block
 	{
 		$$ = new FunctionBase ((string) $1, (List<FunctionArgument>) $3, Statement.Block ((List<Statement>) $5));
 	}
+	;
 
 argument_definitions
 	: { $$ = null; } // empty
@@ -221,12 +228,14 @@ argument_definitions
 		l.Insert (0, (FunctionArgument) $1);
 		$$ = l;
 	}
+	;
 
 argument_definition
 	: type_name identifier
 	{
 		$$ = new FunctionArgument () { Type = (string) $1, Name = (string) $2};
 	}
+	;
 
 // Statements
 
@@ -235,6 +244,7 @@ statement_block
 	{
 		$$ = $2;
 	}
+	;
 
 statements
 	: { $$ = null; } // empty
@@ -244,10 +254,12 @@ statements
 		l.Insert (0, (Statement) $1);
 		$$ = l;
 	}
+	;
 
 statement
 	: statement_with_semicolon SEMICOLON { $$ = $1; }
 	| statement_without_semicolon
+	;
 
 statement_with_semicolon
 	: return_statement
@@ -258,17 +270,20 @@ statement_with_semicolon
 	| variable_declaration_statement
 	| call_super_statement // FIXME: allow it only as a top of constructor body statements.
 	| callable_expression
+	;
 
 statement_without_semicolon
 	: if_statement
 	| for_statement
 	| while_statement
 	| switch_statement
+	;
 
 abstract_assignment_statement
 	: assignment_statement
 	| add_assignment_statement
 	| subtract_assignment_statement
+	;
 
 add_assignment_statement
 	: variable_or_member_reference PLUS_EQUAL expression
@@ -277,6 +292,7 @@ add_assignment_statement
 		var e2 = (Expression) $3;
 		$$ = Statement.Assign (e1, Expression.AddChecked (e1, e2));
 	}
+	;
 
 subtract_assignment_statement
 	: variable_or_member_reference MINUS_EQUAL expression
@@ -285,6 +301,7 @@ subtract_assignment_statement
 		var e2 = (Expression) $3;
 		$$ = Statement.Assign (e1, Expression.SubtractChecked (e1, e2));
 	}
+	;
 
 increment_statement
 	: variable_or_member_reference PLUS_PLUS // FIXME: no pre-positioned increment?
@@ -292,6 +309,7 @@ increment_statement
 		var e1 = (Expression) $1;
 		$$ = Statement.Assign (e1, Expression.AddChecked (e1, Expression.Constant (1)));
 	}
+	;
 
 decrement_statement
 	: variable_or_member_reference MINUS_MINUS // FIXME: no pre-positioned increment?
@@ -299,32 +317,37 @@ decrement_statement
 		var e1 = (Expression) $1;
 		$$ = Statement.Assign (e1, Expression.SubtractChecked (e1, Expression.Constant (1)));
 	}
+	;
 
 call_super_statement
 	: SUPER OPEN_PAREN function_args CLOSE_PAREN
 	{
 		// FIXME: get current type, find base constructor, and call it.
 	}
+	;
 
 return_statement
 	: RETURN expression
 	{
 		$$ = Statement.Return ((Expression) $2);
 	}
+	;
 
 assignment_statement
 	: variable_or_member_reference EQUAL expression
 	{
 		$$ = Statement.Assign ((Expression) $1, (Expression) $2);
 	}
+	;
 
 while_statement
 	: WHILE OPEN_PAREN expression CLOSE_PAREN statement_block
 	{
 		$$ = Statement.Loop ((Expression) $3, Statement.Block ((List<Statement>) $5));
 	}
+	;
 
-break_statement : BREAK { $$ = Statement.Break (); }
+break_statement : BREAK { $$ = Statement.Break (); } ;
 
 /// variable-declaration
 
@@ -338,6 +361,7 @@ variable_declaration_statement
 			l.Add (Statement.DeclareVariable (type, p.Name, p.Initializer));
 		$$ = l;
 	}
+	;
 
 type_name :
 	identifier
@@ -348,9 +372,10 @@ type_name :
 	{
 		// FIXME: implement
 	}
+	;
 
 array_indicator :
-	OPEN_BRACE CLOSE_BRACE
+	OPEN_BRACE CLOSE_BRACE ;
 
 variable_declaration_pairs
 	: variable_declaration_pair
@@ -365,22 +390,26 @@ variable_declaration_pairs
 		l.Insert (0, (VariableDeclarationPair) $1);
 		$$ = l;
 	}
+	;
 
 variable_declaration_pair
 	: identifier opt_variable_initializer
 	{
 		$$ = new VariableDeclarationPair () {Name = (string) $1, Initializer = (Expression) $2};
 	}
+	;
 
 opt_variable_initializer
 	: { $$ = null; } // empty
 	| variable_initializer
+	;
 
 variable_initializer
 	: EQUAL expression
 	{
 		$$ = $2;
 	}
+	;
 
 /// if-else
 
@@ -394,13 +423,15 @@ if_statement
 			Statement.IfThenElse (cond, Statement.Block (tb), Statement.Block (fb)) :
 			Statement.IfThen (cond, Statement.Block (tb));
 	}
+	;
 
 opt_else_block
 	: { $$ = null; } // empty
 	| else_block
+	;
 
 else_block
-	: ELSE statement_block { $$ = $2; }
+	: ELSE statement_block { $$ = $2; } ;
 
 /// for
 
@@ -414,11 +445,13 @@ for_statement
 		var body = Statement.Block ((List<Statement>) $9);
 		$$ = Statement.For (init, cond, cont, body);
 	}
+	;
 
 for_initializer
 	: { $$ = null; } // empty
 	| variable_declaration_statement
 	| abstract_assignment_list
+	;
 
 abstract_assignment_list
 	: abstract_assignment_statement
@@ -433,8 +466,9 @@ abstract_assignment_list
 		l.Insert (0, (Expression) $1);
 		$$ = l;
 	}
+	;
 
-for_continuations : statements // FIXME: no constraints?
+for_continuations : statements ; // FIXME: no constraints?
 
 /// switch-case
 
@@ -444,6 +478,7 @@ switch_statement
 	{
 		$$ = Statement.Switch ((Expression) $3, ((List<SwitchCase>) $6).ToArray ());
 	}
+	;
 
 switch_case_list
 	: { $$ = new List<SwitchCase> (); } // empty
@@ -454,10 +489,12 @@ switch_case_list
 		l.Insert (0, (SwitchCase) $1);
 		$$ = l;
 	}
+	;
 
 switch_case_default
 	: switch_case
 	| switch_default
+	;
 
 switch_case
 	: CASE literal COLON statements
@@ -468,6 +505,7 @@ switch_case
 			l.Add (Statement.Break ());
 		$$ = new SwitchCase ((ConstantExpression) $2, l);
 	}
+	;
 
 switch_default
 	: DEFAULT COLON statements
@@ -478,6 +516,7 @@ switch_default
 			l.Add (Statement.Break ());
 		$$ = new DefaultCase (l);
 	}
+	;
 
 // Expressions
 
@@ -494,6 +533,7 @@ expression
 	| null_expression
 	| parenthesized_expression
 	| numeric_negation_expression
+	;
 
 variable_or_member_reference
 	: identifier
@@ -501,12 +541,14 @@ variable_or_member_reference
 		// FIXME: how can I distinguish variable and field-or-property?
 		// FIXME: how can I instantiate an Expression for varref?
 	}
+	;
 
 // new
 
 new_expression
 	: new_object_expression
 	| new_array_expression
+	;
 
 new_object_expression
 	: NEW function_call_base
@@ -516,6 +558,7 @@ new_object_expression
 		// FIXME: no CallSiteBinder?
 		$$ = Expression.New (fcb.Key, fcb.Value);
 	}
+	;
 
 new_array_expression
 	: NEW identifier OPEN_BRACE expression CLOSE_BRACE
@@ -523,24 +566,28 @@ new_array_expression
 		// FIXME: CreateType() is unlikely possible
 		$$ = Expression.NewArrayBounds ((string) $2, (Expression) $4);
 	}
+	;
 
 // callable expressions
 
 callable_expression
 	: function_call_expression
 	| function_access_expression
+	;
 
-function_call_expression : function_call_base
+function_call_expression : function_call_base ;
 
 function_call_base
 	: identifier OPEN_PAREN function_args CLOSE_PAREN
 	{
 		$$ = new KeyValuePair<string, List<Expression>> ((string) $1, (List<Expression>) $3);
 	}
+	;
 
 function_args
 	: { $$ = new List<Expression> (); } // empty
 	| function_arg_list
+	;
 
 function_arg_list
 	: expression
@@ -555,20 +602,22 @@ function_arg_list
 		l.Insert (0, (Expression) $1);
 		$$ = l;
 	}
+	;
 
 literal
 	: string_literal
 	| numeric_literal
 	| true_expression
 	| false_expression
+	;
 
-true_expression : TRUE { $$ = Expression.True (); }
+true_expression : TRUE { $$ = Expression.True (); } ;
 
-false_expression : FALSE { $$ = Expression.False (); }
+false_expression : FALSE { $$ = Expression.False (); } ;
 
-numeric_literal : NUMERIC_LITERAL
+numeric_literal : NUMERIC_LITERAL;
 
-string_literal : STRING_LITERAL
+string_literal : STRING_LITERAL;
 
 /// operation expressions
 
@@ -576,6 +625,7 @@ operation_expression
 	: comparison_expression
 	| logical_operation_expression
 	| arithmetic_expression
+	;
 
 comparison_expression
 	: less_than_expression
@@ -585,15 +635,18 @@ comparison_expression
 	| eq_expression
 	| not_eq_expression
 	| conditional_expression
+	;
 
 logical_operation_expression
 	: logical_or_expression
 	| logical_and_expression
 	| logical_not_expression
+	;
 
 arithmetic_expression
 	: additive_expression
 	| multiplicative_expression
+	;
 
 additive_expression
 	: add_expression
@@ -602,11 +655,13 @@ additive_expression
 	| bitwise_or_expression
 	| left_shift_expression
 	| right_shift_expression
+	;
 
 multiplicative_expression
 	: multiply_expression
 	| divide_expression
 	| modulo_expression
+	;
 
 // FIXME: "expression" in below items need to be more specific.
 // For example, First expression in "additive_expression" is 
@@ -617,6 +672,7 @@ field_access_expression
 	{
 		$$ = Expression.PropertyOrField ((Expression) $1, (string) $3);
 	}
+	;
 
 function_access_expression
 	: expression DOT function_call_base
@@ -626,104 +682,112 @@ function_access_expression
 		// FIXME: GetMethod() is unlikely possible
 		$$ = Expression.Call (inst, fcb.Key, fcb.Value);
 	}
+	;
 
 super_expression
 	: SUPER
 	{
-		// FIXME: needs current type context, Type, and then base type
+		$$ = null; // FIXME: needs current type context, Type, and then base type
 	}
+	;
 
-this_expression : THIS { } // FIXME: how can I represent it?
+this_expression
+	: THIS
+	{
+		$$ = null;
+	}
+	; // FIXME: how can I represent it?
 
 array_access_expression
 	: expression OPEN_BRACE expression CLOSE_BRACE
 	{
 		$$ = Expression.ArrayIndex ((Expression) $1, (Expression) $3);
 	}
+	;
 
-null_expression : NULL { $$ = Expression.Null (); }
+null_expression : NULL { $$ = Expression.Null (); };
 
-parenthesized_expression : OPEN_PAREN expression CLOSE_PAREN { $$ = $2; }
+parenthesized_expression : OPEN_PAREN expression CLOSE_PAREN { $$ = $2; };
 
 less_than_expression
 	: expression OPEN_ANGLE expression
-	{ $$ = Expression.LessThan ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.LessThan ((Expression) $1, (Expression) $3); };
 
 less_eq_expression
 	: expression OPEN_ANGLE_EQUAL expression
-	{ $$ = Expression.LessThanOrEqual ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.LessThanOrEqual ((Expression) $1, (Expression) $3); };
 
 greater_than_expression
 	:  expression CLOSE_ANGLE expression
-	{ $$ = Expression.GreaterThan ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.GreaterThan ((Expression) $1, (Expression) $3); };
 
 greater_eq_expression
 	: expression CLOSE_ANGLE_EQUAL expression
-	{ $$ = Expression.GreaterThanOrEqual ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.GreaterThanOrEqual ((Expression) $1, (Expression) $3); };
 
 eq_expression
 	: expression EQUAL2 expression
-	{ $$ = Expression.Equal ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.Equal ((Expression) $1, (Expression) $3); };
 
 not_eq_expression
 	: expression EXCLAIM_EQUAL expression
-	{ $$ = Expression.NotEqual ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.NotEqual ((Expression) $1, (Expression) $3); };
 
 conditional_expression
 	: expression QUESTION expression COLON expression
-	{ $$ = Expression.Condition ((Expression) $1, (Expression) $3, (Expression) $5); }
+	{ $$ = Expression.Condition ((Expression) $1, (Expression) $3, (Expression) $5); };
 
 logical_or_expression
 	: expression BAR2 expression
-	{ $$ = Expression.OrElse ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.OrElse ((Expression) $1, (Expression) $3); };
 
 logical_and_expression 
 	: expression AND2 expression
-	{ $$ = Expression.AndAlso ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.AndAlso ((Expression) $1, (Expression) $3); };
 
 logical_not_expression
 	: EXCLAIM expression
-	{ $$ = Expression.Not ((Expression) $1); }
+	{ $$ = Expression.Not ((Expression) $1); };
 
 add_expression
 	: expression PLUS expression
-	{ $$ = Expression.AddChecked ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.AddChecked ((Expression) $1, (Expression) $3); };
 
 subtract_expression 
 	: expression MINUS expression
-	{ $$ = Expression.SubtractChecked ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.SubtractChecked ((Expression) $1, (Expression) $3); };
 
 numeric_negation_expression
 	: MINUS expression
-	{ $$ = Expression.MultiplyChecked ((Expression) $1, Expression.Constant (-1)); }
+	{ $$ = Expression.MultiplyChecked ((Expression) $1, Expression.Constant (-1)); };
 
 multiply_expression
 	: expression ASTERISK expression
-	{ $$ = Expression.MultiplyChecked ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.MultiplyChecked ((Expression) $1, (Expression) $3); };
 
 divide_expression
 	: expression SLASH expression
-	{ $$ = Expression.DivideChecked ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.DivideChecked ((Expression) $1, (Expression) $3); };
 
 modulo_expression 
 	: expression PERCENT expression
-	{ $$ = Expression.ModuloChecked ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.ModuloChecked ((Expression) $1, (Expression) $3); };
 
 bitwise_and_expression 
 	: expression AND expression
-	{ $$ = Expression.And ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.And ((Expression) $1, (Expression) $3); };
 
 bitwise_or_expression 
 	: expression BAR expression
-	{ $$ = Expression.Or ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.Or ((Expression) $1, (Expression) $3); };
 
 left_shift_expression 
 	: expression OPEN_ANGLE2 expression
-	{ $$ = Expression.LeftShift ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.LeftShift ((Expression) $1, (Expression) $3); };
 
 right_shift_expression
 	: expression CLOSE_ANGLE2 expression
-	{ $$ = Expression.RightShift ((Expression) $1, (Expression) $3); }
+	{ $$ = Expression.RightShift ((Expression) $1, (Expression) $3); };
 
 
 %%
