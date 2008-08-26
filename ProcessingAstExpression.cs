@@ -55,12 +55,31 @@ namespace ProcessingDlr.Ast
 
 		public static Statement DeclareVariable (string typeName, string name, Expression initializer)
 		{
-			throw new NotImplementedException ();
+			return new VariableDeclarationStatement (typeName, name, initializer);
 		}
 
 		public static Statement Assign (Expression left, Expression right)
 		{
 			throw new NotImplementedException ();
+		}
+
+		public static Statement CallExpression (Expression exp)
+		{
+			return new CallableExpressionStatement (exp);
+		}
+	}
+
+	public class VariableDeclarationStatement : Statement
+	{
+		public VariableDeclarationStatement (string typeName, string name, Expression initializer)
+		{
+		}
+	}
+
+	public class CallableExpressionStatement : Statement
+	{
+		public CallableExpressionStatement (Expression exp)
+		{
 		}
 	}
 
@@ -105,7 +124,12 @@ namespace ProcessingDlr.Ast
 
 		public static Expression Constant (object value)
 		{
-			throw new NotImplementedException ();
+			return new ConstantExpression (value);
+		}
+
+		public static Expression VariableRef (string name)
+		{
+			return new VariableReferenceExpression (name);
 		}
 
 		public static Expression New (string typeName, List<Expression> args)
@@ -115,7 +139,7 @@ namespace ProcessingDlr.Ast
 
 		public static Expression NewArrayBounds (string typeName, Expression size)
 		{
-			throw new NotImplementedException ();
+			return new NewArrayExpression (typeName, size);
 		}
 
 		public static Expression Condition (Expression cond, Expression trueExpr, Expression falseExpr)
@@ -128,9 +152,10 @@ namespace ProcessingDlr.Ast
 			throw new NotImplementedException ();
 		}
 
-		public static Expression Call (Expression obj, string funcName, List<Expression> args)
+		public static Expression Call (Expression obj, string name, List<Expression> args)
 		{
-			throw new NotImplementedException ();
+			// obj could be null (global function)
+			return new FunctionCallExpression (obj, name, args);
 		}
 
 		public static Expression ArrayIndex (Expression array, Expression index)
@@ -234,6 +259,9 @@ namespace ProcessingDlr.Ast
 
 	public class VariableReferenceExpression : Expression
 	{
+		public VariableReferenceExpression (string name)
+		{
+		}
 	}
 
 	public class LiteralExpression : Expression
@@ -246,5 +274,22 @@ namespace ProcessingDlr.Ast
 
 	public class ConstantExpression : Expression
 	{
+		public ConstantExpression (object value)
+		{
+		}
+	}
+
+	public class FunctionCallExpression : Expression
+	{
+		public FunctionCallExpression (Expression obj, string name, List<Expression> args)
+		{
+		}
+	}
+
+	public class NewArrayExpression : Expression
+	{
+		public NewArrayExpression (string typeName, Expression size)
+		{
+		}
 	}
 }

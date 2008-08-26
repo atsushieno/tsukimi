@@ -35,6 +35,7 @@ namespace ProcessingDlr
 %token IDENTIFIER
 %token NUMERIC_LITERAL
 %token STRING_LITERAL
+%token CHARACTER_LITERAL
 %token CLASS			//"class"
 %token EXTENDS			//"extends"
 %token IMPLEMENTS		//"implements"
@@ -116,8 +117,8 @@ top_level_contents
 	}
 	| top_level_contents top_level_content
 	{
-		var l = (List<ITopLevelContent>) $2;
-		l.Insert (0, (ITopLevelContent) $1);
+		var l = (List<ITopLevelContent>) $1;
+		l.Insert (0, (ITopLevelContent) $2);
 		$$ = l;
 	}
 	;
@@ -280,6 +281,9 @@ statement_with_semicolon
 	| variable_declaration_statement
 	| call_super_statement // FIXME: allow it only as a top of constructor body statements.
 	| callable_expression
+	{
+		$$ = Statement.CallExpression ((Expression) $1);
+	}
 	;
 
 statement_without_semicolon
@@ -539,7 +543,7 @@ expression
 	: callable_expression
 	| operation_expression
 	| variable_or_member_reference
-	| literal
+	| constant_expression
 	| field_access_expression
 	| super_expression
 	| this_expression
@@ -550,11 +554,17 @@ expression
 	| numeric_negation_expression
 	;
 
+constant_expression
+	: literal
+	{
+		$$ = Expression.Constant ($1);
+	}
+	;
+
 variable_or_member_reference
 	: identifier
 	{
-		// FIXME: how can I distinguish variable and field-or-property?
-		// FIXME: how can I instantiate an Expression for varref?
+		$$ = Expression.VariableRef ((string) $1);
 	}
 	;
 
@@ -578,7 +588,6 @@ new_object_expression
 new_array_expression
 	: NEW identifier OPEN_BRACE expression CLOSE_BRACE
 	{
-		// FIXME: CreateType() is unlikely possible
 		$$ = Expression.NewArrayBounds ((string) $2, (Expression) $4);
 	}
 	;
@@ -590,12 +599,17 @@ callable_expression
 	| function_access_expression
 	;
 
-function_call_expression : function_call_base ;
+function_call_expression
+	: function_call_base
+	{
+		var f = (FunctionCall) $1;
+		$$ = Expression.Call (null, f.Name, f.Arguments);
+	}
 
 function_call_base
 	: identifier OPEN_PAREN function_args CLOSE_PAREN
 	{
-		$$ = new KeyValuePair<string, List<Expression>> ((string) $1, (List<Expression>) $3);
+		$$ = new FunctionCall ((string) $1, (List<Expression>) $3);
 	}
 	;
 
@@ -621,6 +635,7 @@ function_arg_list
 
 literal
 	: string_literal
+	| character_literal
 	| numeric_literal
 	| true_expression
 	| false_expression
@@ -633,6 +648,8 @@ false_expression : FALSE { $$ = Expression.False (); } ;
 numeric_literal : NUMERIC_LITERAL;
 
 string_literal : STRING_LITERAL;
+
+character_literal : CHARACTER_LITERAL;
 
 /// operation expressions
 
@@ -693,9 +710,8 @@ function_access_expression
 	: expression DOT function_call_base
 	{
 		var inst = (Expression) $1;
-		var fcb = (KeyValuePair<string, List<Expression>>) $3;
-		// FIXME: GetMethod() is unlikely possible
-		$$ = Expression.Call (inst, fcb.Key, fcb.Value);
+		var f = (FunctionCall) $3;
+		$$ = Expression.Call (inst, f.Name, f.Arguments);
 	}
 	;
 

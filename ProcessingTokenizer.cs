@@ -211,26 +211,18 @@ namespace ProcessingDlr
 
 		char [] nameBuffer = new char [30];
 
-		private string ReadQuoted (char quoteChar)
+		private string ReadStringLiteral ()
 		{
 			int index = 0;
 			bool loop = true;
 			while (loop) {
 				int c = ReadChar ();
-				switch (c) {
-				case -1:
-				case '\'':
-				case '\"':
-					if (quoteChar != c)
-						goto default;
-					loop = false;
+				if (c == '"')
 					break;
-				default:
-					if (c < 0)
-						throw new ParserException ("Unterminated quoted literal.");
-					AppendNameChar (c, ref index);
-					break;
-				}
+				if (c < 0)
+					throw new ParserException ("Unterminated quoted literal.");
+				AppendNameChar (c, ref index);
+				break;
 			}
 
 			return new string (nameBuffer, 0, index);
@@ -251,43 +243,93 @@ namespace ProcessingDlr
 				nameBuffer [index++] = (char) c;
 		}
 
-		private string ReadTripleQuoted (char quoteChar)
+		// taken from System.Json/JsonReader.cs
+		double ReadNumericLiteral ()
 		{
-			int index = 0;
-			bool loop = true;
-			do {
-				int c = ReadChar ();
-				switch (c) {
-				case -1:
-				case '\'':
-				case '\"':
-					// 1
-					if (quoteChar != c)
-						goto default;
-					// 2
-					if ((c = PeekChar ()) != quoteChar) {
-						AppendNameChar (quoteChar, ref index);
-						goto default;
-					}
-					ReadChar ();
-					// 3
-					if ((c = PeekChar ()) == quoteChar) {
-						ReadChar ();
-						loop = false;
-						break;
-					}
-					AppendNameChar (quoteChar, ref index);
-					AppendNameChar (quoteChar, ref index);
-					break;
-				default:
-					if (c < 0)
-						throw new ParserException ("Unterminated triple-quoted literal.");
-					AppendNameChar (c, ref index);
-					break;
-				}
-			} while (loop);
+			bool negative = false;
+			/*
+			if (PeekChar () == '-') {
+				negative = true;
+				ReadChar ();
+				if (PeekChar () < 0)
+					throw ParserException ("Invalid numeric literal; extra negation");
+			}
+			*/
 
-			return new string (nameBuffer, 0, index);
+			int c;
+			int val = 0;
+			int x = 0;
+			bool zeroStart = PeekChar () == '0';
+			for (; ; x++) {
+				c = PeekChar ();
+				if (c < '0' || '9' < c)
+					break;
+				val = val * 10 + (c - '0');
+				ReadChar ();
+				if (zeroStart && x == 1 && c == '0')
+					throw new ParserException ("leading multiple zeros are not allowed");
+			}
+
+			// fraction
+
+			bool hasFrac = false;
+			decimal frac = 0;
+			int fdigits = 0;
+			if (PeekChar () == '.') {
+				hasFrac = true;
+				ReadChar ();
+				if (PeekChar () < 0)
+					throw new ParserException ("Invalid numeric literal; extra dot");
+				decimal d = 10;
+				while (true) {
+					c = PeekChar ();
+					if (c < '0' || '9' < c)
+						break;
+					frac += (c - '0') / d;
+					d *= 10;
+					fdigits++;
+				}
+				if (fdigits == 0)
+					throw new ParserException ("Invalid numeric literal; extra dot");
+			}
+			frac = Decimal.Round (frac, fdigits);
+
+			c = PeekChar ();
+			if (c != 'e' && c != 'E') {
+				if (!hasFrac)
+					return negative ? -val : val;
+				var v = val + frac;
+				return (double) (negative ? -v : v);
+			}
+
+			// exponent
+
+			ReadChar ();
+
+			int exp = 0;
+			if (PeekChar () < 0)
+				throw new ParserException ("Invalid numeric literal; incomplete exponent");
+			bool negexp = false;
+			c = PeekChar ();
+			if (c == '-') {
+				ReadChar ();
+				negexp = true;
+			}
+			else if (c == '+')
+				ReadChar ();
+
+			if (PeekChar () < 0)
+				throw new ParserException ("Invalid numeric literal; incomplete exponent");
+			while (true) {
+				c = PeekChar ();
+				if (c < '0' || '9' < c)
+					break;
+				exp = exp * 10 + (c - '0');
+				ReadChar ();
+			}
+			// it is messy to handle exponent, so I just use Decimal.Parse() with assured format.
+			int [] bits = Decimal.GetBits (val + frac);
+			return (double) new Decimal (bits [0], bits [1], bits [2], negative, (byte) exp);
 		}
 
 		private string ReadOneName ()
@@ -451,21 +493,26 @@ namespace ProcessingDlr
 				ReadLine ();
 				return ParseToken (false);
 			case '\'':
+				c = PeekChar ();
+				if (c == '\'')
+					throw new ParserException ("Invalid character literal");
+				if (IsNumericStart ((char) c)) {
+					double v = ReadNumericLiteral ();
+					if (v != (double) (int) v)
+						throw new ParserException ("Invalid character literal: float is not allowed");
+					current_value = (int) v;
+				} else
+					current_value = c;
+				return Token.CHARACTER_LITERAL;
 			case '\"':
-				if (PeekChar () != c)
-					name = ReadQuoted ((char) c);
-				else {
-					ReadChar ();
-					if (PeekChar () == c) {
-						ReadChar ();
-						name = ReadTripleQuoted ((char) c);
-					} // else '' or ""
-					name = String.Empty;
-				}
-				current_value = name;
+				current_value = ReadStringLiteral ();
 				return Token.STRING_LITERAL;
 			default:
 				peek_char = c;
+				if (IsNumericStart ((char) c)) {
+					current_value = ReadNumericLiteral ();
+					return Token.NUMERIC_LITERAL;
+				}
 				name = ReadOneName ();
 				current_value = name;
 				//if (backslashed)
@@ -546,6 +593,11 @@ namespace ProcessingDlr
 		{
 			return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || (c >= '0' && c <= '9') ||
 				Char.IsLetter (c) || Char.GetUnicodeCategory (c) == UnicodeCategory.ConnectorPunctuation;
+		}
+
+		private bool IsNumericStart (char c)
+		{
+			return '0' <= c && c <= '9';
 		}
 	}
 }

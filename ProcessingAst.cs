@@ -60,6 +60,18 @@ namespace ProcessingDlr.Ast
 		public string Name;
 	}
 
+	public class FunctionCall
+	{
+		public FunctionCall (string name, List<Expression> args)
+		{
+			Name = name;
+			Arguments = args;
+		}
+
+		public string Name;
+		public List<Expression> Arguments;
+	}
+
 	public class VariableDeclarationPair
 	{
 		public string Name;
