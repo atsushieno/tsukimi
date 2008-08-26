@@ -121,27 +121,27 @@ namespace ProcessingDlr.Ast
 
 		public static Expression Null ()
 		{
-			throw new NotImplementedException ();
+			return new ConstantExpression (null);
 		}
 
 		public static Expression True ()
 		{
-			throw new NotImplementedException ();
+			return new ConstantExpression (true);
 		}
 
 		public static Expression False ()
 		{
-			throw new NotImplementedException ();
-		}
-
-		public static Expression Not (Expression operand)
-		{
-			throw new NotImplementedException ();
+			return new ConstantExpression (false);
 		}
 
 		public static Expression Constant (object value)
 		{
 			return new ConstantExpression (value);
+		}
+
+		public static Expression Not (Expression operand)
+		{
+			throw new NotImplementedException ();
 		}
 
 		public static Expression VariableRef (string name)

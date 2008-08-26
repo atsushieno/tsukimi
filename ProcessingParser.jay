@@ -100,8 +100,8 @@ namespace ProcessingDlr
 %left DOT
 %left OPEN_ANGLE OPEN_ANGLE_EQUAL CLOSE_ANGLE CLOSE_ANGLE_EQUAL
 %left OPEN_ANGLE2 CLOSE_ANGLE2
-%left OPEN_BRACE
-%left OPEN_PAREN
+%left OPEN_BRACE CLOSE_BRACE
+%left OPEN_PAREN CLOSE_PAREN
 %right EXCLAIM
 
 
@@ -277,10 +277,10 @@ statement_with_semicolon
 	| variable_declaration_statement
 	| call_super_statement // FIXME: allow it only as a top of constructor body statements.
 	| break_statement
-	| flow_contextless_statement
+	| flow_control_less_statement
 	;
 
-flow_contextless_statement
+flow_control_less_statement
 	: abstract_assignment_statement
 	| increment_statement
 	| decrement_statement
