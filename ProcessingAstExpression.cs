@@ -27,10 +27,10 @@ namespace ProcessingDlr.Ast
 
 		public static Statement For (List<Expression> init,
 			Expression cond,
-			List<Expression> cont,
+			Statement cont,
 			StatementBlock body)
 		{
-			throw new NotImplementedException ();
+			return new ForStatement (init, cond, cont, body);
 		}
 
 		public static Statement Switch (Expression cond, SwitchCase [] cases)
@@ -60,12 +60,19 @@ namespace ProcessingDlr.Ast
 
 		public static Statement Assign (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new AssignmentStatement (left, right);
 		}
 
 		public static Statement CallExpression (Expression exp)
 		{
 			return new CallableExpressionStatement (exp);
+		}
+	}
+
+	public class AssignmentStatement : Statement
+	{
+		public AssignmentStatement (Expression left, Expression right)
+		{
 		}
 	}
 
@@ -97,6 +104,16 @@ namespace ProcessingDlr.Ast
 
 	public class BreakStatement : Statement
 	{
+	}
+
+	public class ForStatement : Statement
+	{
+		public ForStatement (List<Expression> init,
+			Expression cond,
+			Statement cont,
+			StatementBlock body)
+		{
+		}
 	}
 
 	public abstract class Expression
@@ -163,32 +180,12 @@ namespace ProcessingDlr.Ast
 			throw new NotImplementedException ();
 		}
 
-		public static Expression Equal (Expression left, Expression right)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public static Expression NotEqual (Expression left, Expression right)
-		{
-			throw new NotImplementedException ();
-		}
-
 		public static Expression LeftShift (Expression left, Expression right)
 		{
 			throw new NotImplementedException ();
 		}
 
 		public static Expression RightShift (Expression left, Expression right)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public static Expression And (Expression left, Expression right)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public static Expression Or (Expression left, Expression right)
 		{
 			throw new NotImplementedException ();
 		}
@@ -203,49 +200,69 @@ namespace ProcessingDlr.Ast
 			throw new NotImplementedException ();
 		}
 
+		public static Expression Equal (Expression left, Expression right)
+		{
+			return new ComparisonExpression (left, right, ComparisonKind.Equal);
+		}
+
+		public static Expression NotEqual (Expression left, Expression right)
+		{
+			return new ComparisonExpression (left, right, ComparisonKind.NotEqual);
+		}
+
 		public static Expression GreaterThan (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new ComparisonExpression (left, right, ComparisonKind.GreaterThan);
 		}
 
 		public static Expression GreaterThanOrEqual (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new ComparisonExpression (left, right, ComparisonKind.GreaterThanEqual);
 		}
 
 		public static Expression LessThan (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new ComparisonExpression (left, right, ComparisonKind.LessThan);
 		}
 
 		public static Expression LessThanOrEqual (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new ComparisonExpression (left, right, ComparisonKind.LessThanEqual);
 		}
 
 		public static Expression AddChecked (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new ArithmeticExpression (left, right, ArithmeticKind.Add);
 		}
 
 		public static Expression SubtractChecked (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new ArithmeticExpression (left, right, ArithmeticKind.Subtract);
 		}
 
 		public static Expression MultiplyChecked (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new ArithmeticExpression (left, right, ArithmeticKind.Multiply);
 		}
 
 		public static Expression DivideChecked (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new ArithmeticExpression (left, right, ArithmeticKind.Divide);
 		}
 
 		public static Expression ModuloChecked (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new ArithmeticExpression (left, right, ArithmeticKind.Modulo);
+		}
+
+		public static Expression And (Expression left, Expression right)
+		{
+			return new ArithmeticExpression (left, right, ArithmeticKind.BitwiseAnd);
+		}
+
+		public static Expression Or (Expression left, Expression right)
+		{
+			return new ArithmeticExpression (left, right, ArithmeticKind.BitwiseOr);
 		}
 	}
 
@@ -255,6 +272,47 @@ namespace ProcessingDlr.Ast
 
 	public abstract class OperationExpression : Expression
 	{
+	}
+
+	public enum ComparisonKind
+	{
+		LessThan,
+		LessThanEqual,
+		GreaterThan,
+		GreaterThanEqual,
+		Equal,
+		NotEqual
+	}
+
+	public class ComparisonExpression : OperationExpression
+	{
+		public ComparisonExpression (Expression left, Expression right, ComparisonKind kind)
+		{
+		}
+	}
+
+	public abstract class LogicalOperationExpression : OperationExpression
+	{
+	}
+
+	public enum ArithmeticKind
+	{
+		Add,
+		Subtract,
+		Multiply,
+		Divide,
+		Modulo,
+		BitwiseAnd,
+		BitwiseOr,
+		ShiftLeft,
+		ShiftRight,
+	}
+
+	public class ArithmeticExpression : OperationExpression
+	{
+		public ArithmeticExpression (Expression left, Expression right, ArithmeticKind kind)
+		{
+		}
 	}
 
 	public class VariableReferenceExpression : Expression

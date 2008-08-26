@@ -61,8 +61,8 @@ namespace ProcessingDlr
 %token PERCENT			//"%"
 %token PLUS_EQUAL		//"+="
 %token MINUS_EQUAL		//"-="
-%token PLUS_PLUS		//"++"
-%token MINUS_MINUS		//"--"
+%token PLUS2			//"++"
+%token MINUS2			//"--"
 %token EQUAL			//"="
 %token EQUAL2			//"=="
 %token COMMA 			//","
@@ -94,6 +94,7 @@ namespace ProcessingDlr
 %left EQUAL2 EXCLAIM_EQUAL
 %left AND BAR
 %left AND2 BAR2
+%nonassoc PLUS2 MINUS2
 %left QUESTION
 %left COLON
 %left DOT
@@ -102,7 +103,6 @@ namespace ProcessingDlr
 %left OPEN_BRACE
 %left OPEN_PAREN
 %right EXCLAIM
-%nonassoc PLUS2 MINUS2
 
 
 %start top_level_contents
@@ -318,7 +318,7 @@ subtract_assignment_statement
 	;
 
 increment_statement
-	: variable_or_member_reference PLUS_PLUS // FIXME: no pre-positioned increment?
+	: variable_or_member_reference PLUS2 // FIXME: no pre-positioned increment?
 	{
 		var e1 = (Expression) $1;
 		$$ = Statement.Assign (e1, Expression.AddChecked (e1, Expression.Constant (1)));
@@ -326,7 +326,7 @@ increment_statement
 	;
 
 decrement_statement
-	: variable_or_member_reference MINUS_MINUS // FIXME: no pre-positioned increment?
+	: variable_or_member_reference MINUS2 // FIXME: no pre-positioned increment?
 	{
 		var e1 = (Expression) $1;
 		$$ = Statement.Assign (e1, Expression.SubtractChecked (e1, Expression.Constant (1)));
@@ -462,11 +462,11 @@ else_block
 
 for_statement
 	: FOR OPEN_PAREN for_initializer SEMICOLON expression SEMICOLON
-	for_continuations CLOSE_PAREN statement_block
+	for_continuation CLOSE_PAREN statement_block
 	{
 		var init = (List<Expression>) $3;
 		var cond = (Expression) $5;
-		var cont = (List<Expression>) $7;
+		var cont = (Statement) $7;
 		var body = Statement.Block ((List<Statement>) $9);
 		$$ = Statement.For (init, cond, cont, body);
 	}
@@ -493,7 +493,10 @@ abstract_assignment_list
 	}
 	;
 
-for_continuations : statements ; // FIXME: no constraints?
+for_continuation
+	: { $$ = null; } // EMPTY
+	| statement  // FIXME: no constraints?
+	;
 
 /// switch-case
 
@@ -663,6 +666,7 @@ operation_expression
 	: comparison_expression
 	| logical_operation_expression
 	| arithmetic_expression
+	| conditional_expression
 	;
 
 comparison_expression
@@ -672,7 +676,6 @@ comparison_expression
 	| greater_eq_expression
 	| eq_expression
 	| not_eq_expression
-	| conditional_expression
 	;
 
 logical_operation_expression
@@ -684,16 +687,21 @@ logical_operation_expression
 arithmetic_expression
 	: additive_expression
 	| multiplicative_expression
+	| bitwise_operation_expression
+	| shift_operation_expression
 	;
 
 additive_expression
 	: add_expression
 	| subtract_expression
-	| bitwise_and_expression
+
+bitwise_operation_expression
+	: bitwise_and_expression
 	| bitwise_or_expression
-	| left_shift_expression
+
+shift_operation
+	: left_shift_expression
 	| right_shift_expression
-	;
 
 multiplicative_expression
 	: multiply_expression

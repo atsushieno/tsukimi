@@ -350,7 +350,7 @@
 
 	for_statement :=
 		"for" "(" for_initializer ";" expression ";"
-		for_continuations ")" statement_block
+		for_continuation ")" statement_block
 
 	for_initializer :=
 		// empty
@@ -361,7 +361,7 @@
 		abstract_assignment_statement
 		| abstract_assignment_statement "," abstract_assignment_list
 
-	for_continuations := statements // FIXME: no constraints?
+	for_continuation := statement // FIXME: no constraints?
 
 	// switch-case
 
@@ -439,6 +439,7 @@
 		comparison_expression
 		| logical_operation_expression
 		| arithmetic_expression
+		| conditional_expression
 
 	comparison_expression :=
 		less_than_expression
@@ -447,7 +448,6 @@
 		| greater_eq_expression
 		| eq_expression
 		| not_eq_expression
-		| conditional_expression
 
 	logical_operation_expression :=
 		| logical_or_expression
@@ -457,12 +457,18 @@
 	arithmetic_expression :=
 		additive_expression
 		| multiplicative_expression
+		| bitwise_operation_expression
+		| shift_expression
 
 	additive_expression :=
 		add_expression
 		| subtract_expression
+
+	bitwise_operation_expression :=
 		| bitwise_and_expression
 		| bitwise_or_expression
+
+	shift_expression :=
 		| left_shift_expression
 		| right_shift_expression
 
