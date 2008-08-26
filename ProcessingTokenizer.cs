@@ -372,6 +372,8 @@ namespace ProcessingDlr
 
 		private string ReadLine ()
 		{
+			if (peek_char != 0)
+				throw new ParserException ("Internal error: ReadLine() is called at inappropriate state");
 			string s = source.ReadLine ();
 			line++;
 			column = 1;
@@ -458,6 +460,12 @@ namespace ProcessingDlr
 			case '*':
 				return Token.ASTERISK;
 			case '/':
+				if (PeekChar () == '/') {
+					// single line comment
+					ReadChar ();
+					ReadLine ();
+					return ParseToken (false);
+				}
 				if (PeekChar () == '*') {
 					ReadChar ();
 					ConsumeMultilineComment ();
@@ -488,10 +496,6 @@ namespace ProcessingDlr
 				default:
 					return Token.CLOSE_ANGLE;
 				}
-			case '#':
-				// single line comment
-				ReadLine ();
-				return ParseToken (false);
 			case '\'':
 				c = PeekChar ();
 				if (c == '\'')
