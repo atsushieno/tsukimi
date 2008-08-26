@@ -12,7 +12,7 @@ namespace ProcessingDlr.Ast
 
 		public static StatementBlock Block (params Statement [] statements)
 		{
-			throw new NotImplementedException ();
+			return new StatementBlock (statements);
 		}
 
 		public static Statement IfThen (Expression cond, StatementBlock trueBlock)

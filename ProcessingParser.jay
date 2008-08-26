@@ -115,10 +115,10 @@ top_level_contents
 	{
 		$$ = new List<ITopLevelContent> ();
 	}
-	| top_level_contents top_level_content
+	| top_level_content top_level_contents
 	{
-		var l = (List<ITopLevelContent>) $1;
-		l.Insert (0, (ITopLevelContent) $2);
+		var l = (List<ITopLevelContent>) $2;
+		l.Insert (0, (ITopLevelContent) $1);
 		$$ = l;
 	}
 	;
@@ -203,7 +203,7 @@ class_member_definition
 	;
 
 field_definition
-	: variable_declaration_statement SEMICOLON { $$ = $1; }
+	: variable_declaration SEMICOLON { $$ = $1; }
 
 constructor_definition
 	: function_definition_base
@@ -366,7 +366,13 @@ break_statement : BREAK { $$ = Statement.Break (); } ;
 /// variable-declaration
 
 variable_declaration_statement
-	: type_name variable_declaration_pairs SEMICOLON
+	: variable_declaration
+	{
+		$$ = Statement.Block ((List<Statement>) $1);
+	}
+
+variable_declaration
+	: type_name variable_declaration_pairs
 	{
 		// FIXME: CreateType() is not likely possible here.
 		var l = new List<Statement> ();
@@ -468,7 +474,7 @@ for_statement
 
 for_initializer
 	: { $$ = null; } // empty
-	| variable_declaration_statement
+	| variable_declaration
 	| abstract_assignment_list
 	;
 
