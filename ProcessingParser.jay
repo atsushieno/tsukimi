@@ -233,7 +233,12 @@ argument_definitions
 argument_definition
 	: type_name identifier
 	{
-		$$ = new FunctionArgument () { Type = (string) $1, Name = (string) $2};
+		// FIXME: this causes gmcs invalid IL
+		// $$ = new FunctionArgument () { Type = (string) $1, Name = (string) $2};
+		var fa = new FunctionArgument ();
+		fa.Type = (string) $1;
+		fa.Name = (string) $2;
+		$$ = fa;
 	}
 	;
 
@@ -395,7 +400,12 @@ variable_declaration_pairs
 variable_declaration_pair
 	: identifier opt_variable_initializer
 	{
-		$$ = new VariableDeclarationPair () {Name = (string) $1, Initializer = (Expression) $2};
+		// FIXME: gmcs bug, this causes invalid IL
+		// $$ = new VariableDeclarationPair () {Name = (string) $1, Initializer = (Expression) $2};
+		var vd = new VariableDeclarationPair ();
+		vd.Name = (string) $1;
+		vd.Initializer = (Expression) $2;
+		$$ = vd;
 	}
 	;
 
