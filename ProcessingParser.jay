@@ -499,7 +499,7 @@ abstract_assignment_list
 
 for_continuation
 	: { $$ = null; } // EMPTY
-	| flow_contextless_statement
+	| flow_control_less_statement
 	;
 
 /// switch-case
