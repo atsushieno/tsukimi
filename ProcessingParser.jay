@@ -403,11 +403,7 @@ variable_declaration
 
 // concept taken from cs-parser.jay
 variable_type
-	: primary_expression
-	| primary_expression array_indicator
-	{
-		// FIXME: implement
-	}
+	: primary_expression opt_array_indicators
 
 type_name :
 	identifier opt_array_indicators
@@ -443,10 +439,10 @@ variable_declaration_pairs
 		l.Add ((VariableDeclarationPair) $1);
 		$$ = l;
 	}
-	| variable_declaration_pair COMMA variable_declaration_pairs
+	| variable_declaration_pairs COMMA variable_declaration_pair
 	{
-		var l = (List<VariableDeclarationPair>) $3;
-		l.Insert (0, (VariableDeclarationPair) $1);
+		var l = (List<VariableDeclarationPair>) $1;
+		l.Add ((VariableDeclarationPair) $3);
 		$$ = l;
 	}
 	;
@@ -465,15 +461,7 @@ variable_declaration_pair
 
 opt_variable_initializer
 	: { $$ = null; } // empty
-	| variable_initializer
-	;
-
-variable_initializer
-	: EQUAL expression
-	{
-		$$ = $2;
-	}
-	;
+	| EQUAL expression { $$ = $2; }
 
 /// if-else
 
