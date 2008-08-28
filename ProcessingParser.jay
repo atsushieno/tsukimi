@@ -291,8 +291,6 @@ statement_with_semicolon
 
 flow_control_less_statement
 	: abstract_assignment_statement
-	| increment_statement
-	| decrement_statement
 	| callable_expression
 	{
 		$$ = Statement.CallExpression ((Expression) $1);
@@ -317,7 +315,7 @@ add_assignment_statement
 	{
 		var e1 = (Expression) $1;
 		var e2 = (Expression) $3;
-		$$ = Statement.Assign (e1, Expression.AddChecked (e1, e2));
+		$$ = Statement.CallExpression (Expression.Assign (e1, Expression.AddChecked (e1, e2)));
 	}
 	;
 
@@ -326,23 +324,23 @@ subtract_assignment_statement
 	{
 		var e1 = (Expression) $1;
 		var e2 = (Expression) $3;
-		$$ = Statement.Assign (e1, Expression.SubtractChecked (e1, e2));
+		$$ = Statement.CallExpression (Expression.Assign (e1, Expression.SubtractChecked (e1, e2)));
 	}
 	;
 
-increment_statement
+increment_expression
 	: variable_or_member_reference PLUS2 // FIXME: no pre-positioned increment?
 	{
 		var e1 = (Expression) $1;
-		$$ = Statement.Assign (e1, Expression.AddChecked (e1, Expression.Constant (1)));
+		$$ = Expression.Assign (e1, Expression.AddChecked (e1, Expression.Constant (1)));
 	}
 	;
 
-decrement_statement
+decrement_expression
 	: variable_or_member_reference MINUS2 // FIXME: no pre-positioned increment?
 	{
 		var e1 = (Expression) $1;
-		$$ = Statement.Assign (e1, Expression.SubtractChecked (e1, Expression.Constant (1)));
+		$$ = Expression.Assign (e1, Expression.SubtractChecked (e1, Expression.Constant (1)));
 	}
 	;
 
@@ -361,9 +359,15 @@ return_statement
 	;
 
 assignment_statement
+	: assignment_expression
+	{
+		$$ = Statement.CallExpression ((Expression) $1);
+	}
+
+assignment_expression
 	: prefixed_unary_expression EQUAL expression
 	{
-		$$ = Statement.Assign ((Expression) $1, (Expression) $2);
+		$$ = Expression.Assign ((Expression) $1, (Expression) $2);
 	}
 	;
 
@@ -571,8 +575,7 @@ switch_default
 // Expressions
 
 expression
-	: callable_expression
-	| unary_expression
+	: unary_expression
 	| conditional_expression
 	| super_expression
 	;
@@ -584,13 +587,17 @@ unary_expression
 
 prefixed_unary_expression
 	: unary_expression
-	| numeric_negation_expression
+	| MINUS prefixed_unary_expression
+	{
+		$$ = Expression.MultiplyChecked ((Expression) $1, Expression.Constant (-1));
+	}
 
 primary_expression
 	: variable_or_member_reference
 	| constant_expression
 	| null_expression
 	| field_access_expression
+	| callable_expression
 	| this_expression
 	| new_expression
 	| array_access_expression
@@ -620,9 +627,7 @@ new_expression
 new_object_expression
 	: NEW function_call_base
 	{
-		// FIXME: CreateType() is unlikely possible
 		var fcb = (KeyValuePair<string, List<Expression>>) $2;
-		// FIXME: no CallSiteBinder?
 		$$ = Expression.New (fcb.Key, fcb.Value);
 	}
 	;
@@ -639,6 +644,8 @@ new_array_expression
 callable_expression
 	: function_call_expression
 	| function_access_expression
+	| increment_expression
+	| decrement_expression
 	;
 
 function_call_expression
@@ -816,9 +823,6 @@ logical_not_expression
 	: EXCLAIM prefixed_unary_expression
 	{ $$ = Expression.Not ((Expression) $1); };
 
-numeric_negation_expression
-	: MINUS prefixed_unary_expression
-	{ $$ = Expression.MultiplyChecked ((Expression) $1, Expression.Constant (-1)); };
 
 
 %%

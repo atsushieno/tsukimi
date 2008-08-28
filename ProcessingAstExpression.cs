@@ -58,21 +58,9 @@ namespace ProcessingDlr.Ast
 			return new VariableDeclarationStatement (typeName, name, initializer);
 		}
 
-		public static Statement Assign (Expression left, Expression right)
-		{
-			return new AssignmentStatement (left, right);
-		}
-
 		public static Statement CallExpression (Expression exp)
 		{
 			return new CallableExpressionStatement (exp);
-		}
-	}
-
-	public class AssignmentStatement : Statement
-	{
-		public AssignmentStatement (Expression left, Expression right)
-		{
 		}
 	}
 
@@ -180,6 +168,11 @@ namespace ProcessingDlr.Ast
 			return new FunctionCallExpression (obj, name, args);
 		}
 
+		public static Expression Assign (Expression left, Expression right)
+		{
+			return new AssignmentExpression (left, right);
+		}
+
 		public static Expression ArrayIndex (Expression array, Expression index)
 		{
 			throw new NotImplementedException ();
@@ -268,6 +261,13 @@ namespace ProcessingDlr.Ast
 		public static Expression Or (Expression left, Expression right)
 		{
 			return new ArithmeticExpression (left, right, ArithmeticKind.BitwiseOr);
+		}
+	}
+
+	public class AssignmentExpression : Expression
+	{
+		public AssignmentExpression (Expression left, Expression right)
+		{
 		}
 	}
 
