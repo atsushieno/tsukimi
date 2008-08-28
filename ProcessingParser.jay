@@ -313,7 +313,7 @@ abstract_assignment_statement
 	;
 
 add_assignment_statement
-	: variable_or_member_reference PLUS_EQUAL expression
+	: prefixed_unary_expression PLUS_EQUAL expression
 	{
 		var e1 = (Expression) $1;
 		var e2 = (Expression) $3;
@@ -322,7 +322,7 @@ add_assignment_statement
 	;
 
 subtract_assignment_statement
-	: variable_or_member_reference MINUS_EQUAL expression
+	: prefixed_unary_expression MINUS_EQUAL expression
 	{
 		var e1 = (Expression) $1;
 		var e2 = (Expression) $3;
@@ -361,7 +361,7 @@ return_statement
 	;
 
 assignment_statement
-	: variable_or_member_reference EQUAL expression
+	: prefixed_unary_expression EQUAL expression
 	{
 		$$ = Statement.Assign ((Expression) $1, (Expression) $2);
 	}
