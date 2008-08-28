@@ -197,12 +197,12 @@ namespace ProcessingDlr.Ast
 
 		public static Expression AndAlso (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new LogicalOperationExpression (left, right, LogicalOperationKind.AndAlso);
 		}
 
 		public static Expression OrElse (Expression left, Expression right)
 		{
-			throw new NotImplementedException ();
+			return new LogicalOperationExpression (left, right, LogicalOperationKind.OrElse);
 		}
 
 		public static Expression Equal (Expression left, Expression right)
@@ -303,8 +303,17 @@ namespace ProcessingDlr.Ast
 		}
 	}
 
-	public abstract class LogicalOperationExpression : OperationExpression
+	public enum LogicalOperationKind
 	{
+		AndAlso,
+		OrElse,
+	}
+
+	public class LogicalOperationExpression : OperationExpression
+	{
+		public LogicalOperationExpression (Expression left, Expression right, LogicalOperationKind kind)
+		{
+		}
 	}
 
 	public enum ArithmeticKind

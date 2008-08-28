@@ -220,18 +220,27 @@ function_definition
 	;
 
 function_definition_base
-	: identifier OPEN_PAREN argument_definitions CLOSE_PAREN statement_block
+	: identifier OPEN_PAREN opt_argument_definitions CLOSE_PAREN statement_block
 	{
 		$$ = new FunctionBase ((string) $1, (List<FunctionArgument>) $3, Statement.Block ((List<Statement>) $5));
 	}
 	;
 
-argument_definitions
+opt_argument_definitions
 	: { $$ = null; } // empty
-	| argument_definition COMMA argument_definitions
+	| argument_definitions
+
+argument_definitions
+	: argument_definition
 	{
-		var l = (List<FunctionArgument>) $3 ?? new List<FunctionArgument> ();
-		l.Insert (0, (FunctionArgument) $1);
+		var l = new List<FunctionArgument> ();
+		l.Add ((FunctionArgument) $1);
+		$$ = l;
+	}
+	| argument_definitions COMMA argument_definition
+	{
+		var l = (List<FunctionArgument>) $1 ?? new List<FunctionArgument> ();
+		l.Add ((FunctionArgument) $3);
 		$$ = l;
 	}
 	;
@@ -377,6 +386,7 @@ variable_declaration_statement
 
 variable_declaration
 	: type_name variable_declaration_pairs
+//	: variable_type variable_declaration_pairs
 	{
 		// FIXME: CreateType() is not likely possible here.
 		var l = new List<Statement> ();
@@ -386,6 +396,14 @@ variable_declaration
 		$$ = l;
 	}
 	;
+
+// concept taken from cs-parser.jay
+variable_type
+	: primary_expression
+	| primary_expression array_indicator
+	{
+		// FIXME: implement
+	}
 
 type_name :
 	identifier
@@ -555,7 +573,6 @@ switch_default
 expression
 	: callable_expression
 	| unary_expression
-	// | binary_expression
 	| conditional_expression
 	| super_expression
 	;
@@ -566,7 +583,8 @@ unary_expression
 	| cast_expression
 
 prefixed_unary_expression
-	: numeric_negation_expression
+	: unary_expression
+	| numeric_negation_expression
 
 primary_expression
 	: variable_or_member_reference
@@ -669,23 +687,20 @@ true_expression : TRUE { $$ = Expression.True (); } ;
 
 false_expression : FALSE { $$ = Expression.False (); } ;
 
-numeric_literal : NUMERIC_LITERAL;
+numeric_literal : NUMERIC_LITERAL
 
-string_literal : STRING_LITERAL;
+string_literal : STRING_LITERAL
 
-character_literal : CHARACTER_LITERAL;
+character_literal : CHARACTER_LITERAL
 
 /// binary expressions
 
 additive_expression
 	: multiplicative_expression
 	| additive_expression PLUS multiplicative_expression
-	{
-		$$ = Expression.AddChecked ((Expression) $1, (Expression) $3);
-	}
+	{ $$ = Expression.AddChecked ((Expression) $1, (Expression) $3); }
 	| additive_expression MINUS multiplicative_expression
 	{ $$ = Expression.SubtractChecked ((Expression) $1, (Expression) $3); }
-	;
 
 multiplicative_expression
 	: prefixed_unary_expression
@@ -695,21 +710,13 @@ multiplicative_expression
 	{ $$ = Expression.DivideChecked ((Expression) $1, (Expression) $3); }
 	| multiplicative_expression PERCENT prefixed_unary_expression
 	{ $$ = Expression.ModuloChecked ((Expression) $1, (Expression) $3); }
-	;
-
-// FIXME: "expression" in below items need to be more specific.
-// For example, First expression in "additive_expression" is 
-// "multiplicative_expression" (for operator priority)
 
 field_access_expression
-	: expression DOT identifier
-	{
-		$$ = Expression.PropertyOrField ((Expression) $1, (string) $3);
-	}
-	;
+	: primary_expression DOT identifier
+	{ $$ = Expression.PropertyOrField ((Expression) $1, (string) $3); }
 
 function_access_expression
-	: expression DOT function_call_base
+	: primary_expression DOT function_call_base
 	{
 		var inst = (Expression) $1;
 		var f = (FunctionCall) $3;
@@ -732,7 +739,7 @@ this_expression
 	; // FIXME: how can I represent it?
 
 array_access_expression
-	: expression OPEN_BRACE expression CLOSE_BRACE
+	: primary_expression OPEN_BRACE expression CLOSE_BRACE
 	{
 		$$ = Expression.ArrayIndex ((Expression) $1, (Expression) $3);
 	}
@@ -743,7 +750,7 @@ null_expression : NULL { $$ = Expression.Null (); };
 parenthesized_expression : OPEN_PAREN expression CLOSE_PAREN { $$ = $2; };
 
 cast_expression
-	: OPEN_PAREN type_name CLOSE_PAREN expression
+	: OPEN_PAREN type_name CLOSE_PAREN prefixed_unary_expression
 	{
 		$$ = Expression.Cast ((string) $2, (Expression) $4);
 	}

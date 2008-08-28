@@ -285,6 +285,7 @@ namespace ProcessingDlr
 					c = PeekChar ();
 					if (c < '0' || '9' < c)
 						break;
+					ReadChar ();
 					frac += (c - '0') / d;
 					d *= 10;
 					fdigits++;
@@ -420,12 +421,12 @@ namespace ProcessingDlr
 			case ']':
 				return Token.CLOSE_BRACE;
 			case '&':
-				if (PeekChar () != '=')
+				if (PeekChar () != '&')
 					return Token.AND;
 				ReadChar ();
 				return Token.AND2;
 			case '|':
-				if (PeekChar () != '=')
+				if (PeekChar () != '|')
 					return Token.BAR;
 				ReadChar ();
 				return Token.BAR2;
