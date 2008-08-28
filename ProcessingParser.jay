@@ -410,18 +410,31 @@ variable_type
 	}
 
 type_name :
-	identifier
-	{
-		// FIXME: implement
-	}
-	| identifier array_indicator // array of array not allowed
+	identifier opt_array_indicators
 	{
 		// FIXME: implement
 	}
 	;
 
-array_indicator :
-	OPEN_BRACE CLOSE_BRACE ;
+opt_array_indicators
+	: // EMPTY
+	{
+		$$ = 0;
+	}
+	| array_indicators
+
+array_indicators
+	: array_indicator
+	| array_indicators array_indicator
+	{
+		$$ = 1 + (int) $1;
+	}
+
+array_indicator
+	: OPEN_BRACE CLOSE_BRACE
+	{
+		$$ = 1;
+	}
 
 variable_declaration_pairs
 	: variable_declaration_pair
@@ -748,7 +761,7 @@ this_expression
 array_access_expression
 	: primary_expression OPEN_BRACE expression CLOSE_BRACE
 	{
-		$$ = Expression.ArrayIndex ((Expression) $1, (Expression) $3);
+		$$ = Expression.ArrayAccess ((Expression) $1, (Expression) $3);
 	}
 	;
 

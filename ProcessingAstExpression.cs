@@ -173,9 +173,9 @@ namespace ProcessingDlr.Ast
 			return new AssignmentExpression (left, right);
 		}
 
-		public static Expression ArrayIndex (Expression array, Expression index)
+		public static Expression ArrayAccess (Expression array, Expression index)
 		{
-			throw new NotImplementedException ();
+			return new ArrayAccessExpression (array, index);
 		}
 
 		public static Expression LeftShift (Expression left, Expression right)
@@ -368,6 +368,13 @@ namespace ProcessingDlr.Ast
 	public class NewArrayExpression : Expression
 	{
 		public NewArrayExpression (string typeName, Expression size)
+		{
+		}
+	}
+
+	public class ArrayAccessExpression : Expression
+	{
+		public ArrayAccessExpression (Expression array, Expression index)
 		{
 		}
 	}
