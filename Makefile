@@ -6,7 +6,8 @@ SOURCES = \
 	ProcessingAstExpression.cs \
 	ProcessingTokenizer.cs \
 	StandardLibrary.cs \
-	StandardLibrary.Conversion.cs
+	StandardLibrary.Conversion.cs \
+	StandardLibrary.StringFunctions.cs
 
 all: driver.exe
 

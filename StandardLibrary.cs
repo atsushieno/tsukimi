@@ -59,6 +59,11 @@ namespace ProcessingDlr
 			return s != null && s.s == this.s;
 		}
 
+		public override int GetHashCode ()
+		{
+			return s.GetHashCode ();
+		}
+
 		public int indexOf (String s)
 		{
 			return indexOf (s, 0);
@@ -103,7 +108,7 @@ namespace ProcessingDlr
 		OpenGL
 	}
 
-	public partial class StandardLibrary
+	public static partial class StandardLibrary
 	{
 		public const double PI = System.Math.PI;
 		public const double HALF_PI = PI / 2.0;
@@ -118,17 +123,17 @@ namespace ProcessingDlr
 		// (It is possible that noLoop() and loop() could become
 		// like them.)
 
-		public void exit ()
+		public static void exit ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public Size size (int width, int height)
+		public static Size size (int width, int height)
 		{
 			return size (width, height, SizeMode.Java2D);
 		}
 
-		public void size (int width, int height, SizeMode sizeMode)
+		public static void size (int width, int height, SizeMode sizeMode)
 		{
 			// FIXME: check sizeMode and reject some.
 
@@ -137,49 +142,28 @@ namespace ProcessingDlr
 			g.Bounds.Height = height;
 		}
 
-		public void noLoop ()
+		public static void noLoop ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public void delay (int milliseconds)
+		public static void delay (int milliseconds)
 		{
 			Thread.Sleep (milliseconds);
 		}
 
-		public void loop ()
+		public static void loop ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public void redraw ()
+		public static void redraw ()
 		{
 			throw new NotImplementedException ();
-		}
-
-		public int unbinary (string str)
-		{
-			int v = 0;
-			for (int i = 0; i < str.Length; i++) {
-				v <<= 1;
-				if (str [i] == '1')
-					v++;
-				else if (str [i] != '0')
-					throw new FormatException (String.Format ("Invalid binary string: {0}", str));
-			}
 		}
 
 /*
-
-		split()
-		join()
-		splitTokens()
-		nf()
-		match()
-		trim()
-		nfc()
-		nfs()
-		nfp()
+		// Array Functions
 
 		shorten()
 		concat()
@@ -357,33 +341,33 @@ namespace ProcessingDlr
 		emissive()
 */
 
-		public Color color (double gray)
+		public static Color color (double gray)
 		{
 			byte b = (byte) gray;
 			return new Color (0xFF, b, b, b);
 		}
 
-		public Color color (double alpha)
+		public static Color color (double alpha)
 		{
 			return new Color ((byte) alpha, 0, 0, 0);
 		}
 
-		public Color color (double r, double g, double b)
+		public static Color color (double r, double g, double b)
 		{
 			return color (r, g, b, 0xFF);
 		}
 
-		public Color color (double r, double g, double b, double a)
+		public static Color color (double r, double g, double b, double a)
 		{
 			return new Color (a, (byte) r, (byte) g, (byte) b);
 		}
 
-		public Color color (string hex)
+		public static Color color (string hex)
 		{
 			return new Color (int.Parse (hex, NumberStyles.HexNumber));
 		}
 
-		public Color color (string hex, double alpha)
+		public static Color color (string hex, double alpha)
 		{
 			Color c = color (hex);
 			c.A = (byte) alpha;
