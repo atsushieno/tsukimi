@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 /*
@@ -110,11 +111,19 @@ namespace ProcessingDlr
 		OpenGL
 	}
 
+	public class ProcessingHostControl : UserControl
+	{
+		public const string ID = "c056f9b5-5fc9-46ef-a42c-ae316631ebd9";
+	}
+
 	public static partial class StandardLibrary
 	{
 		public const double PI = System.Math.PI;
 		public const double HALF_PI = PI / 2.0;
 		public const double TWO_PI = PI * 2.0;
+
+		public static readonly ProcessingHostControl Host =
+			new ProcessingHostControl ();
 
 		// The functions below are not defined in the standard library.
 		// They are resolved only internally.
@@ -139,9 +148,8 @@ namespace ProcessingDlr
 		{
 			// FIXME: check sizeMode and reject some.
 
-			Geometry g = Application.Current.RootVisual.Clip;
-			g.Bounds.Width = width;
-			g.Bounds.Height = height;
+			Host.Width = width;
+			Host.Height = height;
 		}
 
 		public static void noLoop ()
