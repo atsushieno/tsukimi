@@ -18,12 +18,14 @@ namespace ProcessingDlr
 			this.filename = filename;
 		}
 
+		public AstRoot Root { get; set; }
+
 		public void Parse ()
 		{
 			var t = new Tokenizer (filename);
 			try {
-//				yyparse (t, new yydebug.yyDebugSimple ());
-				yyparse (t);
+//				Root = yyparse (t, new yydebug.yyDebugSimple ());
+				Root = (AstRoot) yyparse (t);
 			} catch (yyParser.yyException ex) {
 				throw new ParserException (String.Format ("Irrecoverable syntax error at {0}", t.Location), ex);
 			}
@@ -148,8 +150,8 @@ class_declaration
 	  OPEN_CURLY class_member_definitions CLOSE_CURLY
 	{
 		var name = (string) $2;
-		var baseType = (string) $3;
-		var interfaces = (List<string>) $4;
+		var baseType = (TypeInfo) $3;
+		var interfaces = (List<TypeInfo>) $4;
 		var members = (List<MemberDefinition>) $5;
 		$$ = new ClassDefinition (name, baseType, interfaces, members);
 	}
@@ -166,30 +168,30 @@ opt_implementation_indications
 	;
 
 derivation_indication
-	: EXTENDS identifier
+	: EXTENDS type_name
 	{
 		$$ = $2;
 	}
 	;
 
 implementation_indications
-	 : IMPLEMENTS identifier_list_comma
+	 : IMPLEMENTS type_list
 	 {
 	 	$$ = $2;
 	 }
 	 ;
 
-identifier_list_comma
-	: identifier
+type_list
+	: type_name
 	{
-		var l = new List<string> ();
-		l.Add ((string) $1);
+		var l = new List<TypeInfo> ();
+		l.Add ((TypeInfo) $1);
 		$$ = l;
 	}
-	| identifier COMMA identifier_list_comma
+	| type_name COMMA type_list
 	{
-		var l = (List<string>) $3;
-		l.Insert (0, (string) $1);
+		var l = (List<TypeInfo>) $3;
+		l.Insert (0, (TypeInfo) $1);
 		$$ = l;
 	}
 	;
@@ -226,7 +228,7 @@ constructor_definition
 function_definition
 	: type_name function_definition_base
 	{
-		$$ = new FunctionDefinition ((string) $1, (FunctionBase) $2);
+		$$ = new FunctionDefinition ((TypeInfo) $1, (FunctionBase) $2);
 	}
 	;
 
@@ -260,9 +262,9 @@ argument_definition
 	: type_name identifier
 	{
 		// FIXME: this causes gmcs invalid IL
-		// $$ = new FunctionArgument () { Type = (string) $1, Name = (string) $2};
+		// $$ = new FunctionArgument () { Type = (TypeInfo) $1, Name = (string) $2};
 		var fa = new FunctionArgument ();
-		fa.Type = (string) $1;
+		fa.Type = (TypeInfo) $1;
 		fa.Name = (string) $2;
 		$$ = fa;
 	}
@@ -273,7 +275,7 @@ argument_definition
 statement_block
 	: OPEN_CURLY statements CLOSE_CURLY
 	{
-		$$ = Statement.Block ((List<Statement>) $2);
+		$$ = Statement.Block (true, (List<Statement>) $2);
 	}
 	;
 
@@ -408,7 +410,7 @@ assignment_statement
 assignment_expression
 	: prefixed_unary_expression EQUAL expression
 	{
-		$$ = Expression.Assign ((Expression) $1, (Expression) $2);
+		$$ = Expression.Assign ((Expression) $1, (Expression) $3);
 	}
 	;
 
@@ -429,15 +431,15 @@ variable_declaration_statement
 		var l = new List<Statement> ();
 		var v = (VariableDeclarations) $1;
 		foreach (VariableDeclarationPair p in v.Pairs)
-			l.Add (Statement.DeclareVariable (v.TypeName, p.Name, p.Initializer));
-		$$ = Statement.Block (l);
+			l.Add (Statement.DeclareVariable (v.Type, p.Name, p.Initializer));
+		$$ = Statement.Block (false, l);
 	}
 
 variable_declaration
 	: type_name variable_declaration_pairs
 	{
 		var v = new VariableDeclarations ();
-		v.TypeName = (string) $1;
+		v.Type = (TypeInfo) $1;
 		v.Pairs = (List<VariableDeclarationPair>) $2;
 		$$ = v;
 	}
@@ -446,7 +448,7 @@ variable_declaration
 type_name :
 	identifier opt_array_indicators
 	{
-		// FIXME: implement
+		$$ = new TypeInfo ((string) $1, (int) $2);
 	}
 	;
 
@@ -678,9 +680,9 @@ new_object_expression
 	;
 
 new_array_expression
-	: NEW identifier OPEN_BRACE expression CLOSE_BRACE
+	: NEW type_name OPEN_BRACE expression CLOSE_BRACE
 	{
-		$$ = Expression.NewArrayBounds ((string) $2, (Expression) $4);
+		$$ = Expression.NewArrayBounds ((TypeInfo) $2, (Expression) $4);
 	}
 	;
 
@@ -804,7 +806,7 @@ parenthesized_expression : OPEN_PAREN expression CLOSE_PAREN { $$ = $2; };
 cast_expression
 	: OPEN_PAREN type_name CLOSE_PAREN prefixed_unary_expression
 	{
-		$$ = Expression.Cast ((string) $2, (Expression) $4);
+		$$ = Expression.Cast ((TypeInfo) $2, (Expression) $4);
 	}
 	;
 

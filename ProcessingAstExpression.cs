@@ -5,14 +5,14 @@ namespace ProcessingDlr.Ast
 {
 	public abstract class Statement : ITopLevelContent
 	{
-		public static StatementBlock Block (List<Statement> statements)
+		public static StatementBlock Block (bool wrap, List<Statement> statements)
 		{
-			return Block (statements.ToArray ());
+			return Block (wrap, statements.ToArray ());
 		}
 
-		public static StatementBlock Block (params Statement [] statements)
+		public static StatementBlock Block (bool wrap, params Statement [] statements)
 		{
-			return new StatementBlock (statements);
+			return new StatementBlock (wrap, statements);
 		}
 
 		public static Statement IfThen (Expression cond, StatementBlock trueBlock)
@@ -54,9 +54,9 @@ namespace ProcessingDlr.Ast
 			throw new NotImplementedException ();
 		}
 
-		public static VariableDeclarationStatement DeclareVariable (string typeName, string name, Expression initializer)
+		public static VariableDeclarationStatement DeclareVariable (TypeInfo type, string name, Expression initializer)
 		{
-			return new VariableDeclarationStatement (typeName, name, initializer);
+			return new VariableDeclarationStatement (type, name, initializer);
 		}
 
 		public static Statement CallExpression (Expression exp)
@@ -67,28 +67,43 @@ namespace ProcessingDlr.Ast
 
 	public class VariableDeclarationStatement : Statement
 	{
-		public VariableDeclarationStatement (string typeName, string name, Expression initializer)
+		public VariableDeclarationStatement (TypeInfo type, string name, Expression initializer)
 		{
+			Type = type;
+			Name = name;
+			Initializer = initializer;
 		}
+
+		public TypeInfo Type { get; set; }
+		public string Name { get; set; }
+		public Expression Initializer { get; set; }
 	}
 
 	public class CallableExpressionStatement : Statement
 	{
 		public CallableExpressionStatement (Expression exp)
 		{
+			Content = exp;
 		}
+
+		public Expression Content { get; set; }
 	}
 
 	public class StatementBlock : Statement
 	{
-		public StatementBlock (List<Statement> statements)
-			: this (statements.ToArray ())
+		public StatementBlock (bool wrap, List<Statement> statements)
+			: this (wrap, statements.ToArray ())
 		{
 		}
 
-		public StatementBlock (params Statement [] statements)
+		public StatementBlock (bool wrap, params Statement [] statements)
 		{
+			Wrap = wrap;
+			Statements = statements;
 		}
+
+		public bool Wrap { get; set; }
+		public Statement [] Statements { get; private set; }
 	}
 
 	public class BreakStatement : Statement
@@ -109,7 +124,16 @@ namespace ProcessingDlr.Ast
 			Statement cont,
 			StatementBlock body)
 		{
+			Initializers = init;
+			Condition = cond;
+			Continuer = cont;
+			Body = body;
 		}
+
+		public List<Statement> Initializers { get; private set; }
+		public Expression Condition { get; set; }
+		public Statement Continuer { get; set; }
+		public StatementBlock Body { get; set; }
 	}
 
 	public abstract class Expression
@@ -150,14 +174,14 @@ namespace ProcessingDlr.Ast
 			return new NewObjectExpression (typeName, args);
 		}
 
-		public static Expression NewArrayBounds (string typeName, Expression size)
+		public static Expression NewArrayBounds (TypeInfo type, Expression size)
 		{
-			return new NewArrayExpression (typeName, size);
+			return new NewArrayExpression (type, size);
 		}
 
-		public static Expression Cast (string typeName, Expression value)
+		public static Expression Cast (TypeInfo type, Expression value)
 		{
-			return new CastExpression (typeName, value);
+			return new CastExpression (type, value);
 		}
 
 		public static Expression Condition (Expression cond, Expression trueExpr, Expression falseExpr)
@@ -276,14 +300,24 @@ namespace ProcessingDlr.Ast
 	{
 		public AssignmentExpression (Expression left, Expression right)
 		{
+			Left = left;
+			Right = right;
 		}
+
+		public Expression Left { get; set; }
+		public Expression Right { get; set; }
 	}
 
 	public class CastExpression : Expression
 	{
-		public CastExpression (string typeName, Expression value)
+		public CastExpression (TypeInfo type, Expression value)
 		{
+			Type = type;
+			Value = value;
 		}
+
+		public TypeInfo Type { get; set; }
+		public Expression Value { get; set; }
 	}
 
 	public abstract class CallableExpression : Expression
@@ -308,7 +342,14 @@ namespace ProcessingDlr.Ast
 	{
 		public ComparisonExpression (Expression left, Expression right, ComparisonKind kind)
 		{
+			Left = left;
+			Right = right;
+			Kind = kind;
 		}
+
+		public Expression Left { get; set; }
+		public Expression Right { get; set; }
+		public ComparisonKind Kind { get; set; }
 	}
 
 	public enum LogicalOperationKind
@@ -341,14 +382,24 @@ namespace ProcessingDlr.Ast
 	{
 		public ArithmeticExpression (Expression left, Expression right, ArithmeticKind kind)
 		{
+			Left = left;
+			Right = right;
+			Kind = kind;
 		}
+
+		public Expression Left { get; set; }
+		public Expression Right { get; set; }
+		public ArithmeticKind Kind { get; set; }
 	}
 
 	public class VariableReferenceExpression : Expression
 	{
 		public VariableReferenceExpression (string name)
 		{
+			Name = name;
 		}
+
+		public string Name { get; set; }
 	}
 
 	public class LiteralExpression : Expression
@@ -363,14 +414,24 @@ namespace ProcessingDlr.Ast
 	{
 		public ConstantExpression (object value)
 		{
+			this.Value = value;
 		}
+
+		public object Value { get; set; }
 	}
 
 	public class FunctionCallExpression : Expression
 	{
 		public FunctionCallExpression (Expression obj, string name, List<Expression> args)
 		{
+			Target = obj;
+			Name = name;
+			Arguments = args;
 		}
+
+		public Expression Target { get; set; }
+		public string Name { get; set; }
+		public List<Expression> Arguments { get; private set; }
 	}
 
 	public class NewObjectExpression : Expression
@@ -382,15 +443,25 @@ namespace ProcessingDlr.Ast
 
 	public class NewArrayExpression : Expression
 	{
-		public NewArrayExpression (string typeName, Expression size)
+		public NewArrayExpression (TypeInfo type, Expression size)
 		{
+			Type = type;
+			Size = size;
 		}
+
+		public TypeInfo Type { get; set; }
+		public Expression Size { get; set; }
 	}
 
 	public class ArrayAccessExpression : Expression
 	{
 		public ArrayAccessExpression (Expression array, Expression index)
 		{
+			Array = array;
+			Index = index;
 		}
+
+		public Expression Array { get; set; }
+		public Expression Index { get; set; }
 	}
 }

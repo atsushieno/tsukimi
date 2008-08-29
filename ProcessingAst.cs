@@ -20,26 +20,42 @@ namespace ProcessingDlr.Ast
 	{
 	}
 
+	public class TypeInfo
+	{
+		public TypeInfo (string name, int arrayRank)
+		{
+			Name = name;
+			ArrayRank = arrayRank;
+		}
+
+		public string Name { get; set; }
+		public int ArrayRank { get; set; }
+	}
+
 	public class ClassDefinition : ITopLevelContent
 	{
-		string name, base_type;
-		List<string> interfaces;
-		List<MemberDefinition> members;
-
-		public ClassDefinition (string name, string baseType, List<string> interfaces, List<MemberDefinition> members)
+		public ClassDefinition (string name, TypeInfo baseType, List<TypeInfo> interfaces, List<MemberDefinition> members)
 		{
-			this.name = name;
-			this.base_type = baseType;
-			this.interfaces = interfaces;
-			this.members = members;
+			Name = name;
+			BaseType = baseType;
+			Interfaces = interfaces;
+			Members = members;
 		}
+
+		public string Name { get; set; }
+		public TypeInfo BaseType { get; set; }
+		public List<TypeInfo> Interfaces { get; private set; }
+		public List<MemberDefinition> Members { get; private set; }
 	}
 
 	public class GlobalFunctionDefinition : ITopLevelContent
 	{
 		public GlobalFunctionDefinition (FunctionDefinition function)
 		{
+			Internal = function;
 		}
+
+		internal FunctionDefinition Internal { get; set; }
 	}
 
 	public abstract class MemberDefinition
@@ -50,23 +66,50 @@ namespace ProcessingDlr.Ast
 	{
 		public FieldDefinition (VariableDeclarations v)
 		{
+			Decls = v;
+		}
+
+		internal VariableDeclarations Decls { get; set; }
+
+		public TypeInfo Type {
+			get { return Decls.Type; }
+			set { Decls.Type = value; }
+		}
+
+		public List<VariableDeclarationPair> Pairs {
+			get { return Decls.Pairs; }
 		}
 	}
 
 	public abstract class FunctionDefinitionBase : MemberDefinition
 	{
+		protected FunctionDefinitionBase (FunctionBase funcBase)
+		{
+			Name = funcBase.Name;
+			Arguments = funcBase.Arguments;
+			Body = funcBase.Body;
+		}
+
+		public string Name { get; set; }
+		public List<FunctionArgument> Arguments { get; private set; }
+		public StatementBlock Body { get; set; }
 	}
 
 	public class FunctionDefinition : FunctionDefinitionBase
 	{
-		public FunctionDefinition (string typeName, FunctionBase funcBase)
+		public FunctionDefinition (TypeInfo type, FunctionBase funcBase)
+			: base (funcBase)
 		{
+			Type = type;
 		}
+
+		public TypeInfo Type { get; set; }
 	}
 
 	public class ConstructorDefinition : FunctionDefinitionBase
 	{
 		public ConstructorDefinition (FunctionBase funcBase)
+			: base (funcBase)
 		{
 		}
 	}
@@ -87,7 +130,7 @@ namespace ProcessingDlr.Ast
 
 	public class FunctionArgument
 	{
-		public string Type;
+		public TypeInfo Type;
 		public string Name;
 	}
 
@@ -105,7 +148,7 @@ namespace ProcessingDlr.Ast
 
 	public class VariableDeclarations
 	{
-		public string TypeName;
+		public TypeInfo Type;
 		public List<VariableDeclarationPair> Pairs;
 	}
 

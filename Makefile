@@ -7,6 +7,7 @@ CONVERTER_SOURCES = \
 	ProcessingAst.cs \
 	ProcessingAstExpression.cs \
 	ProcessingTokenizer.cs \
+	CodeGenerator.cs
 
 CORE_DLL_SOURCES = \
 	StandardLibrary.cs \

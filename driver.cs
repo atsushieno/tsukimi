@@ -10,6 +10,7 @@ namespace ProcessingDlr
 			foreach (string s in args) {
 				ProcessingParser p = new ProcessingParser (s);
 				p.Parse ();
+				new CodeGenerator (p.Root, Console.Out).Generate ();
 			}
 		}
 	}

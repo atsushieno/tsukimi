@@ -36,7 +36,10 @@ moonlight[*2].
 *** Some Details
 
 	- *.pde files are parsed to build AstRoot.
+	- "Global" class is generated to hold global members.
 	- For each top level contents in AstRoot:
 	-- A class is converted to generate a managed class.
 	-- A global function definition is converted to a method of Global class.
 	-- A statement is converted to become a statement in Global.Run().
+
+
