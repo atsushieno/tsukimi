@@ -22,18 +22,36 @@ namespace ProcessingDlr.Ast
 		}
 	}
 
+	public class GlobalFunctionDefinition : ITopLevelContent
+	{
+		public GlobalFunctionDefinition (FunctionDefinition function)
+		{
+		}
+	}
+
 	public abstract class MemberDefinition
 	{
 	}
 
-	public class FunctionDefinition : MemberDefinition
+	public class FieldDefinition : MemberDefinition
+	{
+		public FieldDefinition (VariableDeclarations v)
+		{
+		}
+	}
+
+	public abstract class FunctionDefinitionBase : MemberDefinition
+	{
+	}
+
+	public class FunctionDefinition : FunctionDefinitionBase
 	{
 		public FunctionDefinition (string typeName, FunctionBase funcBase)
 		{
 		}
 	}
 
-	public class ConstructorDefinition
+	public class ConstructorDefinition : FunctionDefinitionBase
 	{
 		public ConstructorDefinition (FunctionBase funcBase)
 		{
@@ -70,6 +88,12 @@ namespace ProcessingDlr.Ast
 
 		public string Name;
 		public List<Expression> Arguments;
+	}
+
+	public class VariableDeclarations
+	{
+		public string TypeName;
+		public List<VariableDeclarationPair> Pairs;
 	}
 
 	public class VariableDeclarationPair

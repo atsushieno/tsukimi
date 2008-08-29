@@ -61,6 +61,9 @@ namespace ProcessingDlr
 %token PERCENT			//"%"
 %token PLUS_EQUAL		//"+="
 %token MINUS_EQUAL		//"-="
+%token ASTERISK_EQUAL		//"*="
+%token SLASH_EQUAL		//"/="
+%token PERCENT_EQUAL		//"%="
 %token PLUS2			//"++"
 %token MINUS2			//"--"
 %token EQUAL			//"="
@@ -133,6 +136,9 @@ top_level_content
 
 global_function_definition
 	: function_definition
+	{
+		$$ = new GlobalFunctionDefinition ((FunctionDefinition) $1);
+	}
 	;
 
 class_declaration
@@ -189,10 +195,10 @@ identifier_list_comma
 
 class_member_definitions
 	: { $$ = null; } // empty
-	| class_member_definition class_member_definitions
+	| class_member_definitions class_member_definition
 	{
-		var l = (List<MemberDefinition>) $2 ?? new List<MemberDefinition> ();
-		l.Insert (0, (MemberDefinition) $1);
+		var l = (List<MemberDefinition>) $1 ?? new List<MemberDefinition> ();
+		l.Add ((MemberDefinition) $2);
 		$$ = l;
 	}
 	;
@@ -204,7 +210,10 @@ class_member_definition
 	;
 
 field_definition
-	: variable_declaration SEMICOLON { $$ = $1; }
+	: variable_declaration SEMICOLON
+	{
+		$$ = new FieldDefinition ((VariableDeclarations) $1);
+	}
 
 constructor_definition
 	: function_definition_base
@@ -309,6 +318,9 @@ abstract_assignment_statement
 	: assignment_statement
 	| add_assignment_statement
 	| subtract_assignment_statement
+	| multiply_assignment_statement
+	| divide_assignment_statement
+	| modulo_assignment_statement
 	;
 
 add_assignment_statement
@@ -326,6 +338,33 @@ subtract_assignment_statement
 		var e1 = (Expression) $1;
 		var e2 = (Expression) $3;
 		$$ = Statement.CallExpression (Expression.Assign (e1, Expression.SubtractChecked (e1, e2)));
+	}
+	;
+
+multiply_assignment_statement
+	: prefixed_unary_expression ASTERISK_EQUAL expression
+	{
+		var e1 = (Expression) $1;
+		var e2 = (Expression) $3;
+		$$ = Statement.CallExpression (Expression.Assign (e1, Expression.MultiplyChecked (e1, e2)));
+	}
+	;
+
+divide_assignment_statement
+	: prefixed_unary_expression SLASH_EQUAL expression
+	{
+		var e1 = (Expression) $1;
+		var e2 = (Expression) $3;
+		$$ = Statement.CallExpression (Expression.Assign (e1, Expression.DivideChecked (e1, e2)));
+	}
+	;
+
+modulo_assignment_statement
+	: prefixed_unary_expression PERCENT_EQUAL expression
+	{
+		var e1 = (Expression) $1;
+		var e2 = (Expression) $3;
+		$$ = Statement.CallExpression (Expression.Assign (e1, Expression.ModuloChecked (e1, e2)));
 	}
 	;
 
@@ -386,25 +425,22 @@ break_statement : BREAK { $$ = Statement.Break (); } ;
 variable_declaration_statement
 	: variable_declaration
 	{
-		$$ = Statement.Block ((List<Statement>) $1);
+		var l = new List<Statement> ();
+		var v = (VariableDeclarations) $1;
+		foreach (VariableDeclarationPair p in v.Pairs)
+			l.Add (Statement.DeclareVariable (v.TypeName, p.Name, p.Initializer));
+		$$ = Statement.Block (l);
 	}
 
 variable_declaration
 	: type_name variable_declaration_pairs
-//	: variable_type variable_declaration_pairs
 	{
-		// FIXME: CreateType() is not likely possible here.
-		var l = new List<Statement> ();
-		string type = (string) $1;
-		foreach (VariableDeclarationPair p in (List<VariableDeclarationPair>) $2)
-			l.Add (Statement.DeclareVariable (type, p.Name, p.Initializer));
-		$$ = l;
+		var v = new VariableDeclarations ();
+		v.TypeName = (string) $1;
+		v.Pairs = (List<VariableDeclarationPair>) $2;
+		$$ = v;
 	}
 	;
-
-// concept taken from cs-parser.jay
-variable_type
-	: primary_expression opt_array_indicators
 
 type_name :
 	identifier opt_array_indicators
@@ -489,10 +525,9 @@ else_block
 /// for
 
 for_statement
-	: FOR OPEN_PAREN for_initializer SEMICOLON expression SEMICOLON
+	: FOR OPEN_PAREN opt_for_initializers SEMICOLON expression SEMICOLON
 	for_continuation CLOSE_PAREN statement_block
 	{
-Console.WriteLine ("{0} {1} {2} {3}", $3.GetType (), $5.GetType (), $7.GetType (), $9.GetType ());
 		var init = (List<Statement>) $3;
 		var cond = (Expression) $5;
 		var cont = (Statement) $7;
@@ -504,14 +539,18 @@ Console.WriteLine ("{0} {1} {2} {3}", $3.GetType (), $5.GetType (), $7.GetType (
 opt_for_initializers
 	: { $$ = null; } // empty
 	| for_initializers
+	{
+		if ($1 is Statement) {
+			var l = new List<Statement> ();
+			l.Add ((Statement) $1);
+			$$ = l;
+		}
+		else
+			$$ = $1;
+	}
 
 for_initializers
 	: for_initializer
-	{
-		var l = new List<Statement> ();
-		l.Add ((Statement) $1);
-		$$ = l;
-	}
 	| for_initializers COMMA for_initializer
 	{
 		var l = (List<Statement>) $1;
@@ -520,7 +559,7 @@ for_initializers
 	}
 
 for_initializer
-	: variable_declaration
+	: variable_declaration_statement
 	| abstract_assignment_statement
 	;
 

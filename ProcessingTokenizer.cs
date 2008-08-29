@@ -397,7 +397,10 @@ namespace ProcessingDlr
 					return Token.MINUS;
 				}
 			case '*':
-				return Token.ASTERISK;
+				if (PeekChar () != '=')
+					return Token.ASTERISK;
+				ReadChar ();
+				return Token.ASTERISK_EQUAL;
 			case '/':
 				if (PeekChar () == '/') {
 					// single line comment
@@ -410,7 +413,10 @@ namespace ProcessingDlr
 					ConsumeMultilineComment ();
 					return ParseToken (false);
 				}
-				return Token.SLASH;
+				if (PeekChar () != '=')
+					return Token.SLASH;
+				ReadChar ();
+				return Token.SLASH_EQUAL;
 			case '%':
 				return Token.PERCENT;
 			case '<':

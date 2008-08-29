@@ -6,6 +6,10 @@
 	Seealso: processing syntax reference
 	http://processing.org/reference/index_ext.html
 
+	There are some undocumented syntax components that are actually
+	allowed (according to examples). I've filed some of them at
+	http://dev.processing.org/bugs/show_bug.cgi?id=900
+
 ** Mapping from "processing reference" to BNF components
 
 *** components filtered at tokenization phase
@@ -179,6 +183,12 @@
 		add_assignment_statement := expression "+=" expression
 	-= (subtract assign) : statement
 		subtract_assignment_statement := expression "-=" expression
+	UNDOCUMENTED: *= (multiply assign) : statement
+		multiply_assignment_statement := expression "*=" expression
+	UNDOCUMENTED: /= (divide assign) : statement
+		divide_assignment_statement := expression "/=" expression
+	UNDOCUMENTED: %= (modulo assign) : statement
+		modulo_assignment_statement := expression "/=" expression
 	++ (increment) : statement
 		increment_statement := expression "++"
 			// FIXME: no pre-positioned increment?

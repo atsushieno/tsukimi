@@ -17,12 +17,12 @@ namespace ProcessingDlr.Ast
 
 		public static Statement IfThen (Expression cond, StatementBlock trueBlock)
 		{
-			throw new NotImplementedException ();
+			return new IfStatement (cond, trueBlock, null);
 		}
 
 		public static Statement IfThenElse (Expression cond, StatementBlock trueBlock, StatementBlock falseBlock)
 		{
-			throw new NotImplementedException ();
+			return new IfStatement (cond, trueBlock, falseBlock);
 		}
 
 		public static Statement For (List<Statement> init,
@@ -53,7 +53,7 @@ namespace ProcessingDlr.Ast
 			throw new NotImplementedException ();
 		}
 
-		public static Statement DeclareVariable (string typeName, string name, Expression initializer)
+		public static VariableDeclarationStatement DeclareVariable (string typeName, string name, Expression initializer)
 		{
 			return new VariableDeclarationStatement (typeName, name, initializer);
 		}
@@ -92,6 +92,13 @@ namespace ProcessingDlr.Ast
 
 	public class BreakStatement : Statement
 	{
+	}
+
+	public class IfStatement : Statement
+	{
+		public IfStatement (Expression cond, StatementBlock trueBlock, StatementBlock falseBlock)
+		{
+		}
 	}
 
 	public class ForStatement : Statement
