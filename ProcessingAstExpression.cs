@@ -25,7 +25,7 @@ namespace ProcessingDlr.Ast
 			throw new NotImplementedException ();
 		}
 
-		public static Statement For (List<Expression> init,
+		public static Statement For (List<Statement> init,
 			Expression cond,
 			Statement cont,
 			StatementBlock body)
@@ -96,7 +96,7 @@ namespace ProcessingDlr.Ast
 
 	public class ForStatement : Statement
 	{
-		public ForStatement (List<Expression> init,
+		public ForStatement (List<Statement> init,
 			Expression cond,
 			Statement cont,
 			StatementBlock body)
@@ -139,7 +139,7 @@ namespace ProcessingDlr.Ast
 
 		public static Expression New (string typeName, List<Expression> args)
 		{
-			throw new NotImplementedException ();
+			return new NewObjectExpression (typeName, args);
 		}
 
 		public static Expression NewArrayBounds (string typeName, Expression size)
@@ -361,6 +361,13 @@ namespace ProcessingDlr.Ast
 	public class FunctionCallExpression : Expression
 	{
 		public FunctionCallExpression (Expression obj, string name, List<Expression> args)
+		{
+		}
+	}
+
+	public class NewObjectExpression : Expression
+	{
+		public NewObjectExpression (string typeName, List<Expression> args)
 		{
 		}
 	}

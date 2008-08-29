@@ -80,6 +80,7 @@ namespace ProcessingDlr
 %token CLOSE_CURLY		//"}"
 %token OPEN_PAREN		//"("
 %token CLOSE_PAREN		//")"
+%token OPEN_BRACE_CLOSE_BRACE	//"[" "]"
 %token OPEN_BRACE		//"["
 %token CLOSE_BRACE		//"]"
 %token OPEN_ANGLE		//"<"
@@ -427,7 +428,7 @@ array_indicators
 	}
 
 array_indicator
-	: OPEN_BRACE CLOSE_BRACE
+	: OPEN_BRACE_CLOSE_BRACE
 	{
 		$$ = 1;
 	}
@@ -491,7 +492,8 @@ for_statement
 	: FOR OPEN_PAREN for_initializer SEMICOLON expression SEMICOLON
 	for_continuation CLOSE_PAREN statement_block
 	{
-		var init = (List<Expression>) $3;
+Console.WriteLine ("{0} {1} {2} {3}", $3.GetType (), $5.GetType (), $7.GetType (), $9.GetType ());
+		var init = (List<Statement>) $3;
 		var cond = (Expression) $5;
 		var cont = (Statement) $7;
 		var body = Statement.Block ((List<Statement>) $9);
@@ -499,25 +501,27 @@ for_statement
 	}
 	;
 
-for_initializer
+opt_for_initializers
 	: { $$ = null; } // empty
-	| variable_declaration
-	| abstract_assignment_list
-	;
+	| for_initializers
 
-abstract_assignment_list
-	: abstract_assignment_statement
+for_initializers
+	: for_initializer
 	{
-		var l = new List<Expression> ();
-		l.Add ((Expression) $1);
+		var l = new List<Statement> ();
+		l.Add ((Statement) $1);
 		$$ = l;
 	}
-	| abstract_assignment_statement COMMA abstract_assignment_list
+	| for_initializers COMMA for_initializer
 	{
-		var l = (List<Expression>) $3;
-		l.Insert (0, (Expression) $1);
+		var l = (List<Statement>) $1;
+		l.Add ((Statement) $3);
 		$$ = l;
 	}
+
+for_initializer
+	: variable_declaration
+	| abstract_assignment_statement
 	;
 
 for_continuation
@@ -628,8 +632,8 @@ new_expression
 new_object_expression
 	: NEW function_call_base
 	{
-		var fcb = (KeyValuePair<string, List<Expression>>) $2;
-		$$ = Expression.New (fcb.Key, fcb.Value);
+		var fcb = (FunctionCall) $2;
+		$$ = Expression.New (fcb.Name, fcb.Arguments);
 	}
 	;
 

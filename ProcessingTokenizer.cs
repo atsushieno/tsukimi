@@ -87,75 +87,6 @@ namespace ProcessingDlr
 
 		// based on RncTokenizer
 
-		/*
-		private int ReadEscapedHexNumber (int current)
-		{
-			int i = source.Read ();
-			switch (i) {
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-				current = current * 16 + (i - '0');
-				return ReadEscapedHexNumber (current);
-			case 'A':
-			case 'B':
-			case 'C':
-			case 'D':
-			case 'E':
-			case 'F':
-				current = current * 16 + (i - 'A') + 10;
-				return ReadEscapedHexNumber (current);
-			case 'a':
-			case 'b':
-			case 'c':
-			case 'd':
-			case 'e':
-			case 'f':
-				current = current * 16 + (i - 'a' + 10);
-				return ReadEscapedHexNumber (current);
-			}
-			peek_char = i;
-			return current;
-		}
-
-		private int ReadFromStream ()
-		{
-			int ret = source.Read ();
-			if (ret != '\\')
-				return ret;
-			ret = source.Read ();
-			switch (ret) {
-			case 'x':
-				int tmp;
-				int xcount = 0;
-				do {
-					xcount++;
-					tmp = source.Read ();
-				} while (tmp == 'x');
-				if (tmp != '{') {
-					peekString = new string ('x', xcount);
-					if (tmp >= 0)
-						peekString += (char) tmp;
-					return '\\';
-				}
-				ret = ReadEscapedHexNumber (0);
-				if (peek_char != '}')
-					break;
-				peek_char = 0;
-				return ret;
-			}
-			peekString = new string ((char) ret, 1);
-			return '\\';
-		}
-		*/
-
 		private int PeekChar ()
 		{
 			if (peek_char == 0)
@@ -381,7 +312,6 @@ namespace ProcessingDlr
 			return s;
 		}
 
-		// FIXME: handle numeric constant and remove tripe-quoted literal
 		private int ParseToken (bool backslashed)
 		{
 			SkipWhitespaces ();
@@ -417,7 +347,15 @@ namespace ProcessingDlr
 			case ')':
 				return Token.CLOSE_PAREN;
 			case '[':
-				return Token.OPEN_BRACE;
+				SkipWhitespaces ();
+				if (PeekChar () != ']')
+					return Token.OPEN_BRACE;
+				ReadChar ();
+				// it is special token to distinguish array declaration and array access.
+				// FIXME: it should actually be implemented to
+				// save a token cache and thus handle comments
+				// (i.e. such as foo [/*snip*/] )
+				return Token.OPEN_BRACE_CLOSE_BRACE;
 			case ']':
 				return Token.CLOSE_BRACE;
 			case '&':
@@ -520,8 +458,6 @@ namespace ProcessingDlr
 				}
 				name = ReadOneName ();
 				current_value = name;
-				//if (backslashed)
-				//	return Token.QuotedIdentifier;
 				switch (name) {
 				case "class":
 					return Token.CLASS;
