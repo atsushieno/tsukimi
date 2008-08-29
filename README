@@ -16,17 +16,27 @@ moonlight[*2].
 	- Write code generator that is based on System.Windows.dll.
 	  Not sure we generate either of some source code or direct IL.
 
-** Some Details
+** Source Files
+
+	- processing_syntax.txt:
+	  my analysis on processing syntax. It is based on 1.0 beta.
+
+	- skeleton.cs :
+	  taken from mcs (jay).
+
+** Assemblies
+
+	- Proce55ingDlr.Core.dll:
+	  contains StandardLibrary and fundamental control types.
+	- proce55ing2xaml.exe:
+	  pde parser and XAML generator, possibly more.
+
+** Parser/Converter
+
+*** Some Details
 
 	- *.pde files are parsed to build AstRoot.
 	- For each top level contents in AstRoot:
 	-- A class is converted to generate a managed class.
 	-- A global function definition is converted to a method of Global class.
 	-- A statement is converted to become a statement in Global.Run().
-
-** Files
-
-processing_syntax.txt is my analysis on processing syntax. It is based on
-1.0 beta.
-
-skeleton.cs : taken from mcs (jay).

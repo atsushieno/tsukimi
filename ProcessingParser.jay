@@ -22,7 +22,8 @@ namespace ProcessingDlr
 		{
 			var t = new Tokenizer (filename);
 			try {
-				yyparse (t, new yydebug.yyDebugSimple ());
+//				yyparse (t, new yydebug.yyDebugSimple ());
+				yyparse (t);
 			} catch (yyParser.yyException ex) {
 				throw new ParserException (String.Format ("Irrecoverable syntax error at {0}", t.Location), ex);
 			}
@@ -117,13 +118,13 @@ identifier : IDENTIFIER
 top_level_contents
 	: // empty
 	{
-		$$ = new List<ITopLevelContent> ();
+		$$ = new AstRoot ();
 	}
 	| top_level_content top_level_contents
 	{
-		var l = (List<ITopLevelContent>) $2;
-		l.Insert (0, (ITopLevelContent) $1);
-		$$ = new AstRoot (l.ToArray ());
+		var r = (AstRoot) $2;
+		r.Items.Insert (0, (ITopLevelContent) $1);
+		$$ = r;
 	}
 	;
 

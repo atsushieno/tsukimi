@@ -5,8 +5,14 @@ namespace ProcessingDlr.Ast
 {
 	public class AstRoot
 	{
-		public AstRoot (ITopLevelContent [] contents)
+		List<ITopLevelContent> items = new List<ITopLevelContent> ();
+
+		public AstRoot ()
 		{
+		}
+
+		public IList<ITopLevelContent> Items {
+			get { return items; }
 		}
 	}
 
