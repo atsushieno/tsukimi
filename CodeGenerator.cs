@@ -15,6 +15,10 @@ namespace ProcessingDlr
 		List<GlobalFunctionDefinition> funcs = new List<GlobalFunctionDefinition> ();
 		List<Statement> stmts = new List<Statement> ();
 
+		bool writeSemicolon = true;
+		ClassDefinition current_class;
+		List<string> local_variables = new List<string> ();
+
 		public CodeGenerator (AstRoot root, TextWriter writer)
 		{
 			this.root = root;
@@ -54,6 +58,7 @@ namespace ProcessingDlr
 
 		void GenerateClass (ClassDefinition c)
 		{
+			current_class =c;
 			w.Write ("public class ");
 			w.Write (c.Name);
 			var l = new List<TypeInfo> (c.Interfaces);
@@ -83,6 +88,7 @@ namespace ProcessingDlr
 			}
 
 			w.WriteLine ("}");
+			current_class = null;
 		}
 
 		void GenerateField (FieldDefinition f)
@@ -144,8 +150,6 @@ namespace ProcessingDlr
 			GenerateFunction (f.Internal);
 		}
 
-		bool writeSemicolon = true;
-
 		void GenerateStatement (Statement s)
 		{
 			if (s is CallableExpressionStatement) {
@@ -195,12 +199,18 @@ namespace ProcessingDlr
 			}
 		}
 
-		string MapGlobalFunction (string name)
+		string ResolveGlobalFunction (string name)
 		{
 			foreach (GlobalFunctionDefinition g in funcs)
 				if (g.Internal.Name == name)
 					return name;
 			return ("StandardLibrary." + name);
+		}
+
+		string ResolveFieldOrLocalVariable (string name)
+		{
+			// FIXME: implement
+			return name;
 		}
 
 		void GenerateExpression (Expression x)
@@ -211,7 +221,7 @@ namespace ProcessingDlr
 					GenerateExpression (f.Target);
 					w.Write (".");
 				}
-				w.Write (MapGlobalFunction (f.Name));
+				w.Write (ResolveGlobalFunction (f.Name));
 				w.Write (" (");
 				for (int i = 0; i < f.Arguments.Count; i++) {
 					if (i > 0)
@@ -236,7 +246,7 @@ namespace ProcessingDlr
 				w.Write ("]");
 			} else if (x is VariableReferenceExpression) {
 				var v = (VariableReferenceExpression) x;
-				w.Write (v.Name);
+				w.Write (ResolveFieldOrLocalVariable (v.Name));
 			} else if (x is ComparisonExpression) {
 				var c = (ComparisonExpression) x;
 				GenerateExpression (c.Left);
