@@ -11,22 +11,15 @@ namespace ProcessingDlr
 		AstRoot root;
 		TextWriter w;
 
+		List<ClassDefinition> classes = new List<ClassDefinition> ();
+		List<GlobalFunctionDefinition> funcs = new List<GlobalFunctionDefinition> ();
+		List<Statement> stmts = new List<Statement> ();
+
 		public CodeGenerator (AstRoot root, TextWriter writer)
 		{
 			this.root = root;
 			this.w = writer;
-		}
 
-		public void Generate ()
-		{
-			w.WriteLine ("using System;");
-			w.WriteLine ("using System.Windows;");
-			w.WriteLine ("using System.Windows.Controls;");
-			w.WriteLine ("using ProcessingDlr;");
-
-			var classes = new List<ClassDefinition> ();
-			var funcs = new List<GlobalFunctionDefinition> ();
-			var stmts = new List<Statement> ();
 			foreach (ITopLevelContent c in root.Items) {
 				if (c is ClassDefinition)
 					classes.Add ((ClassDefinition) c);
@@ -35,6 +28,14 @@ namespace ProcessingDlr
 				else if (c is Statement)
 					stmts.Add ((Statement) c);
 			}
+		}
+
+		public void Generate ()
+		{
+			w.WriteLine ("using System;");
+			w.WriteLine ("using System.Windows;");
+			w.WriteLine ("using System.Windows.Controls;");
+			w.WriteLine ("using ProcessingDlr;");
 
 			foreach (var c in classes)
 				GenerateClass (c);
@@ -191,6 +192,14 @@ namespace ProcessingDlr
 			}
 		}
 
+		string MapGlobalFunction (string name)
+		{
+			foreach (GlobalFunctionDefinition g in funcs)
+				if (g.Internal.Name == name)
+					return name;
+			return ("StandardLibrary." + name);
+		}
+
 		void GenerateExpression (Expression x)
 		{
 			if (x is FunctionCallExpression) {
@@ -199,7 +208,7 @@ namespace ProcessingDlr
 					GenerateExpression (f.Target);
 					w.Write (".");
 				}
-				w.Write (f.Name);
+				w.Write (MapGlobalFunction (f.Name));
 				w.Write (" (");
 				for (int i = 0; i < f.Arguments.Count; i++) {
 					if (i > 0)
