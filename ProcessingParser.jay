@@ -232,7 +232,7 @@ function_definition
 function_definition_base
 	: identifier OPEN_PAREN opt_argument_definitions CLOSE_PAREN statement_block
 	{
-		$$ = new FunctionBase ((string) $1, (List<FunctionArgument>) $3, Statement.Block ((List<Statement>) $5));
+		$$ = new FunctionBase ((string) $1, (List<FunctionArgument>) $3, (StatementBlock) $5);
 	}
 	;
 
@@ -272,7 +272,7 @@ argument_definition
 statement_block
 	: OPEN_CURLY statements CLOSE_CURLY
 	{
-		$$ = $2;
+		$$ = Statement.Block ((List<Statement>) $2);
 	}
 	;
 
@@ -414,7 +414,7 @@ assignment_expression
 while_statement
 	: WHILE OPEN_PAREN expression CLOSE_PAREN statement_block
 	{
-		$$ = Statement.Loop ((Expression) $3, Statement.Block ((List<Statement>) $5));
+		$$ = Statement.Loop ((Expression) $3, (StatementBlock) $5);
 	}
 	;
 
@@ -506,21 +506,21 @@ if_statement
 	: IF OPEN_PAREN expression CLOSE_PAREN statement_block opt_else_block
 	{
 		var cond = (Expression) $3;
-		var tb = (List<Statement>) $5;
-		var fb = (List<Statement>) $6;
+		var tb = (StatementBlock) $5;
+		var fb = (Statement) $6;
 		$$ = fb != null ?
-			Statement.IfThenElse (cond, Statement.Block (tb), Statement.Block (fb)) :
-			Statement.IfThen (cond, Statement.Block (tb));
+			Statement.IfThenElse (cond, tb, fb) :
+			Statement.IfThen (cond, tb);
 	}
 	;
 
 opt_else_block
 	: { $$ = null; } // empty
 	| else_block
-	;
 
 else_block
-	: ELSE statement_block { $$ = $2; } ;
+	: ELSE if_statement { $$ = $2; } // else if
+	| ELSE statement_block { $$ = $2; } // else only
 
 /// for
 
@@ -531,7 +531,7 @@ for_statement
 		var init = (List<Statement>) $3;
 		var cond = (Expression) $5;
 		var cont = (Statement) $7;
-		var body = Statement.Block ((List<Statement>) $9);
+		var body = (StatementBlock) $9;
 		$$ = Statement.For (init, cond, cont, body);
 	}
 	;

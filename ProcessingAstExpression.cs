@@ -20,7 +20,8 @@ namespace ProcessingDlr.Ast
 			return new IfStatement (cond, trueBlock, null);
 		}
 
-		public static Statement IfThenElse (Expression cond, StatementBlock trueBlock, StatementBlock falseBlock)
+		// It does not use StatementBlock to handle else-if statements as IfStatement (i.e. IfStatement(trueBlock, IfStatement(elseIfTrue, finalElseBlock)) etc.)
+		public static Statement IfThenElse (Expression cond, Statement trueBlock, Statement falseBlock)
 		{
 			return new IfStatement (cond, trueBlock, falseBlock);
 		}
@@ -96,7 +97,7 @@ namespace ProcessingDlr.Ast
 
 	public class IfStatement : Statement
 	{
-		public IfStatement (Expression cond, StatementBlock trueBlock, StatementBlock falseBlock)
+		public IfStatement (Expression cond, Statement trueBlock, Statement falseBlock)
 		{
 		}
 	}
