@@ -44,9 +44,12 @@ namespace ProcessingDlr
 			w.WriteLine ("// placeholder for global functions");
 			foreach (var f in funcs)
 				GenerateGlobalFunction (f);
-			w.WriteLine ("}");
+			w.WriteLine ("public static void Run ()");
+			w.WriteLine ("{");
 			foreach (var st in stmts)
 				GenerateStatement (st);
+			w.WriteLine ("}");
+			w.WriteLine ("}");
 		}
 
 		void GenerateClass (ClassDefinition c)
