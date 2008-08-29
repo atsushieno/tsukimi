@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 
@@ -21,15 +23,15 @@ Object mappings:
 	since it does not exist in processing.
 */
 
-
+using String = ProcessingDlr.PString;
 
 namespace ProcessingDlr
 {
-	public class String
+	public class PString
 	{
 		string s;
 
-		public String (string s)
+		public PString (string s)
 		{
 		}
 
@@ -71,7 +73,7 @@ namespace ProcessingDlr
 
 		public int indexOf (String s, int startIndex)
 		{
-			return s.IndexOf (s.s, startIndex, CompareOptions.Ordinal);
+			return this.s.IndexOf (s.s, startIndex, StringComparison.Ordinal);
 		}
 
 		public int length ()
@@ -91,12 +93,12 @@ namespace ProcessingDlr
 
 		public string ToLowerCase ()
 		{
-			return s.ToLowerCase (CultureInfo.InvariantCulture);
+			return s.ToLower (CultureInfo.InvariantCulture);
 		}
 
 		public string ToUpperCase ()
 		{
-			return s.ToUpperCase (CultureInfo.InvariantCulture);
+			return s.ToUpper (CultureInfo.InvariantCulture);
 		}
 	}
 
@@ -128,9 +130,9 @@ namespace ProcessingDlr
 			throw new NotImplementedException ();
 		}
 
-		public static Size size (int width, int height)
+		public static void size (int width, int height)
 		{
-			return size (width, height, SizeMode.Java2D);
+			size (width, height, SizeMode.Java2D);
 		}
 
 		public static void size (int width, int height, SizeMode sizeMode)
@@ -343,13 +345,12 @@ namespace ProcessingDlr
 
 		public static Color color (double gray)
 		{
-			byte b = (byte) gray;
-			return new Color (0xFF, b, b, b);
+			return color (gray, 0xFF);
 		}
 
-		public static Color color (double alpha)
+		public static Color color (double gray, double alpha)
 		{
-			return new Color ((byte) alpha, 0, 0, 0);
+			return color (gray, gray, gray, alpha);
 		}
 
 		public static Color color (double r, double g, double b)
@@ -359,12 +360,13 @@ namespace ProcessingDlr
 
 		public static Color color (double r, double g, double b, double a)
 		{
-			return new Color (a, (byte) r, (byte) g, (byte) b);
+			return Color.FromArgb ((byte) a, (byte) r, (byte) g, (byte) b);
 		}
 
 		public static Color color (string hex)
 		{
-			return new Color (int.Parse (hex, NumberStyles.HexNumber));
+			uint v = uint.Parse (hex, NumberStyles.HexNumber);
+			return Color.FromArgb ((byte) (v & 0xFF0000 >> 16), (byte) (v & 0xFF00 >> 8), (byte) (v & 0xFF), (byte) (v >> 24));
 		}
 
 		public static Color color (string hex, double alpha)

@@ -12,7 +12,7 @@ SOURCES = \
 all: driver.exe
 
 driver.exe : $(SOURCES)
-	gmcs -debug -out:driver.exe $(SOURCES)
+	gmcs -debug -out:driver.exe $(SOURCES) -r:System.Windows.dll
 
 ProcessingParser.cs : ProcessingParser.jay
 	jay -tcv < skeleton.cs  ProcessingParser.jay > ProcessingParser.cs

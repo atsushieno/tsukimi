@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 
@@ -16,11 +17,12 @@ namespace ProcessingDlr
 				else if (str [i] != '0')
 					throw new FormatException (String.Format ("Invalid binary string: {0}", str));
 			}
+			return v;
 		}
 
 		public static char @char (int value)
 		{
-			return new char (value);
+			return (char) value;
 		}
 
 		public static char [] @char (int [] value)
@@ -103,7 +105,7 @@ namespace ProcessingDlr
 
 		public static string hex (int i)
 		{
-			return i.ToString (NumberStyles.HexNumber);
+			return i.ToString ("X");
 		}
 
 		public static string hex (Color c)
@@ -130,7 +132,7 @@ namespace ProcessingDlr
 		public static string hex (Color c, int digits)
 		{
 			// FIXME: dunno how digits is treated here.
-			return String.Format ("{0:X02}{1:X02}{2:X02}{3:X02}", c.Red, c.Green, c.Blue, c.Alpha).Substring (0, digits);
+			return String.Format ("{0:X02}{1:X02}{2:X02}{3:X02}", c.R, c.G, c.B, c.A).Substring (0, digits);
 		}
 
 		public static string binary (sbyte value)
@@ -143,19 +145,19 @@ namespace ProcessingDlr
 		}
 		public static string binary (int value)
 		{
-			if (value == int.MinValue)
-				return "10000000000000000000000000000000";
 			bool neg = false;
 			if (value < 0) {
 				neg = true;
-				value = -value;
+				value = ~value + 1;
 			}
 			int digits = 0;
 			for (int x = value; x > 0; x >>= 1)
 				digits++;
 			char [] arr = new char [digits];
 			for (int i = 0; i < digits; i++)
-				arr [i] = value & (1 << i) != 0 ? '1' : '0';
+				arr [i] = (value & (1 << i)) != 0 ? '1' : '0';
+			if (neg)
+				arr [0] = '1';
 			return new string (arr);
 		}
 		public static string binary (Color value)
@@ -289,7 +291,7 @@ namespace ProcessingDlr
 		}
 		public static double @float (string v)
 		{
-			return double.Parse (CultureInfo.InvariantCulture);
+			return double.Parse (v, CultureInfo.InvariantCulture);
 		}
 		public static double @float (int [] v)
 		{

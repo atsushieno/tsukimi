@@ -15,37 +15,37 @@ namespace ProcessingDlr
 
 		public static string [] split (string s, string token)
 		{
-			return s.Split (s, token);
+			return s.Split (new string [] {token}, StringSplitOptions.None);
 		}
 
 		public static string join (string [] arr, string joiner)
 		{
-			return String.Join (arr, joiner);
+			return String.Join (joiner, arr);
 		}
 
 		static readonly char [] wsChars = {' ', '\n', '\r', '\t'};
 
-		public static string splitTokens (string s)
+		public static string [] splitTokens (string s)
 		{
 			return s.Split (wsChars);
 		}
 
-		public static string splitTokens (string s, string token)
+		public static string [] splitTokens (string s, string token)
 		{
-			return s.Split (s, token);
+			return s.Split (token.ToCharArray ());
 		}
 
 		public static string nf (int n, int digits)
 		{
-			return n.ToString (CultureInfo.InvariantCulture, "{0," + digits + "}");
+			return n.ToString ("{0," + digits + "}", CultureInfo.InvariantCulture);
 		}
 
 		public static string nf (double n, int left, int right)
 		{
-			return n.ToString (CultureInfo.InvariantCulture, "{0," + left + "," + right + "}");
+			return n.ToString ("{0," + left + "," + right + "}", CultureInfo.InvariantCulture);
 		}
 
-		public static string match (string str, string regexp)
+		public static string [] match (string str, string regexp)
 		{
 			var m = Regex.Matches (str, regexp);
 			string [] res = new string [m.Count];
