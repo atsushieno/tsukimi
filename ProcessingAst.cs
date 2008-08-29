@@ -3,6 +3,13 @@ using System.Collections.Generic;
 
 namespace ProcessingDlr.Ast
 {
+	public class AstRoot
+	{
+		public AstRoot (ITopLevelContent [] contents)
+		{
+		}
+	}
+
 	public interface ITopLevelContent
 	{
 	}

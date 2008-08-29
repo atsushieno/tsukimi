@@ -5,7 +5,7 @@ using System.IO;
 
 namespace ProcessingDlr
 {
-	class ParserException : ApplicationException
+	class ParserException : Exception
 	{
 		public ParserException (string message)
 			: base (message)

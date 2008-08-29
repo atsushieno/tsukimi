@@ -4,12 +4,14 @@ SOURCES = \
 	ProcessingParser.cs \
 	ProcessingAst.cs \
 	ProcessingAstExpression.cs \
-	ProcessingTokenizer.cs
+	ProcessingTokenizer.cs \
+	StandardLibrary.cs \
+	StandardLibrary.Conversion.cs
 
 all: driver.exe
 
 driver.exe : $(SOURCES)
-	gmcs -debug -out:driver.exe $(SOURCES) 
+	gmcs -debug -out:driver.exe $(SOURCES)
 
 ProcessingParser.cs : ProcessingParser.jay
 	jay -tcv < skeleton.cs  ProcessingParser.jay > ProcessingParser.cs

@@ -123,7 +123,7 @@ top_level_contents
 	{
 		var l = (List<ITopLevelContent>) $2;
 		l.Insert (0, (ITopLevelContent) $1);
-		$$ = l;
+		$$ = new AstRoot (l.ToArray ());
 	}
 	;
 
