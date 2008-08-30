@@ -17,7 +17,17 @@ namespace ProcessingDlr
 
 		bool writeSemicolon = true;
 		ClassDefinition current_class;
-		List<string> local_variables = new List<string> ();
+
+		class VariableScope : List<VariableDeclarationStatement>
+		{
+		}
+
+		List<VariableScope> variable_stack = new List<VariableScope> ();
+		VariableScope global_variables = new VariableScope ();
+
+		VariableScope current_variable_scope {
+			get { return variable_stack.Count > 0 ? variable_stack [variable_stack.Count - 1] : global_variables; }
+		}
 
 		public CodeGenerator (AstRoot root, TextWriter writer)
 		{
@@ -135,12 +145,31 @@ namespace ProcessingDlr
 			}
 			w.Write (")");
 			w.WriteLine ();
+			variable_stack.Add (new VariableScope ());
 			GenerateStatement (f.Body);
+			variable_stack.RemoveAt (variable_stack.Count - 1);
+		}
+
+		string ResolveTypeName (string name)
+		{
+			switch (name) {
+			case "byte":
+				return "sbyte";
+			case "string":
+				return "ProcessingDlr.PString";
+			case "float":
+				return "double";
+			case "color":
+				return "System.Windows.Media.Color";
+			default:
+				return name;
+			}
 		}
 
 		void GenerateType (TypeInfo type)
 		{
-			w.Write (type.Name);
+			string csType = ResolveTypeName (type.Name);
+			w.Write (csType);
 			for (int i = 0; i < type.ArrayRank; i++)
 				w.Write (" []");
 		}
@@ -166,6 +195,7 @@ namespace ProcessingDlr
 					w.WriteLine ("}");
 			} else if (s is VariableDeclarationStatement) {
 				var v = (VariableDeclarationStatement) s;
+				current_variable_scope.Add (v);
 				GenerateType (v.Type);
 				w.Write (' ');
 				w.Write (v.Name);
@@ -207,9 +237,30 @@ namespace ProcessingDlr
 			return ("StandardLibrary." + name);
 		}
 
-		string ResolveFieldOrLocalVariable (string name)
+		string ResolveVariableIdentifier (string name)
 		{
 			// FIXME: implement
+			// resolve local variable -> class field -> global variable
+
+			for (int i = variable_stack.Count - 1; i >= 0; i--)
+				foreach (var s in variable_stack [i])
+					if (s.Name == name)
+						return name; // local variable.
+
+			if (current_class != null)
+				foreach (var f in current_class.Members.FindAll<FieldDefinition> ())
+					foreach (var p in f.Pairs)
+						if (p.Name == name)
+							return name; // class member
+
+			foreach (var s in global_variables)
+				if (s.Name == name)
+					return name; // local variable.
+
+			foreach (var n in StandardLibrary.AllFieldNames)
+				if (n == name)
+					return "StandardLibrary." + name;
+
 			return name;
 		}
 
@@ -244,9 +295,9 @@ namespace ProcessingDlr
 				w.Write (" [");
 				GenerateExpression (n.Size);
 				w.Write ("]");
-			} else if (x is VariableReferenceExpression) {
-				var v = (VariableReferenceExpression) x;
-				w.Write (ResolveFieldOrLocalVariable (v.Name));
+			} else if (x is IdentifierReferenceExpression) {
+				var v = (IdentifierReferenceExpression) x;
+				w.Write (ResolveVariableIdentifier (v.Name));
 			} else if (x is ComparisonExpression) {
 				var c = (ComparisonExpression) x;
 				GenerateExpression (c.Left);

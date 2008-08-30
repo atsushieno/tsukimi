@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
@@ -116,14 +117,36 @@ namespace ProcessingDlr
 		public const string ID = "c056f9b5-5fc9-46ef-a42c-ae316631ebd9";
 	}
 
+	public class ProcessingStandardAttribute : Attribute
+	{
+	}
+
 	public static partial class StandardLibrary
 	{
+		[ProcessingStandardAttribute]
 		public const double PI = System.Math.PI;
+		[ProcessingStandardAttribute]
 		public const double HALF_PI = PI / 2.0;
+		[ProcessingStandardAttribute]
 		public const double TWO_PI = PI * 2.0;
 
 		public static readonly ProcessingHostControl Host =
-			new ProcessingHostControl ();
+			null;//	new ProcessingHostControl ();
+
+		static string [] all_field_names;
+
+		public static string [] AllFieldNames { // FIXME: should not be public
+			get {
+				if (all_field_names != null)
+					return all_field_names;
+				var names = new List<string> ();
+				foreach (var mi in typeof (StandardLibrary).GetMembers ())
+					if (mi.GetCustomAttributes (typeof (ProcessingStandardAttribute), false).Length > 0)
+						names.Add (mi.Name);
+				all_field_names = names.ToArray ();
+				return all_field_names;
+			}
+		}
 
 		// The functions below are not defined in the standard library.
 		// They are resolved only internally.

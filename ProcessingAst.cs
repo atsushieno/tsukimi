@@ -34,7 +34,7 @@ namespace ProcessingDlr.Ast
 
 	public class ClassDefinition : ITopLevelContent
 	{
-		public ClassDefinition (string name, TypeInfo baseType, List<TypeInfo> interfaces, List<MemberDefinition> members)
+		public ClassDefinition (string name, TypeInfo baseType, List<TypeInfo> interfaces, MemberList members)
 		{
 			Name = name;
 			BaseType = baseType;
@@ -45,7 +45,17 @@ namespace ProcessingDlr.Ast
 		public string Name { get; set; }
 		public TypeInfo BaseType { get; set; }
 		public List<TypeInfo> Interfaces { get; private set; }
-		public List<MemberDefinition> Members { get; private set; }
+		public MemberList Members { get; private set; }
+	}
+
+	public class MemberList : List<MemberDefinition>
+	{
+		public IEnumerable<T> FindAll<T> () where T : MemberDefinition
+		{
+			foreach (var m in this)
+				if (m is T)
+					yield return (T) m;
+		}
 	}
 
 	public class GlobalFunctionDefinition : ITopLevelContent

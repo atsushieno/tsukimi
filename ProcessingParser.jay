@@ -152,7 +152,7 @@ class_declaration
 		var name = (string) $2;
 		var baseType = (TypeInfo) $3;
 		var interfaces = (List<TypeInfo>) $4;
-		var members = (List<MemberDefinition>) $5;
+		var members = (MemberList) $5;
 		$$ = new ClassDefinition (name, baseType, interfaces, members);
 	}
 	;
@@ -200,7 +200,7 @@ class_member_definitions
 	: { $$ = null; } // empty
 	| class_member_definitions class_member_definition
 	{
-		var l = (List<MemberDefinition>) $1 ?? new List<MemberDefinition> ();
+		var l = (MemberList) $1 ?? new MemberList ();
 		l.Add ((MemberDefinition) $2);
 		$$ = l;
 	}
@@ -660,7 +660,7 @@ constant_expression
 variable_or_member_reference
 	: identifier
 	{
-		$$ = Expression.VariableRef ((string) $1);
+		$$ = Expression.IdentifierReference ((string) $1);
 	}
 	;
 

@@ -164,9 +164,9 @@ namespace ProcessingDlr.Ast
 			throw new NotImplementedException ();
 		}
 
-		public static Expression VariableRef (string name)
+		public static Expression IdentifierReference (string name)
 		{
-			return new VariableReferenceExpression (name);
+			return new IdentifierReferenceExpression (name);
 		}
 
 		public static Expression New (string typeName, List<Expression> args)
@@ -392,9 +392,9 @@ namespace ProcessingDlr.Ast
 		public ArithmeticKind Kind { get; set; }
 	}
 
-	public class VariableReferenceExpression : Expression
+	public class IdentifierReferenceExpression : Expression
 	{
-		public VariableReferenceExpression (string name)
+		public IdentifierReferenceExpression (string name)
 		{
 			Name = name;
 		}
