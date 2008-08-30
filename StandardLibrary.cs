@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 /*
 
@@ -142,7 +143,14 @@ namespace ProcessingDlr
 		public static readonly ProcessingHostControl Host =
 			null;//	new ProcessingHostControl ();
 
-		static Color? stroke_color, fill_color;
+		static SolidColorBrush stroke_brush;
+
+		static Color? stroke_color {
+			get { return stroke_brush != null ? (Color?) stroke_brush.Color : null; }
+			set { stroke_brush = value != null ? new SolidColorBrush ((Color) value) : null; }
+		}
+
+		static Color? fill_color;
 
 		[ProcessingStandardField]
 		public static int width {
@@ -244,7 +252,52 @@ namespace ProcessingDlr
 		frameRate()
 		noCursor()
 		cursor()
+*/
 
+		public static void triangle (int x1, int y1, int x2, int y2, int x3, int y3)
+		{
+			triangle ((double) x1, (double) y1, (double) x2, (double) y2, (double) x3, (double) y3);
+		}
+
+		public static void triangle (double x1, double y1, double x2, double y2, double x3, double y3)
+		{
+			var p = new Polygon ();
+			p.Points.Add (new Point (x1, y1));
+			p.Points.Add (new Point (x2, y2));
+			p.Points.Add (new Point (x3, y3));
+			// FIXME: consider fill property
+			p.Stroke = stroke_brush;
+			// FIXME: append to host
+		}
+
+		public static void line (int x1, int y1, int x2, int y2)
+		{
+			line ((double) x1, (double) y1, (double) x2, (double) y2);
+		}
+
+		public static void line (double x1, double y1, double x2, double y2)
+		{
+			var l = new Line ();
+			l.X1 = x1;
+			l.Y1 = y1;
+			l.X2 = x2;
+			l.Y2 = y2;
+			// FIXME: consider fill property
+			l.Stroke = stroke_brush;
+			// FIXME: append to host
+		}
+
+		public static void line (int x1, int y1, int z1, int x2, int y2, int z2)
+		{
+			line ((double) x1, (double) y1, (double) z1, (double) x2, (double) y2, (double) z2);
+		}
+
+		public static void line (double x1, double y1, double z1, double x2, double y2, double z2)
+		{
+			throw new NotImplementedException ();
+		}
+
+/*
 *** Shape
 
 	function:
@@ -395,39 +448,6 @@ namespace ProcessingDlr
 		emissive()
 */
 
-		public static Color color (double gray)
-		{
-			return color (gray, 0xFF);
-		}
-
-		public static Color color (double gray, double alpha)
-		{
-			return color (gray, gray, gray, alpha);
-		}
-
-		public static Color color (double r, double g, double b)
-		{
-			return color (r, g, b, 0xFF);
-		}
-
-		public static Color color (double r, double g, double b, double a)
-		{
-			return Color.FromArgb ((byte) a, (byte) r, (byte) g, (byte) b);
-		}
-
-		public static Color color (string hex)
-		{
-			uint v = uint.Parse (hex, NumberStyles.HexNumber);
-			return Color.FromArgb ((byte) (v & 0xFF0000 >> 16), (byte) (v & 0xFF00 >> 8), (byte) (v & 0xFF), (byte) (v >> 24));
-		}
-
-		public static Color color (string hex, double alpha)
-		{
-			Color c = color (hex);
-			c.A = (byte) alpha;
-			return c;
-		}
-
 		public static void background (double gray)
 		{
 			background (color (gray));
@@ -567,8 +587,42 @@ namespace ProcessingDlr
 		green()
 		hue()
 		alpha()
-		color()
+*/
 
+		public static Color color (double gray)
+		{
+			return color (gray, 0xFF);
+		}
+
+		public static Color color (double gray, double alpha)
+		{
+			return color (gray, gray, gray, alpha);
+		}
+
+		public static Color color (double r, double g, double b)
+		{
+			return color (r, g, b, 0xFF);
+		}
+
+		public static Color color (double r, double g, double b, double a)
+		{
+			return Color.FromArgb ((byte) a, (byte) r, (byte) g, (byte) b);
+		}
+
+		public static Color color (string hex)
+		{
+			uint v = uint.Parse (hex, NumberStyles.HexNumber);
+			return Color.FromArgb ((byte) (v & 0xFF0000 >> 16), (byte) (v & 0xFF00 >> 8), (byte) (v & 0xFF), (byte) (v >> 24));
+		}
+
+		public static Color color (string hex, double alpha)
+		{
+			Color c = color (hex);
+			c.A = (byte) alpha;
+			return c;
+		}
+
+/*
 *** Image
 
 	type:
