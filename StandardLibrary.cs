@@ -26,6 +26,7 @@ Object mappings:
 */
 
 using String = ProcessingDlr.PString;
+using ColorMode = System.Int32;
 
 namespace ProcessingDlr
 {
@@ -130,8 +131,18 @@ namespace ProcessingDlr
 		[ProcessingStandardField]
 		public const double TWO_PI = PI * 2.0;
 
+		#region UNDOCUMENTED
+		[ProcessingStandardField]
+		public const int RGB = 1;
+
+		[ProcessingStandardField]
+		public const int HSB = 2;
+		#endregion
+
 		public static readonly ProcessingHostControl Host =
 			null;//	new ProcessingHostControl ();
+
+		static Color? stroke_color, fill_color;
 
 		[ProcessingStandardField]
 		public static int width {
@@ -417,16 +428,135 @@ namespace ProcessingDlr
 			return c;
 		}
 
+		public static void background (double gray)
+		{
+			background (color (gray));
+		}
+
+		public static void background (double gray, double alpha)
+		{
+			background (color (gray, alpha));
+		}
+
+		public static void background (double r, double g, double b)
+		{
+			background (color (r, g, b));
+		}
+
+		public static void background (double r, double g, double b, double a)
+		{
+			background (color (r, g, b, a));
+		}
+
+		public static void background (string hex)
+		{
+			background (color (hex));
+		}
+
+		public static void background (string hex, double alpha)
+		{
+			background (color (hex, alpha));
+		}
+
+		static void background (Color c)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public static void colorMode (ColorMode mode)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public static void colorMode (ColorMode mode, double range)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public static void colorMode (ColorMode mode, double range1, double range2, double range3)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public static void colorMode (ColorMode mode, double range1, double range2, double range3, double range4)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public static void stroke (double gray)
+		{
+			stroke_color = color (gray);
+		}
+
+		public static void stroke (double gray, double alpha)
+		{
+			stroke_color = color (gray, alpha);
+		}
+
+		public static void stroke (double r, double g, double b)
+		{
+			stroke_color = color (r, g, b);
+		}
+
+		public static void stroke (double r, double g, double b, double a)
+		{
+			stroke_color = color (r, g, b, a);
+		}
+
+		public static void stroke (string hex)
+		{
+			stroke_color = color (hex);
+		}
+
+		public static void stroke (string hex, double alpha)
+		{
+			stroke_color = color (hex, alpha);
+		}
+
+		public static void noFill ()
+		{
+			fill_color = null;
+		}
+
+		public static void noStroke ()
+		{
+			stroke_color = null;
+		}
+
+		public static void fill (double gray)
+		{
+			fill_color = color (gray);
+		}
+
+		public static void fill (double gray, double alpha)
+		{
+			fill_color = color (gray, alpha);
+		}
+
+		public static void fill (double r, double g, double b)
+		{
+			fill_color = color (r, g, b);
+		}
+
+		public static void fill (double r, double g, double b, double a)
+		{
+			fill_color = color (r, g, b, a);
+		}
+
+		public static void fill (string hex)
+		{
+			fill_color = color (hex);
+		}
+
+		public static void fill (string hex, double alpha)
+		{
+			fill_color = color (hex, alpha);
+		}
+
 /*
 *** Color
 
 	function:
-		background()
-		colorMode()
-		stroke()
-		noFill()
-		noStroke()
-		fill()
 
 		blendColor()
 		red()
@@ -493,43 +623,6 @@ namespace ProcessingDlr
 
 		textDescent()
 		textAscent()
-
-*** Math
-
-	function:
-		min()
-		max()
-		round()
-		dist()
-		exp()
-		pow()
-		floor()
-		sqrt()
-		abs()
-		constrain()
-		norm()
-		mag()
-		log()
-		lerp()
-		sq()
-		ceil()
-		map()
-
-		acos()
-		tan()
-		sin()
-		cos()
-		degrees()
-		atan2()
-		atan()
-		radians()
-		asin()
-
-		noise()
-		noiseSeed()
-		randomSeed()
-		noiseDetail()
-		random()
 */
 	}
 }
