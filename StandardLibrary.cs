@@ -117,21 +117,31 @@ namespace ProcessingDlr
 		public const string ID = "c056f9b5-5fc9-46ef-a42c-ae316631ebd9";
 	}
 
-	public class ProcessingStandardAttribute : Attribute
+	public class ProcessingStandardFieldAttribute : Attribute
 	{
 	}
 
 	public static partial class StandardLibrary
 	{
-		[ProcessingStandardAttribute]
+		[ProcessingStandardField]
 		public const double PI = System.Math.PI;
-		[ProcessingStandardAttribute]
+		[ProcessingStandardField]
 		public const double HALF_PI = PI / 2.0;
-		[ProcessingStandardAttribute]
+		[ProcessingStandardField]
 		public const double TWO_PI = PI * 2.0;
 
 		public static readonly ProcessingHostControl Host =
 			null;//	new ProcessingHostControl ();
+
+		[ProcessingStandardField]
+		public static int width {
+			get { return (int) Host.Width; }
+		}
+
+		[ProcessingStandardField]
+		public static int height {
+			get { return (int) Host.Height; }
+		}
 
 		static string [] all_field_names;
 
@@ -141,7 +151,7 @@ namespace ProcessingDlr
 					return all_field_names;
 				var names = new List<string> ();
 				foreach (var mi in typeof (StandardLibrary).GetMembers ())
-					if (mi.GetCustomAttributes (typeof (ProcessingStandardAttribute), false).Length > 0)
+					if (mi.GetCustomAttributes (typeof (ProcessingStandardFieldAttribute), false).Length > 0)
 						names.Add (mi.Name);
 				all_field_names = names.ToArray ();
 				return all_field_names;
