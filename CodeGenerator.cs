@@ -211,6 +211,16 @@ namespace ProcessingDlr
 				}
 				if (writeSemicolon)
 					w.WriteLine (";");
+			} else if (s is IfStatement) {
+				var i = (IfStatement) s;
+				w.Write ("if (");
+				GenerateExpression (i.Condition);
+				w.Write (")");
+				GenerateStatement (i.TrueBlock);
+				if (i.FalseBlock != null) {
+					w.Write ("else ");
+					GenerateStatement (i.FalseBlock);
+				}
 			} else if (s is ForStatement) {
 				var f = (ForStatement) s;
 				w.Write ("for (");
@@ -294,6 +304,17 @@ namespace ProcessingDlr
 					w.Write (((bool) c.Value) ? "true" : "false");
 				else
 					w.Write (c.Value);
+			} else if (x is NewObjectExpression) {
+				var n = (NewObjectExpression) x;
+				w.Write ("new ");
+				GenerateType (n.Type);
+				w.Write (" (");
+				for (int i = 0; i < n.Arguments.Count; i++) {
+					if (i > 0)
+						w.Write (", ");
+					GenerateExpression (n.Arguments [i]);
+				}
+				w.Write (")");
 			} else if (x is NewArrayExpression) {
 				var n = (NewArrayExpression) x;
 				w.Write ("new ");
@@ -346,6 +367,16 @@ namespace ProcessingDlr
 					w.Write (" >> "); break;
 				}
 				GenerateExpression (a.Right);
+			} else if (x is LogicalOperationExpression) {
+				var o = (LogicalOperationExpression) x;
+				GenerateExpression (o.Left);
+				switch (o.Kind) {
+				case LogicalOperationKind.AndAlso:
+					w.Write (" && "); break;
+				case LogicalOperationKind.OrElse:
+					w.Write (" || "); break;
+				}
+				GenerateExpression (o.Right);
 			} else if (x is ArrayAccessExpression) {
 				var a = (ArrayAccessExpression) x;
 				GenerateExpression (a.Array);

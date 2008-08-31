@@ -114,7 +114,14 @@ namespace ProcessingDlr.Ast
 	{
 		public IfStatement (Expression cond, Statement trueBlock, Statement falseBlock)
 		{
+			Condition = cond;
+			TrueBlock = trueBlock;
+			FalseBlock = falseBlock;
 		}
+
+		public Expression Condition { get; set; }
+		public Statement TrueBlock { get; set; }
+		public Statement FalseBlock { get; set; }
 	}
 
 	public class ForStatement : Statement
@@ -169,9 +176,9 @@ namespace ProcessingDlr.Ast
 			return new IdentifierReferenceExpression (name);
 		}
 
-		public static Expression New (string typeName, List<Expression> args)
+		public static Expression New (TypeInfo type, List<Expression> args)
 		{
-			return new NewObjectExpression (typeName, args);
+			return new NewObjectExpression (type, args);
 		}
 
 		public static Expression NewArrayBounds (TypeInfo type, Expression size)
@@ -362,7 +369,14 @@ namespace ProcessingDlr.Ast
 	{
 		public LogicalOperationExpression (Expression left, Expression right, LogicalOperationKind kind)
 		{
+			Left = left;
+			Right = right;
+			Kind = kind;
 		}
+
+		public Expression Left { get; set; }
+		public Expression Right { get; set; }
+		public LogicalOperationKind Kind { get; set; }
 	}
 
 	public enum ArithmeticKind
@@ -436,9 +450,14 @@ namespace ProcessingDlr.Ast
 
 	public class NewObjectExpression : Expression
 	{
-		public NewObjectExpression (string typeName, List<Expression> args)
+		public NewObjectExpression (TypeInfo type, List<Expression> args)
 		{
+			Type = type;
+			Arguments = args;
 		}
+
+		public TypeInfo Type { get; set; }
+		public List<Expression> Arguments { get; set; }
 	}
 
 	public class NewArrayExpression : Expression

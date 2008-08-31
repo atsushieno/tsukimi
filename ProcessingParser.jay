@@ -241,7 +241,7 @@ function_definition_base
 	;
 
 opt_argument_definitions
-	: { $$ = null; } // empty
+	: { $$ = new List<FunctionArgument> (); } // empty
 	| argument_definitions
 
 argument_definitions
@@ -253,7 +253,7 @@ argument_definitions
 	}
 	| argument_definitions COMMA argument_definition
 	{
-		var l = (List<FunctionArgument>) $1 ?? new List<FunctionArgument> ();
+		var l = (List<FunctionArgument>) $1;
 		l.Add ((FunctionArgument) $3);
 		$$ = l;
 	}
@@ -635,7 +635,7 @@ prefixed_unary_expression
 	: unary_expression
 	| MINUS prefixed_unary_expression
 	{
-		$$ = Expression.MultiplyChecked ((Expression) $1, Expression.Constant (-1));
+		$$ = Expression.MultiplyChecked ((Expression) $2, Expression.Constant (-1));
 	}
 
 primary_expression
@@ -674,7 +674,7 @@ new_object_expression
 	: NEW function_call_base
 	{
 		var fcb = (FunctionCall) $2;
-		$$ = Expression.New (fcb.Name, fcb.Arguments);
+		$$ = Expression.New (new TypeInfo (fcb.Name, 0), fcb.Arguments);
 	}
 	;
 
