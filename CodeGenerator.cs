@@ -71,16 +71,21 @@ namespace ProcessingDlr
 			current_class =c;
 			w.Write ("public class ");
 			w.Write (c.Name);
-			var l = new List<TypeInfo> (c.Interfaces);
-			if (c.BaseType != null)
-				l.Insert (0, c.BaseType);
-			if (l.Count > 0) {
-				w.Write (" : ");
-				for (int i = 0; i < l.Count; i++) {
-					if (i > 0)
-						w.Write (", ");
-					w.Write (l [i]);
+			if (c.Interfaces != null) {
+				var l = new List<TypeInfo> (c.Interfaces);
+				if (c.BaseType != null)
+					l.Insert (0, c.BaseType);
+				if (l.Count > 0) {
+					w.Write (" : ");
+					for (int i = 0; i < l.Count; i++) {
+						if (i > 0)
+							w.Write (", ");
+						w.Write (l [i]);
+					}
 				}
+			} else if (c.BaseType != null) {
+				w.Write (" : ");
+				w.WriteLine (c.BaseType);
 			}
 			w.WriteLine ();
 			w.WriteLine ("{");
@@ -111,9 +116,10 @@ namespace ProcessingDlr
 					w.Write (", ");
 				var p = f.Pairs [i];
 				w.Write (p.Name);
-				if (p.Initializer != null)
+				if (p.Initializer != null) {
 					w.Write (" = ");
 					GenerateExpression (p.Initializer);
+				}
 			}
 			w.WriteLine (";");
 		}

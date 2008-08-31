@@ -164,8 +164,14 @@ namespace ProcessingDlr.Ast
 
 	public class VariableDeclarationPair
 	{
-		public string Name;
-		public Expression Initializer;
+		public VariableDeclarationPair (string name, Expression initializer)
+		{
+			Name = name;
+			Initializer = initializer;
+		}
+
+		public string Name { get; set; }
+		public Expression Initializer { get; set; }
 	}
 
 	public class SwitchCase

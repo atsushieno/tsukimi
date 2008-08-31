@@ -3,9 +3,10 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using ProcessingDlr;
 using ProcessingDlr.Ast;
 
-namespace ProcessingDlr
+namespace ProcessingDlr.Parser
 {
 
 	public class ProcessingParser
@@ -152,7 +153,7 @@ class_declaration
 		var name = (string) $2;
 		var baseType = (TypeInfo) $3;
 		var interfaces = (List<TypeInfo>) $4;
-		var members = (MemberList) $5;
+		var members = (MemberList) $6;
 		$$ = new ClassDefinition (name, baseType, interfaces, members);
 	}
 	;
@@ -197,10 +198,10 @@ type_list
 	;
 
 class_member_definitions
-	: { $$ = null; } // empty
+	: { $$ = new MemberList (); } // empty
 	| class_member_definitions class_member_definition
 	{
-		var l = (MemberList) $1 ?? new MemberList ();
+		var l = (MemberList) $1;
 		l.Add ((MemberDefinition) $2);
 		$$ = l;
 	}
@@ -490,11 +491,9 @@ variable_declaration_pairs
 variable_declaration_pair
 	: identifier opt_variable_initializer
 	{
-		// FIXME: gmcs bug, this causes invalid IL
+		// FIXME: gmcs bug, this causes invalid IL (if it is valid; field initializer causes the issue)
 		// $$ = new VariableDeclarationPair () {Name = (string) $1, Initializer = (Expression) $2};
-		var vd = new VariableDeclarationPair ();
-		vd.Name = (string) $1;
-		vd.Initializer = (Expression) $2;
+		var vd = new VariableDeclarationPair ((string) $1, (Expression) $2);
 		$$ = vd;
 	}
 	;

@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using ProcessingDlr;
 
-namespace ProcessingDlr
+namespace ProcessingDlr.Parser
 {
 	class ParserException : Exception
 	{
@@ -18,7 +19,7 @@ namespace ProcessingDlr
 		}
 	}
 
-	class Tokenizer : ProcessingDlr.yyParser.yyInput
+	class Tokenizer : yyParser.yyInput
 	{
 		TextReader source;
 		bool should_dispose;
