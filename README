@@ -26,7 +26,7 @@ moonlight[*2].
 
 ** Assemblies
 
-	- Proce55ingDlr.Core.dll:
+	- Proce55ingCli.Core.dll:
 	  contains StandardLibrary and fundamental control types.
 	- proce55ing2xaml.exe:
 	  pde parser and XAML generator, possibly more.

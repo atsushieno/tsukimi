@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ProcessingDlr.Ast
+namespace ProcessingCli.Ast
 {
 	public class AstRoot
 	{

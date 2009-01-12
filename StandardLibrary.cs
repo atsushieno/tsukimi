@@ -16,7 +16,7 @@ Object mappings:
 	int -> System.Int32
 	boolean -> System.Boolean
 	byte -> System.SByte
-	String -> ProcessingDlr.String
+	String -> ProcessingCli.String
 	Array -> (no direct mapping. System.Array is implicitly used)
 	Object -> System.Object
 
@@ -26,10 +26,10 @@ Object mappings:
 	since it does not exist in processing.
 */
 
-using String = ProcessingDlr.PString;
+using String = ProcessingCli.PString;
 using ColorMode = System.Int32;
 
-namespace ProcessingDlr
+namespace ProcessingCli
 {
 	public class PString
 	{

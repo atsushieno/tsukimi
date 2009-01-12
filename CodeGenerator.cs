@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using ProcessingDlr.Ast;
+using ProcessingCli.Ast;
 
-namespace ProcessingDlr
+namespace ProcessingCli
 {
 	public class CodeGenerator
 	{
@@ -49,12 +49,16 @@ namespace ProcessingDlr
 			w.WriteLine ("using System;");
 			w.WriteLine ("using System.Windows;");
 			w.WriteLine ("using System.Windows.Controls;");
-			w.WriteLine ("using ProcessingDlr;");
+			w.WriteLine ("using ProcessingCli;");
 
 			foreach (var c in classes)
 				GenerateClass (c);
-			w.WriteLine ("public class Global");
+			w.WriteLine ("public class ProcessingApplication : Application");
 			w.WriteLine ("{");
+			w.WriteLine ("public ProcessingApplication ()");
+			w.WriteLine ("{");
+			w.WriteLine ("Startup += delegate (object sender, StartupEventArgs e) { Run (); };");
+			w.WriteLine ("}");
 			w.WriteLine ("// placeholder for global functions");
 			foreach (var f in funcs)
 				GenerateGlobalFunction (f);
@@ -162,7 +166,7 @@ namespace ProcessingDlr
 			case "byte":
 				return "sbyte";
 			case "string":
-				return "ProcessingDlr.PString";
+				return "ProcessingCli.PString";
 			case "float":
 				return "double";
 			case "color":

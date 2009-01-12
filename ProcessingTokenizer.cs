@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using ProcessingDlr;
+using ProcessingCli;
 
-namespace ProcessingDlr.Parser
+namespace ProcessingCli.Parser
 {
 	class ParserException : Exception
 	{

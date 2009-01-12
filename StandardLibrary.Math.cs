@@ -1,6 +1,6 @@
 using System;
 
-namespace ProcessingDlr
+namespace ProcessingCli
 {
 	public static partial class StandardLibrary
 	{

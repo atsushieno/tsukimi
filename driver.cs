@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using ProcessingDlr.Parser;
+using ProcessingCli.Parser;
 
-namespace ProcessingDlr
+namespace ProcessingCli
 {
 	public class CommandLineParser
 	{
