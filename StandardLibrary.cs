@@ -140,7 +140,7 @@ namespace ProcessingCli
 		public const int HSB = 2;
 		#endregion
 
-		public static readonly Control Host; // set by application
+		public static Canvas Host; // set by application
 
 		static SolidColorBrush stroke_brush;
 

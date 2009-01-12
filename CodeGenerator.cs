@@ -57,11 +57,12 @@ namespace ProcessingCli
 			w.WriteLine ("{");
 			w.WriteLine ("public ProcessingApplication ()");
 			w.WriteLine ("{");
-			w.WriteLine ("Startup += delegate (object sender, StartupEventArgs e) {");
-			w.WriteLine ("this.RootVisual = new Canvas ();");
-			w.WriteLine ("StandardLibrary.Host = Canvas.RootVisual;");
-			w.WriteLine ("this.Root.Loaded += delegate (object sender, EventArgs e) { Run (); };");
-			w.WriteLine ("} // end of ApplicationStartup delegate");
+			w.WriteLine ("Startup += delegate (object sender_, StartupEventArgs se) {");
+			w.WriteLine ("var c = new Canvas ();");
+			w.WriteLine ("this.RootVisual = c;");
+			w.WriteLine ("StandardLibrary.Host = c;");
+			w.WriteLine ("c.Loaded += delegate (object sender, RoutedEventArgs e) { Run (); };");
+			w.WriteLine ("}; // end of ApplicationStartup delegate");
 			w.WriteLine ("} // end of ProcessingApplication.ctor()");
 			w.WriteLine ("// placeholder for global functions");
 			foreach (var f in funcs)
