@@ -190,7 +190,7 @@ namespace ProcessingCli
 
 		public static double map (double value, double low1, double high1, double low2, double high2)
 		{
-			throw new NotImplementedException ();
+			return (value - low1) * (high2 - low2) / (high1 - low1) + low2;
 		}
 
 		public static double acos (double d)
