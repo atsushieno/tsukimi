@@ -50,12 +50,14 @@ namespace ProcessingCli
 			w.WriteLine ("using System.Windows;");
 			w.WriteLine ("using System.Windows.Controls;");
 			w.WriteLine ("using ProcessingCli;");
+			w.WriteLine ("namespace ProcessingCliApplication");
+			w.WriteLine ("{");
 
 			foreach (var c in classes)
 				GenerateClass (c);
-			w.WriteLine ("public class ProcessingApplication : Application");
+			w.WriteLine ("public class App : Application");
 			w.WriteLine ("{");
-			w.WriteLine ("public ProcessingApplication ()");
+			w.WriteLine ("public App ()");
 			w.WriteLine ("{");
 			w.WriteLine ("Startup += delegate (object sender_, StartupEventArgs se) {");
 			w.WriteLine ("var c = new Canvas ();");
@@ -63,7 +65,7 @@ namespace ProcessingCli
 			w.WriteLine ("StandardLibrary.Host = c;");
 			w.WriteLine ("c.Loaded += delegate (object sender, RoutedEventArgs e) { Run (); };");
 			w.WriteLine ("}; // end of ApplicationStartup delegate");
-			w.WriteLine ("} // end of ProcessingApplication.ctor()");
+			w.WriteLine ("} // end of App.ctor()");
 			w.WriteLine ("// placeholder for global functions");
 			foreach (var f in funcs)
 				GenerateGlobalFunction (f);
@@ -71,6 +73,7 @@ namespace ProcessingCli
 			w.WriteLine ("{");
 			foreach (var st in stmts)
 				GenerateStatement (st);
+			w.WriteLine ("}");
 			w.WriteLine ("}");
 			w.WriteLine ("}");
 		}
