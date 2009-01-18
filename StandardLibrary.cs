@@ -661,7 +661,20 @@ namespace ProcessingCli
 		blend()
 		loadPixels()
 		get()
+*/
+		public static void set (double x, double y, Color c)
+		{
+			var l = new Line ();
+			l.X1 = x;
+			l.Y1 = y;
+			l.X2 = x + 1;
+			l.Y2 = y + 1;
+			// FIXME: consider fill property
+			l.Stroke = new SolidColorBrush (c);;
+			Host.Children.Add (l);
+		}
 
+/*
 *** Rendering
 
 	type:
