@@ -266,7 +266,7 @@ namespace ProcessingCli
 			p.Points.Add (new Point (x3, y3));
 			// FIXME: consider fill property
 			p.Stroke = stroke_brush;
-			// FIXME: append to host
+			Host.Children.Add (p);
 		}
 
 		public static void line (int x1, int y1, int x2, int y2)
@@ -283,7 +283,7 @@ namespace ProcessingCli
 			l.Y2 = y2;
 			// FIXME: consider fill property
 			l.Stroke = stroke_brush;
-			// FIXME: append to host
+			Host.Children.Add (l);
 		}
 
 		public static void line (int x1, int y1, int z1, int x2, int y2, int z2)
