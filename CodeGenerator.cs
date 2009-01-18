@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using ProcessingCli.Ast;
 
@@ -105,6 +106,9 @@ namespace ProcessingCli
 			w.WriteLine ("{");
 			foreach (var st in stmts)
 				GenerateStatement (st);
+			foreach (var f in funcs)
+				if (f.Internal.Name == "setup")
+					w.WriteLine ("setup ();");
 			w.WriteLine ("}");
 			w.WriteLine ("}");
 			w.WriteLine ("}");
