@@ -254,7 +254,10 @@ namespace ProcessingCli
 				current_variable_scope.Add (v);
 				// declaration could done earlier in its
 				// class (static) context.
-				if (!v.DeclaredGloballyInOutput) {
+				if (v.DeclaredGloballyInOutput) {
+					if (v.Initializer == null)
+						return; // the global variable has to initializer.
+				} else {
 					GenerateType (v.Type);
 					w.Write (' ');
 				}
