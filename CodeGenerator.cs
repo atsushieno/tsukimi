@@ -67,8 +67,8 @@ namespace ProcessingCli
 			w.WriteLine ("Startup += delegate (object sender_, StartupEventArgs se) {");
 			w.WriteLine ("var c = new Canvas ();");
 			w.WriteLine ("this.RootVisual = c;");
-			w.WriteLine ("StandardLibrary.Host = c;");
 			w.WriteLine ("c.Loaded += delegate (object sender, RoutedEventArgs e) { Run (); };");
+			w.WriteLine ("StandardLibrary.SetHost (c);");
 			w.WriteLine ("}; // end of ApplicationStartup delegate");
 			w.WriteLine ("} // end of App.ctor()");
 			w.WriteLine ();
@@ -184,6 +184,7 @@ namespace ProcessingCli
 
 		void GenerateConstructor (ConstructorDefinition c)
 		{
+			w.Write ("public ");
 			GenerateFunctionBase (c);
 		}
 
@@ -307,7 +308,10 @@ namespace ProcessingCli
 			foreach (GlobalFunctionDefinition g in funcs)
 				if (g.Internal.Name == name)
 					return name;
-			return ("StandardLibrary." + name);
+			foreach (var n in StandardLibrary.AllFunctionNames)
+				if (n == name)
+					return "StandardLibrary." + name;
+			return name;
 		}
 
 		string ResolveVariableIdentifier (string name)

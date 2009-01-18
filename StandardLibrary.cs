@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -142,6 +143,12 @@ namespace ProcessingCli
 
 		public static Canvas Host; // set by application
 
+		public static void SetHost (Canvas canvas)
+		{
+			Host = canvas;
+			Host.MouseMove += delegate (object o, MouseEventArgs e) { current_mouse = e; };
+		}
+
 		static SolidColorBrush stroke_brush;
 
 		static Color? stroke_color {
@@ -149,7 +156,12 @@ namespace ProcessingCli
 			set { stroke_brush = value != null ? new SolidColorBrush ((Color) value) : null; }
 		}
 
-		static Color? fill_color;
+		static SolidColorBrush fill_brush;
+
+		static Color? fill_color {
+			get { return fill_brush != null ? (Color?) fill_brush.Color : null; }
+			set { fill_brush = value != null ? new SolidColorBrush ((Color) value) : null; }
+		}
 
 		[ProcessingStandardField]
 		public static int width {
@@ -161,9 +173,9 @@ namespace ProcessingCli
 			get { return (int) Host.Height; }
 		}
 
-		static string [] all_field_names;
+		static string [] all_field_names, all_func_names;
 
-		public static string [] AllFieldNames { // FIXME: should not be public
+		public static string [] AllFieldNames {
 			get {
 				if (all_field_names != null)
 					return all_field_names;
@@ -173,6 +185,19 @@ namespace ProcessingCli
 						names.Add (mi.Name);
 				all_field_names = names.ToArray ();
 				return all_field_names;
+			}
+		}
+
+		public static string [] AllFunctionNames {
+			get {
+				if (all_func_names != null)
+					return all_func_names;
+				var names = new List<string> ();
+				foreach (var mi in typeof (StandardLibrary).GetMethods ())
+					if (true) // (mi.GetCustomAttributes (typeof (ProcessingStandardFieldAttribute), false).Length > 0)
+						names.Add (mi.Name);
+				all_func_names = names.ToArray ();
+				return all_func_names;
 			}
 		}
 
@@ -296,12 +321,23 @@ namespace ProcessingCli
 			throw new NotImplementedException ();
 		}
 
+		public static void rect (double x, double y, double width, double height)
+		{
+			var r = new Rectangle ();
+			r.RadiusX = x;
+			r.RadiusY = y;
+			r.Width = width;
+			r.Height = height;
+			// FIXME: consider fill property
+			r.Stroke = stroke_brush;
+			r.Fill = fill_brush;
+			Host.Children.Add (r);
+		}
+
 /*
 *** Shape
 
 	function:
-		triangle()
-		line()
 		arc()
 		point()
 		quad()
@@ -336,7 +372,20 @@ namespace ProcessingCli
 		texture()
 		curveVertex()
 		endShape()
+*/
+		static MouseEventArgs current_mouse;
 
+		[ProcessingStandardField]
+		public static double mouseX {
+			get { return current_mouse == null ? 0 : current_mouse.GetPosition (null).X; }
+		}
+
+		[ProcessingStandardField]
+		public static double mouseY {
+			get { return current_mouse == null ? 0 : current_mouse.GetPosition (null).Y; }
+		}
+
+/*
 *** Input
 
 	static variable:
