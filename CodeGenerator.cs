@@ -18,6 +18,7 @@ namespace ProcessingCli
 
 		bool writeSemicolon = true;
 		ClassDefinition current_class;
+		bool in_global_context;
 
 		class VariableScope : List<VariableDeclarationStatement>
 		{
@@ -69,9 +70,37 @@ namespace ProcessingCli
 			w.WriteLine ("c.Loaded += delegate (object sender, RoutedEventArgs e) { Run (); };");
 			w.WriteLine ("}; // end of ApplicationStartup delegate");
 			w.WriteLine ("} // end of App.ctor()");
+			w.WriteLine ();
+
+			in_global_context = true;
+
+			w.WriteLine ("// placeholder for global variables");
+			// Global variables must be declared outside
+			// Run() global method so that they can be
+			// accessed everywhere.
+			foreach (var st in stmts) {
+				var b = st as StatementBlock;
+				if (b == null)
+					continue;
+				foreach (var s in b.Statements) {
+					var v = s as VariableDeclarationStatement;
+					if (v == null)
+						continue;
+					w.Write ("static ");
+					GenerateType (v.Type);
+					w.Write (' ');
+					w.Write (v.Name);
+					w.Write (';');
+					w.WriteLine ();
+					v.DeclaredGloballyInOutput = true;
+				}
+			}
+			w.WriteLine ();
+
 			w.WriteLine ("// placeholder for global functions");
 			foreach (var f in funcs)
 				GenerateGlobalFunction (f);
+
 			w.WriteLine ("public static void Run ()");
 			w.WriteLine ("{");
 			foreach (var st in stmts)
@@ -142,6 +171,8 @@ namespace ProcessingCli
 		void GenerateFunction (FunctionDefinition f)
 		{
 			w.Write ("public ");
+			if (in_global_context)
+				w.Write ("static ");
 			GenerateType (f.Type);
 			w.Write (' ');
 			GenerateFunctionBase (f);
@@ -217,8 +248,12 @@ namespace ProcessingCli
 			} else if (s is VariableDeclarationStatement) {
 				var v = (VariableDeclarationStatement) s;
 				current_variable_scope.Add (v);
-				GenerateType (v.Type);
-				w.Write (' ');
+				// declaration could done earlier in its
+				// class (static) context.
+				if (!v.DeclaredGloballyInOutput) {
+					GenerateType (v.Type);
+					w.Write (' ');
+				}
 				w.Write (v.Name);
 				if (v.Initializer != null) {
 					w.Write (" = ");

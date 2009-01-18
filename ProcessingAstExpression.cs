@@ -77,6 +77,9 @@ namespace ProcessingCli.Ast
 		public TypeInfo Type { get; set; }
 		public string Name { get; set; }
 		public Expression Initializer { get; set; }
+		// it is used by code generator to indicate whether
+		// the variable is already declared globally.
+		public bool DeclaredGloballyInOutput { get; set; }
 	}
 
 	public class CallableExpressionStatement : Statement
