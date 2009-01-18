@@ -578,15 +578,30 @@ namespace ProcessingCli
 	function:
 
 		blendColor()
-		red()
 		brightness()
-		blue()
 		saturation()
 		lerpColor()
-		green()
 		hue()
-		alpha()
 */
+		public static double alpha (Color value)
+		{
+			return value.A;
+		}
+
+		public static double red (Color value)
+		{
+			return value.R;
+		}
+
+		public static double green (Color value)
+		{
+			return value.G;
+		}
+
+		public static double blue (Color value)
+		{
+			return value.B;
+		}
 
 		public static Color color (double gray)
 		{
