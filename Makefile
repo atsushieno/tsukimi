@@ -1,4 +1,4 @@
-CONVERTER_EXE = proce55ing2xaml.exe
+CONVERTER_EXE = proce55ing2cli.exe
 CORE_DLL = Proce55ing.Core.dll
 
 CONVERTER_SOURCES = \
