@@ -11,7 +11,12 @@ namespace ProcessingCli
 			foreach (string s in args) {
 				ProcessingParser p = new ProcessingParser (s);
 				p.Parse ();
-				new CodeGenerator (p.Root, Console.Out).Generate ();
+				// was this task so messy? :p
+				string fileBodyName = new FileInfo (s).Name;
+				int last = fileBodyName.LastIndexOf ('.');
+				if (last > 0)
+					fileBodyName = fileBodyName.Substring (0, last);
+				new CodeGenerator (p.Root, Console.Out, fileBodyName).Generate ();
 			}
 		}
 	}

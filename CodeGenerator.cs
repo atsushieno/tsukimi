@@ -10,6 +10,7 @@ namespace ProcessingCli
 	{
 		AstRoot root;
 		TextWriter w;
+		string namespace_name;
 
 		List<ClassDefinition> classes = new List<ClassDefinition> ();
 		List<GlobalFunctionDefinition> funcs = new List<GlobalFunctionDefinition> ();
@@ -29,10 +30,11 @@ namespace ProcessingCli
 			get { return variable_stack.Count > 0 ? variable_stack [variable_stack.Count - 1] : global_variables; }
 		}
 
-		public CodeGenerator (AstRoot root, TextWriter writer)
+		public CodeGenerator (AstRoot root, TextWriter writer, string namespaceName)
 		{
 			this.root = root;
 			this.w = writer;
+			this.namespace_name = namespaceName ?? "ProcessingCliApplication";
 
 			foreach (ITopLevelContent c in root.Items) {
 				if (c is ClassDefinition)
@@ -49,8 +51,9 @@ namespace ProcessingCli
 			w.WriteLine ("using System;");
 			w.WriteLine ("using System.Windows;");
 			w.WriteLine ("using System.Windows.Controls;");
+			w.WriteLine ("using System.Windows.Media;");
 			w.WriteLine ("using ProcessingCli;");
-			w.WriteLine ("namespace ProcessingCliApplication");
+			w.WriteLine ("namespace {0}", namespace_name);
 			w.WriteLine ("{");
 
 			foreach (var c in classes)
