@@ -6,5 +6,5 @@ wget http://dev.processing.org/source/index.cgi/*checkout*/trunk/processing/buil
 unzip examples.zip
 
 # then run create-sample.sh, with [appname] and [pdefile], for example:
-./create-sample.sh Array Basics/Array/Array/Array.pde
+./create-sample.sh Array examples/Basics/Arrays/Array/Array.pde
 
