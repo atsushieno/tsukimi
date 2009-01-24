@@ -150,6 +150,7 @@ namespace ProcessingCli
 		}
 
 		static SolidColorBrush stroke_brush;
+		static double? stroke_weight;
 
 		static Color? stroke_color {
 			get { return stroke_brush != null ? (Color?) stroke_brush.Color : null; }
@@ -291,6 +292,8 @@ namespace ProcessingCli
 			p.Points.Add (new Point (x3, y3));
 			// FIXME: consider fill property
 			p.Stroke = stroke_brush;
+			if (stroke_weight != null)
+				p.StrokeThickness = (double) stroke_weight;
 			Host.Children.Add (p);
 		}
 
@@ -308,6 +311,8 @@ namespace ProcessingCli
 			l.Y2 = y2;
 			// FIXME: consider fill property
 			l.Stroke = stroke_brush;
+			if (stroke_weight != null)
+				l.StrokeThickness = (double) stroke_weight;
 			Host.Children.Add (l);
 		}
 
@@ -321,6 +326,16 @@ namespace ProcessingCli
 			throw new NotImplementedException ();
 		}
 
+		public static void point (double x, double y)
+		{
+			set (x, y, Colors.Black);
+		}
+
+		public static void point (double x, double y, double z)
+		{
+			throw new NotImplementedException ();
+		}
+
 		public static void rect (double x, double y, double width, double height)
 		{
 			var r = new Rectangle ();
@@ -330,10 +345,16 @@ namespace ProcessingCli
 			r.Height = height;
 			// FIXME: consider fill property
 			r.Stroke = stroke_brush;
+			if (stroke_weight != null)
+				r.StrokeThickness = (double) stroke_weight;
 			r.Fill = fill_brush;
 			Host.Children.Add (r);
 		}
 
+		public static void strokeWeight (double size)
+		{
+			stroke_weight = size;
+		}
 /*
 *** Shape
 
@@ -496,6 +517,28 @@ namespace ProcessingCli
 		emissive()
 */
 
+		/*
+		public static void background (int gray)
+		{
+			background (color (gray));
+		}
+
+		public static void background (int gray, int alpha)
+		{
+			background (color (gray, alpha));
+		}
+
+		public static void background (int r, int g, int b)
+		{
+			background (color (r, g, b));
+		}
+
+		public static void background (int r, int g, int b, int a)
+		{
+			background (color (r, g, b, a));
+		}
+		*/
+
 		public static void background (double gray)
 		{
 			background (color (gray));
@@ -528,7 +571,7 @@ namespace ProcessingCli
 
 		static void background (Color c)
 		{
-			throw new NotImplementedException ();
+			Host.Background = new SolidColorBrush (c);
 		}
 
 		public static void colorMode (ColorMode mode)
@@ -590,6 +633,28 @@ namespace ProcessingCli
 		{
 			stroke_color = null;
 		}
+
+		/*
+		public static void fill (int gray)
+		{
+			fill_color = color (gray);
+		}
+
+		public static void fill (int gray, int alpha)
+		{
+			fill_color = color (gray, alpha);
+		}
+
+		public static void fill (int r, int g, int b)
+		{
+			fill_color = color (r, g, b);
+		}
+
+		public static void fill (int r, int g, int b, int a)
+		{
+			fill_color = color (r, g, b, a);
+		}
+		*/
 
 		public static void fill (double gray)
 		{
@@ -669,7 +734,7 @@ namespace ProcessingCli
 
 		public static Color color (double r, double g, double b, double a)
 		{
-			return Color.FromArgb ((byte) a, (byte) r, (byte) g, (byte) b);
+			return Color.FromArgb ((byte) (int) a, (byte) (int) r, (byte) (int) g, (byte) (int) b);
 		}
 
 		public static Color color (string hex)
