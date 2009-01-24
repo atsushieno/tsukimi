@@ -176,7 +176,7 @@ namespace ProcessingCli.Parser
 		}
 
 		// taken from System.Json/JsonReader.cs
-		double ReadNumericLiteral ()
+		double ReadNumericLiteral (bool skipDecimalPart)
 		{
 			bool negative = false;
 			/*
@@ -190,16 +190,18 @@ namespace ProcessingCli.Parser
 
 			int c;
 			int val = 0;
-			int x = 0;
-			bool zeroStart = PeekChar () == '0';
-			for (; ; x++) {
-				c = PeekChar ();
-				if (c < '0' || '9' < c)
-					break;
-				val = val * 10 + (c - '0');
-				ReadChar ();
-				if (zeroStart && x == 1 && c == '0')
-					throw new ParserException ("leading multiple zeros are not allowed");
+			if (!skipDecimalPart) {
+				int x = 0;
+				bool zeroStart = PeekChar () == '0';
+				for (; ; x++) {
+					c = PeekChar ();
+					if (c < '0' || '9' < c)
+						break;
+					val = val * 10 + (c - '0');
+					ReadChar ();
+					if (zeroStart && x == 1 && c == '0')
+						throw new ParserException ("leading multiple zeros are not allowed");
+				}
 			}
 
 			// fraction
@@ -207,9 +209,10 @@ namespace ProcessingCli.Parser
 			bool hasFrac = false;
 			decimal frac = 0;
 			int fdigits = 0;
-			if (PeekChar () == '.') {
+			if (skipDecimalPart || PeekChar () == '.') {
 				hasFrac = true;
-				ReadChar ();
+				if (!skipDecimalPart)
+					ReadChar ();
 				if (PeekChar () < 0)
 					throw new ParserException ("Invalid numeric literal; extra dot");
 				decimal d = 10;
@@ -329,6 +332,12 @@ namespace ProcessingCli.Parser
 			case ',':
 				return Token.COMMA;
 			case '.':
+				// processing seems to allow numeric value that starts with '.'
+				// e.g. .123
+				if (IsNumericStart ((char) PeekChar ())) {
+					current_value = ReadNumericLiteral (true);
+					return Token.NUMERIC_LITERAL;
+				}
 				return Token.DOT;
 			case ':':
 				return Token.COLON;
@@ -447,7 +456,7 @@ namespace ProcessingCli.Parser
 				if (c == '\'')
 					throw new ParserException ("Invalid character literal");
 				if (IsNumericStart ((char) c)) {
-					double v = ReadNumericLiteral ();
+					double v = ReadNumericLiteral (false);
 					if (v != (double) (int) v)
 						throw new ParserException ("Invalid character literal: float is not allowed");
 					current_value = (int) v;
@@ -460,7 +469,7 @@ namespace ProcessingCli.Parser
 			default:
 				peek_char = c;
 				if (IsNumericStart ((char) c)) {
-					current_value = ReadNumericLiteral ();
+					current_value = ReadNumericLiteral (false);
 					return Token.NUMERIC_LITERAL;
 				}
 				name = ReadOneName ();
