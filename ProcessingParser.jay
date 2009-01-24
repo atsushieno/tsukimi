@@ -765,9 +765,9 @@ literal
 	| false_expression
 	;
 
-true_expression : TRUE { $$ = Expression.True (); } ;
+true_expression : TRUE { $$ = true; } ;
 
-false_expression : FALSE { $$ = Expression.False (); } ;
+false_expression : FALSE { $$ = false; } ;
 
 numeric_literal : NUMERIC_LITERAL
 
@@ -896,7 +896,7 @@ shift_expression
 
 logical_not_expression
 	: EXCLAIM prefixed_unary_expression
-	{ $$ = Expression.Not ((Expression) $1); };
+	{ $$ = Expression.Not ((Expression) $2); };
 
 
 
