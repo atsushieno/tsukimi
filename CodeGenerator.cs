@@ -214,6 +214,8 @@ namespace ProcessingCli
 		string ResolveTypeName (string name)
 		{
 			switch (name) {
+			case "boolean":
+				return "bool";
 			case "byte":
 				return "sbyte";
 			case "string":
@@ -347,6 +349,9 @@ namespace ProcessingCli
 
 		void GenerateExpression (Expression x)
 		{
+			if (x == null)
+				throw new ArgumentNullException ("x");
+
 			if (x is FunctionCallExpression) {
 				var f = (FunctionCallExpression) x;
 				if (f.Target != null) {
@@ -457,6 +462,11 @@ namespace ProcessingCli
 					w.Write (" || "); break;
 				}
 				GenerateExpression (o.Right);
+			} else if (x is LogicalNotExpression) {
+				var n = (LogicalNotExpression) x;
+				w.Write ("!(");
+				GenerateExpression (n.Value);
+				w.Write (")");
 			} else if (x is ArrayAccessExpression) {
 				var a = (ArrayAccessExpression) x;
 				GenerateExpression (a.Array);
@@ -476,7 +486,7 @@ namespace ProcessingCli
 				GenerateExpression (a.Right);
 			} else {
 				Console.Error.WriteLine (x);
-				throw new NotImplementedException ();
+				throw new NotImplementedException ("Not implemented expression: " + x);
 			}
 		}
 	}
