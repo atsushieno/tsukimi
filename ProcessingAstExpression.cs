@@ -171,7 +171,9 @@ namespace ProcessingCli.Ast
 
 		public static Expression Not (Expression operand)
 		{
-			throw new NotImplementedException ();
+			if (operand == null)
+				throw new ArgumentNullException ("operand");
+			return new LogicalNotExpression (operand);
 		}
 
 		public static Expression IdentifierReference (string name)
@@ -366,6 +368,18 @@ namespace ProcessingCli.Ast
 	{
 		AndAlso,
 		OrElse,
+	}
+
+	public class LogicalNotExpression : OperationExpression
+	{
+		public LogicalNotExpression (Expression value)
+		{
+			if (value == null)
+				throw new ArgumentNullException ("value");
+			Value = value;
+		}
+
+		public Expression Value { get; set; }
 	}
 
 	public class LogicalOperationExpression : OperationExpression
