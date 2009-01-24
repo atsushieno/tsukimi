@@ -124,6 +124,14 @@ namespace ProcessingCli
 	{
 	}
 
+	public enum EllipseMode
+	{
+		Center,
+		Radius,
+		Corner,
+		Corners
+	}
+
 	public static partial class StandardLibrary
 	{
 		[ProcessingStandardField]
@@ -132,6 +140,14 @@ namespace ProcessingCli
 		public const double HALF_PI = PI / 2.0;
 		[ProcessingStandardField]
 		public const double TWO_PI = PI * 2.0;
+		[ProcessingStandardFieldAttribute]
+		public const EllipseMode Center = EllipseMode.Center;
+		[ProcessingStandardFieldAttribute]
+		public const EllipseMode RADIUS = EllipseMode.Radius;
+		[ProcessingStandardFieldAttribute]
+		public const EllipseMode CORNER = EllipseMode.Corner;
+		[ProcessingStandardFieldAttribute]
+		public const EllipseMode CORNERS = EllipseMode.Corners;
 
 		#region UNDOCUMENTED
 		[ProcessingStandardField]
@@ -354,6 +370,16 @@ namespace ProcessingCli
 		public static void strokeWeight (double size)
 		{
 			stroke_weight = size;
+		}
+
+		public static void smooth ()
+		{
+			Console.WriteLine ("WARNING: no support for smooth() yet");
+		}
+
+		public static void ellipseMode (EllipseMode mode)
+		{
+			Console.WriteLine ("WARNING: no support for ellipseMode() yet");
 		}
 /*
 *** Shape
@@ -658,34 +684,38 @@ namespace ProcessingCli
 
 		public static void fill (double gray)
 		{
-			fill_color = color (gray);
+			fill (color (gray));
 		}
 
 		public static void fill (double gray, double alpha)
 		{
-			fill_color = color (gray, alpha);
+			fill (color (gray, alpha));
 		}
 
 		public static void fill (double r, double g, double b)
 		{
-			fill_color = color (r, g, b);
+			fill (color (r, g, b));
 		}
 
 		public static void fill (double r, double g, double b, double a)
 		{
-			fill_color = color (r, g, b, a);
+			fill (color (r, g, b, a));
 		}
 
 		public static void fill (string hex)
 		{
-			fill_color = color (hex);
+			fill (color (hex));
 		}
 
 		public static void fill (string hex, double alpha)
 		{
-			fill_color = color (hex, alpha);
+			fill (color (hex, alpha));
 		}
 
+		public static void fill (Color color)
+		{
+			fill_color = color;
+		}
 /*
 *** Color
 
