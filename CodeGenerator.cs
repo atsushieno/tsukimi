@@ -367,6 +367,11 @@ namespace ProcessingCli
 					w.Write ("null");
 				else if (c.Value is bool)
 					w.Write (((bool) c.Value) ? "true" : "false");
+				else if (c.Value is char) {
+					w.Write ("'");
+					w.Write (c.Value);
+					w.Write ("'");
+				}
 				else
 					w.Write (c.Value);
 			} else if (x is NewObjectExpression) {
