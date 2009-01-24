@@ -16,6 +16,12 @@ moonlight[*2].
 	- Write code generator that is based on System.Windows.dll.
 	  Not sure we generate either of some source code or direct IL.
 
+*** Some TODOs
+
+	- Make StandardLibrary as an instance so that global variables and
+	  local variables can be distinguished without adding lengthy
+	  "StandardLibrary." to global ones.
+
 ** Source Files
 
 	- processing_syntax.txt:
