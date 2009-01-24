@@ -28,7 +28,7 @@ namespace ProcessingCli.Parser
 		{
 			var t = new Tokenizer (filename);
 			try {
-//				Root = yyparse (t, new yydebug.yyDebugSimple ());
+//				Root = (AstRoot) yyparse (t, new yydebug.yyDebugSimple ());
 				Root = (AstRoot) yyparse (t);
 			} catch (yyParser.yyException ex) {
 				throw new ParserException (String.Format ("Irrecoverable syntax error at {0}", t.Location), ex);
@@ -503,7 +503,33 @@ variable_declaration_pair
 
 opt_variable_initializer
 	: { $$ = null; } // empty
+	| EQUAL array_initializer { $$ = $2; }
 	| EQUAL expression { $$ = $2; }
+
+array_initializer
+	: OPEN_CURLY opt_expression_list_comma CLOSE_CURLY
+	{
+		var l = (List<Expression>) $2;
+		$$ = new ArrayInitializerExpression (l);
+	}
+
+opt_expression_list_comma
+	: { $$ = new List<Expression> (); } // empty
+	| expression_list_comma
+
+expression_list_comma
+	: expression
+	{
+		var l = new List<Expression> ();
+		l.Add ((Expression) $1);
+		$$ = l;
+	}
+	| expression_list_comma COMMA expression
+	{
+		var l = (List<Expression>) $1;
+		l.Add ((Expression) $3);
+		$$ = l;
+	}
 
 /// if-else
 

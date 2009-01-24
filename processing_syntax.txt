@@ -342,9 +342,21 @@
 	opt_variable_initializer :=
 		// empty
 		| variable_initializer
+		| "=" array_initializer
 
 	variable_initializer :=
 		"=" expression
+
+	array_initializer :=
+		"{" opt_expression_list_comma "}"
+
+	opt_expression_list_comma :=
+		// empty
+		| expression_list_comma
+
+	expression_list_comma :=
+		expression
+		| expression_list_comma "," expression
 
 	// if-else
 

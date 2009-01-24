@@ -383,6 +383,16 @@ namespace ProcessingCli
 				w.Write (" [");
 				GenerateExpression (n.Size);
 				w.Write ("]");
+			} else if (x is ArrayInitializerExpression) {
+				var n = (ArrayInitializerExpression) x;
+				w.Write ("{");
+				if (n.Elements.Count > 0)
+					GenerateExpression (n.Elements [0]);
+				for (int i = 1; i < n.Elements.Count; i++) {
+					w.Write (", ");
+					GenerateExpression (n.Elements [i]);
+				}
+				w.Write ("}");
 			} else if (x is IdentifierReferenceExpression) {
 				var v = (IdentifierReferenceExpression) x;
 				w.Write (ResolveVariableIdentifier (v.Name));

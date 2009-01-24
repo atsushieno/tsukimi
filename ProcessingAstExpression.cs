@@ -475,6 +475,16 @@ namespace ProcessingCli.Ast
 		public Expression Size { get; set; }
 	}
 
+	public class ArrayInitializerExpression : Expression
+	{
+		public ArrayInitializerExpression (List<Expression> elements)
+		{
+			Elements = elements;
+		}
+
+		public IList<Expression> Elements { get; private set; }
+	}
+
 	public class ArrayAccessExpression : Expression
 	{
 		public ArrayAccessExpression (Expression array, Expression index)
