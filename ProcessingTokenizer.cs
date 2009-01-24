@@ -455,13 +455,19 @@ namespace ProcessingCli.Parser
 				c = PeekChar ();
 				if (c == '\'')
 					throw new ParserException ("Invalid character literal");
+				/*
 				if (IsNumericStart ((char) c)) {
 					double v = ReadNumericLiteral (false);
 					if (v != (double) (int) v)
 						throw new ParserException ("Invalid character literal: float is not allowed");
 					current_value = (int) v;
-				} else
-					current_value = c;
+				} 
+				*/ else {
+					current_value = (char) c;
+					ReadChar ();
+				}
+				if (ReadChar () != '\'')
+					throw new ParserException ("Character literal must end with \"'\"");
 				return Token.CHARACTER_LITERAL;
 			case '\"':
 				current_value = ReadStringLiteral ();
