@@ -247,7 +247,7 @@ namespace ProcessingCli
 
 		public static void noLoop ()
 		{
-			throw new NotImplementedException ();
+			Console.WriteLine ("WARNING: not implemented function noLoop()");
 		}
 
 		public static void delay (int milliseconds)
