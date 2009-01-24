@@ -230,6 +230,7 @@ namespace ProcessingCli
 
 		public static double radians (double d)
 		{
+			return PI * d / 180.0;
 			throw new NotImplementedException ();
 		}
 
