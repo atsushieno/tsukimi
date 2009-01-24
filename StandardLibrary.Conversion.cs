@@ -273,13 +273,23 @@ namespace ProcessingCli
 			throw new FormatException (String.Format ("Invalid boolean string: {0}", s));
 		}
 
+		public static bool boolean (int v)
+		{
+			return v != 0;
+		}
+
+		public static bool boolean (double v)
+		{
+			return v != 0.0;
+		}
+		
 		public static double @float (int v)
 		{
 			return (double) v;
 		}
 		public static double @float (char v)
 		{
-			return (double) v;
+			return (double) (int) v;
 		}
 		public static double @float (sbyte v)
 		{
