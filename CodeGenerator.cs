@@ -109,6 +109,10 @@ namespace ProcessingCli
 			foreach (var f in funcs)
 				if (f.Internal.Name == "setup")
 					w.WriteLine ("setup ();");
+			// FIXME: draw() is not just one shot function.
+			foreach (var f in funcs)
+				if (f.Internal.Name == "draw")
+					w.WriteLine ("draw ();");
 			w.WriteLine ("}");
 			w.WriteLine ("}");
 			w.WriteLine ("}");
@@ -310,7 +314,7 @@ namespace ProcessingCli
 					return name;
 			foreach (var n in StandardLibrary.AllFunctionNames)
 				if (n == name)
-					return "StandardLibrary." + name;
+					return "StandardLibrary.@" + name;
 			return name;
 		}
 
