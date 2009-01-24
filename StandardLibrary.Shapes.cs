@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -74,9 +75,7 @@ namespace ProcessingCli
 
 		public static void rect (double x, double y, double width, double height)
 		{
-			var r = new Rectangle ();
-			r.RadiusX = x;
-			r.RadiusY = y;
+			Rectangle r = new Rectangle ();
 			r.Width = width;
 			r.Height = height;
 			// FIXME: consider fill property
@@ -84,6 +83,8 @@ namespace ProcessingCli
 			if (stroke_weight != null)
 				r.StrokeThickness = (double) stroke_weight;
 			r.Fill = fill_brush;
+			Canvas.SetLeft (r, x);
+			Canvas.SetTop (r, y);
 			Host.Children.Add (r);
 		}
 
