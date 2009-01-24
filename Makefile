@@ -13,7 +13,8 @@ CORE_DLL_SOURCES = \
 	StandardLibrary.cs \
 	StandardLibrary.Conversion.cs \
 	StandardLibrary.StringFunctions.cs \
-	StandardLibrary.Math.cs
+	StandardLibrary.Math.cs \
+	StandardLibrary.Shapes.cs
 
 all: $(CORE_DLL) $(CONVERTER_EXE)
 
