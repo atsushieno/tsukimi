@@ -32,11 +32,11 @@ namespace ProcessingCli.Parser
 		int peek_char;
 		bool next_increment_line;
 
-		public Tokenizer (string filename)
+		public Tokenizer (Uri sourceUri, TextReader source)
 		{
 			should_dispose = true;
-			base_uri = filename;
-			source = new StreamReader (filename);
+			base_uri = sourceUri.ToString ();
+			this.source = source;
 		}
 
 		public Tokenizer (TextReader reader, string baseUri)

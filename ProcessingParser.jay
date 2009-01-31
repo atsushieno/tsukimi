@@ -14,21 +14,23 @@ namespace ProcessingCli.Parser
 
 	public class ProcessingParser
 	{
-		string filename;
+		Uri sourceUri;
+		TextReader source;
 		int yacc_verbose_flag;
 
-		public ProcessingParser (string filename)
+		public ProcessingParser (Uri sourceUri, TextReader source)
 		{
-			this.filename = filename;
+			this.sourceUri = sourceUri;
+			this.source = source;
 		}
 
 		public AstRoot Root { get; set; }
 
 		public void Parse ()
 		{
-			var t = new Tokenizer (filename);
+			var t = new Tokenizer (sourceUri, source);
 			try {
-//				Root = (AstRoot) yyparse (t, new yydebug.yyDebugSimple ());
+				//Root = (AstRoot) yyparse (t, new yydebug.yyDebugSimple ());
 				Root = (AstRoot) yyparse (t);
 			} catch (yyParser.yyException ex) {
 				throw new ParserException (String.Format ("Irrecoverable syntax error at {0}", t.Location), ex);
