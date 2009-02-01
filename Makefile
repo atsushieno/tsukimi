@@ -3,7 +3,9 @@ CORE_DLL = Processing.Core.dll
 
 CONVERTER_SOURCES = \
 	driver.cs \
+	ProcessingProjectSource.cs \
 	ProcessingSourceImporter.cs \
+	ProcessingXapImporter.cs \
 	ProcessingParser.cs \
 	ProcessingAst.cs \
 	ProcessingAstExpression.cs \

@@ -44,15 +44,19 @@
     <Compile Include="..\ProcessingAstExpression.cs" />
     <Compile Include="..\ProcessingTokenizer.cs" />
     <Compile Include="..\ProcessingSourceImporter.cs" />
+    <Compile Include="..\ProcessingXapImporter.cs" />
+    <Compile Include="..\ProcessingProjectSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ProcessingParser.jay" />
+    <None Include="..\README" />
+    <None Include="..\processing_syntax.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties InternalTargetFrameworkVersion="2.1" xmlns="" />
+      <Properties InternalTargetFrameworkVersion="2.1" />
     </MonoDevelop>
   </ProjectExtensions>
 </Project>
