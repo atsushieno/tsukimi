@@ -107,6 +107,57 @@ namespace ProcessingCli
 		}
 	}
 
+	public class PImage
+	{
+		internal PImage (string filename)
+		{
+		}
+
+		internal PImage (Color [] pixels)
+		{
+		}
+
+		public double width { get; set; }
+		public double height { get; set; }
+
+		public Color [] pixels {
+			get { throw new NotSupportedException (); }
+		}
+
+		public Color @get (int x, int y)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public Color @set (int x, int y, Color c)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public void copy (int sx, int sy, int swidth, int sheight, int dx, int dy, int dwidth, int dheight)
+		{
+			copy (this, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+		}
+
+		public void copy (PImage srcImg, int sx, int sy, int swidth, int sheight, int dx, int dy, int dwidth, int dheight)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public void mask (PImage maskImg)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public void mask (int [] maskArray)
+		{
+			var maskAlpha = new Color [maskArray.Length];
+			for (int i = 0; i < maskAlpha.Length; i++)
+				maskAlpha [i] = Color.FromArgb ((byte) maskArray [i], 0, 0, 0);
+			mask (new PImage (maskAlpha));
+		}
+	}
+
 	public enum SizeMode
 	{
 		Processing2D,
@@ -680,6 +731,7 @@ namespace ProcessingCli
 		loadPixels()
 		get()
 */
+
 		public static void set (double x, double y, Color c)
 		{
 			var l = new Line ();
