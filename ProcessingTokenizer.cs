@@ -154,7 +154,6 @@ namespace ProcessingCli.Parser
 				if (c < 0)
 					throw new ParserException ("Unterminated quoted literal.");
 				AppendNameChar (c, ref index);
-				break;
 			}
 
 			return new string (nameBuffer, 0, index);
