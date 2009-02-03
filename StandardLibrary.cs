@@ -788,10 +788,11 @@ namespace ProcessingCli
 			var i = img.Image;
 			if (img.width != width || img.height != height)
 				i.Arrange (new Rect (0, 0, width, height));
-
-			// FIXME: add mask
-
 			Host.Children.Add (i);
+
+			// FIXME: add mask (as alpha channel)
+			//foreach (var mask in img.Masks)
+			//	image (mask, x, y, width, height);
 		}
 
 		public static void set (double x, double y, Color c)

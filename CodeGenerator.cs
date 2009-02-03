@@ -488,6 +488,11 @@ namespace ProcessingCli
 				GenerateExpression (a.Left);
 				w.Write (" = ");
 				GenerateExpression (a.Right);
+			} else if (x is FieldAccessExpression) {
+				var a = (FieldAccessExpression) x;
+				GenerateExpression (a.Target);
+				w.Write ('.');
+				w.Write (a.MemberName);
 			} else {
 				Console.Error.WriteLine (x);
 				throw new NotImplementedException ("Not implemented expression: " + x);

@@ -203,7 +203,7 @@ namespace ProcessingCli.Ast
 
 		public static Expression PropertyOrField (Expression obj, string memberName)
 		{
-			throw new NotImplementedException ();
+			return new FieldAccessExpression (obj, memberName);
 		}
 
 		public static Expression Call (Expression obj, string name, List<Expression> args)
@@ -439,6 +439,14 @@ namespace ProcessingCli.Ast
 
 	public class FieldAccessExpression : Expression
 	{
+		public FieldAccessExpression (Expression target, string memberName)
+		{
+			Target = target;
+			MemberName = memberName;
+		}
+
+		public Expression Target { get; set; }
+		public string MemberName { get; set; }
 	}
 
 	public class ConstantExpression : Expression
