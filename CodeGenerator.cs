@@ -376,6 +376,10 @@ namespace ProcessingCli
 					w.Write ("'");
 					w.Write (c.Value);
 					w.Write ("'");
+				} else if (c.Value is string) {
+					w.Write ("@\"");
+					w.Write (c.Value.ToString ().Replace ("\"", "\"\""));
+					w.Write ('"');
 				}
 				else
 					w.Write (c.Value);
