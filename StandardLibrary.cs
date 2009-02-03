@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Net;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 /*
@@ -109,16 +112,39 @@ namespace ProcessingCli
 
 	public class PImage
 	{
-		internal PImage (string filename)
+		Image img;
+		List<PImage> masks;
+
+		internal PImage (BitmapImage bitmap)
 		{
+			img = new Image () { Source = bitmap };
 		}
 
 		internal PImage (Color [] pixels)
 		{
 		}
 
-		public double width { get; set; }
-		public double height { get; set; }
+		internal Image Image {
+			get { return img; }
+		}
+
+		internal List<PImage> Masks {
+			get {
+				if (masks == null)
+					masks = new List<PImage> ();
+				return masks;
+			}
+		}
+
+		public double width {
+			get { return img.Width; }
+			set { img.Width = value; }
+		}
+
+		public double height {
+			get { return img.Height; }
+			set { img.Height = value; }
+		}
 
 		public Color [] pixels {
 			get { throw new NotSupportedException (); }
@@ -146,7 +172,7 @@ namespace ProcessingCli
 
 		public void mask (PImage maskImg)
 		{
-			throw new NotSupportedException ();
+			Masks.Add (maskImg);
 		}
 
 		public void mask (int [] maskArray)
@@ -731,6 +757,42 @@ namespace ProcessingCli
 		loadPixels()
 		get()
 */
+		public static PImage loadImage (string uri)
+		{
+			return new PImage (new BitmapImage (new Uri (uri, UriKind.RelativeOrAbsolute)));
+		}
+
+		public static PImage loadImage (string uri, string extension)
+		{
+			// FIXME: extension is ignored so far
+			var cli = new WebClient ();
+			var wait = new ManualResetEvent (false);
+			Stream result = null;
+			cli.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
+				result = e.Result;
+				wait.Set ();
+			};
+			wait.WaitOne ();
+			var img = new BitmapImage ();
+			img.SetSource (result);
+			return new PImage (img);
+		}
+
+		public static void image (PImage img, double x, double y)
+		{
+			image (img, x, y, img.width, img.height);
+		}
+
+		public static void image (PImage img, double x, double y, double width, double height)
+		{
+			var i = img.Image;
+			if (img.width != width || img.height != height)
+				i.Arrange (new Rect (0, 0, width, height));
+
+			// FIXME: add mask
+
+			Host.Children.Add (i);
+		}
 
 		public static void set (double x, double y, Color c)
 		{
