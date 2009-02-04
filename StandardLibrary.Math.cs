@@ -93,19 +93,21 @@ namespace ProcessingCli
 			return (int) Math.Round (value);
 		}
 
+		/*
 		public static int dist (int x1, int y1, int x2, int y2)
 		{
-			throw new NotImplementedException ();
+			return (int) Math.Sqrt ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 		}
 
 		public static int dist (int x1, int y1, int z1, int x2, int y2, int z2)
 		{
 			throw new NotImplementedException ();
 		}
+		*/
 
 		public static double dist (double x1, double y1, double x2, double y2)
 		{
-			throw new NotImplementedException ();
+			return Math.Sqrt ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 		}
 
 		public static double dist (double x1, double y1, double z1, double x2, double y2, double z2)
