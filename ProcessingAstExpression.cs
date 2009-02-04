@@ -41,7 +41,12 @@ namespace ProcessingCli.Ast
 
 		public static Statement Break ()
 		{
-			throw new NotImplementedException ();
+			return new BreakStatement ();
+		}
+
+		public static Statement Continue ()
+		{
+			return new ContinueStatement ();
 		}
 
 		public static Statement Loop (Expression cond, StatementBlock block)
@@ -51,7 +56,7 @@ namespace ProcessingCli.Ast
 
 		public static Statement Return (Expression value)
 		{
-			throw new NotImplementedException ();
+			return new ReturnStatement (value);
 		}
 
 		public static VariableDeclarationStatement DeclareVariable (TypeInfo type, string name, Expression initializer)
@@ -109,6 +114,10 @@ namespace ProcessingCli.Ast
 		public Statement [] Statements { get; private set; }
 	}
 
+	public class ContinueStatement : Statement
+	{
+	}
+
 	public class BreakStatement : Statement
 	{
 	}
@@ -144,6 +153,16 @@ namespace ProcessingCli.Ast
 		public Expression Condition { get; set; }
 		public Statement Continuer { get; set; }
 		public StatementBlock Body { get; set; }
+	}
+
+	public class ReturnStatement : Statement
+	{
+		public ReturnStatement (Expression value)
+		{
+			Value = value;
+		}
+
+		public Expression Value { get; set; }
 	}
 
 	public abstract class Expression
@@ -186,9 +205,9 @@ namespace ProcessingCli.Ast
 			return new NewObjectExpression (type, args);
 		}
 
-		public static Expression NewArrayBounds (TypeInfo type, Expression size)
+		public static Expression NewArrayBounds (TypeInfo type, List<Expression> sizes)
 		{
-			return new NewArrayExpression (type, size);
+			return new NewArrayExpression (type, sizes);
 		}
 
 		public static Expression Cast (TypeInfo type, Expression value)
@@ -487,14 +506,14 @@ namespace ProcessingCli.Ast
 
 	public class NewArrayExpression : Expression
 	{
-		public NewArrayExpression (TypeInfo type, Expression size)
+		public NewArrayExpression (TypeInfo type, List<Expression> sizes)
 		{
 			Type = type;
-			Size = size;
+			Sizes = sizes;
 		}
 
 		public TypeInfo Type { get; set; }
-		public Expression Size { get; set; }
+		public List<Expression> Sizes { get; set; }
 	}
 
 	public class ArrayInitializerExpression : Expression

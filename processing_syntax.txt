@@ -105,6 +105,9 @@
 	break : statement
 		break_statement := "break"
 
+	continue : statement
+		continue_statement := "continue"
+
 	switch : statement part
 		switch_statement :=
 			"switch" "(" expression ")" "{" switch_case_list "}"
@@ -292,6 +295,7 @@
 		return_statement
 		| abstract_assignment_statement
 		| break_statement
+		| continue_statement
 		| increment_statement
 		| decrement_statement
 		| variable_declaration_statement
@@ -320,6 +324,7 @@
 	assignment_statement := variable "=" expression
 	while_statement := "while" "(" expression ")" statement_block
 	break_statement := "break"
+	continue_statement := "continue"
 
 	// variable-declaration
 
@@ -435,7 +440,16 @@
 		"new" function_call_base
 
 	new_array_expression :=
-		"new" identifier "[" expression "]"
+		"new" identifier new_array_ranks
+
+	new_array_ranks :=
+		new_array_rank
+		| new_array_ranks new_array_rank
+
+	// FIXME: could depend on the rank position
+	new_array_rank :=
+		"[" expression "]"
+		| "[" "]"
 
 	// callable expressions
 

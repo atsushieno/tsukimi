@@ -303,9 +303,21 @@ namespace ProcessingCli
 				w.WriteLine (")");
 				writeSemicolon = true;
 				GenerateStatement (f.Body);
+			} else if (s is BreakStatement) {
+				w.WriteLine ("break;");
+			} else if (s is ContinueStatement) {
+				w.WriteLine ("continue;");
+			} else if (s is ReturnStatement) {
+				var r = (ReturnStatement) s;
+				w.Write ("return");
+				if (r.Value != null) {
+					w.Write (' ');
+					GenerateExpression (r.Value);
+				}
+				w.WriteLine (';');
 			} else {
 				Console.Error.WriteLine (s);
-				throw new NotImplementedException ();
+				throw new NotImplementedException ("Not implemented statement: " + s);
 			}
 		}
 
@@ -396,11 +408,33 @@ namespace ProcessingCli
 				w.Write (")");
 			} else if (x is NewArrayExpression) {
 				var n = (NewArrayExpression) x;
-				w.Write ("new ");
-				GenerateType (n.Type);
-				w.Write (" [");
-				GenerateExpression (n.Size);
-				w.Write ("]");
+				if (n.Sizes.Count == 1) {
+					w.Write ("new ");
+					GenerateType (n.Type);
+					w.Write (" [");
+					if (n.Sizes [0] != null)
+						GenerateExpression (n.Sizes [0]);
+					w.Write ("]");
+				} else {
+					w.Write ('(');
+					GenerateType (n.Type);
+					for (int i = 0; i < n.Sizes.Count; i++)
+						w.Write (" []");
+					w.Write (") ");
+					w.Write ("ProcessingUtility.CreateMultiDimentionArray (typeof (");
+					GenerateType (n.Type);
+					w.Write ("), 0, ");
+					if (n.Sizes [0] != null)
+						GenerateExpression (n.Sizes [0]);
+					for (int i = 1; i < n.Sizes.Count; i++) {
+						w.Write (", ");
+						if (n.Sizes [i] != null)
+							GenerateExpression (n.Sizes [i]);
+						else
+							w.Write ("-1");
+					}
+					w.Write (")");
+				}
 			} else if (x is ArrayInitializerExpression) {
 				var n = (ArrayInitializerExpression) x;
 				w.Write ("{");
