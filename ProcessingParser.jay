@@ -50,6 +50,7 @@ namespace ProcessingCli.Parser
 %token IMPLEMENTS		//"implements"
 %token WHILE			//"while"
 %token BREAK			//"break"
+%token CONTINUE			//"continue"
 %token RETURN			//"return"
 %token IF			//"if"
 %token ELSE			//"else"
@@ -305,6 +306,7 @@ statement_with_semicolon
 	| variable_declaration_statement
 	| call_super_statement // FIXME: allow it only as a top of constructor body statements.
 	| break_statement
+	| continue_statement
 	| flow_control_less_statement
 	;
 
@@ -428,6 +430,8 @@ while_statement
 	;
 
 break_statement : BREAK { $$ = Statement.Break (); } ;
+
+continue_statement : CONTINUE { $$ = Statement.Continue (); }
 
 /// variable-declaration
 
@@ -710,11 +714,35 @@ new_object_expression
 	;
 
 new_array_expression
-	: NEW type_name OPEN_BRACE expression CLOSE_BRACE
+	: NEW type_name new_array_ranks
 	{
-		$$ = Expression.NewArrayBounds ((TypeInfo) $2, (Expression) $4);
+		$$ = Expression.NewArrayBounds ((TypeInfo) $2, (List<Expression>) $3);
 	}
 	;
+
+new_array_ranks
+	: new_array_rank
+	{
+		var l = new List<Expression> ();
+		l.Add ((Expression) $1);
+		$$ = l;
+	}
+	| new_array_ranks new_array_rank
+	{
+		var l = (List<Expression>) $1;
+		l.Add ((Expression) $2);
+		$$ = l;
+	}
+
+new_array_rank
+	: OPEN_BRACE expression CLOSE_BRACE
+	{
+		$$ = $2;
+	}
+	| OPEN_BRACE_CLOSE_BRACE
+	{
+		$$ = null;
+	}
 
 // callable expressions
 

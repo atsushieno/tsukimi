@@ -490,6 +490,8 @@ namespace ProcessingCli.Parser
 					return Token.WHILE;
 				case "break":
 					return Token.BREAK;
+				case "continue":
+					return Token.CONTINUE;
 				case "return":
 					return Token.RETURN;
 				case "if":
