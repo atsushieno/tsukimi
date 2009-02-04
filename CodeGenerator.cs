@@ -51,6 +51,7 @@ namespace ProcessingCli
 		public void Generate ()
 		{
 			w.WriteLine ("using System;");
+			w.WriteLine ("using System.Linq;");
 			w.WriteLine ("using System.Windows;");
 			w.WriteLine ("using System.Windows.Controls;");
 			w.WriteLine ("using System.Windows.Media;");
@@ -218,7 +219,7 @@ namespace ProcessingCli
 				return "bool";
 			case "byte":
 				return "sbyte";
-			case "string":
+			case "String":
 				return "ProcessingCli.PString";
 			case "float":
 				return "double";
@@ -357,6 +358,21 @@ namespace ProcessingCli
 					return "StandardLibrary." + name;
 
 			return name;
+		}
+
+		string ResolveFieldMemberName (Expression type, string fieldName)
+		{
+			// FIXME: This AST currently has no way to infer
+			// TypeInfo from an Expression, so it handles every
+			// "length" property as for an array and replaces it
+			// with "Length" in CLI.
+			if (true) {
+				switch (fieldName) {
+				case "length":
+					return "Length";
+				}
+			}
+			return fieldName;
 		}
 
 		void GenerateExpression (Expression x)
@@ -526,7 +542,7 @@ namespace ProcessingCli
 				var a = (FieldAccessExpression) x;
 				GenerateExpression (a.Target);
 				w.Write ('.');
-				w.Write (a.MemberName);
+				w.Write (ResolveFieldMemberName (a.Target, a.MemberName));
 			} else {
 				Console.Error.WriteLine (x);
 				throw new NotImplementedException ("Not implemented expression: " + x);

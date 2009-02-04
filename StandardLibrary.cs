@@ -35,6 +35,67 @@ using ColorMode = System.Int32;
 
 namespace ProcessingCli
 {
+	public static class ProcessingExtensions
+	{
+		public static int charAt (this string s, int index)
+		{
+			return s [index];
+		}
+
+		public static bool equals (this string ss, String s)
+		{
+			return ss == s;
+		}
+
+		public static int indexOf (this string ss, String s)
+		{
+			return indexOf (ss, s, 0);
+		}
+
+		public static int indexOf (this string ss, String s, int startIndex)
+		{
+			return ss.IndexOf (s, startIndex, StringComparison.Ordinal);
+		}
+
+		public static int length (this string s)
+		{
+			return s.Length;
+		}
+
+		public static string substring (this string s, int start)
+		{
+			return s.Substring (start);
+		}
+
+		public static string substring (this string s, int start, int end)
+		{
+			return s.Substring (start, end - start);
+		}
+
+		public static string toLowerCase (this string s)
+		{
+			return s.ToLower (CultureInfo.InvariantCulture);
+		}
+
+		public static string toUpperCase (this string s)
+		{
+			return s.ToUpper (CultureInfo.InvariantCulture);
+		}
+
+		// FIXME: the specification requires that String implements
+		// all methods in J2SE java.lang.String.
+
+		public static bool startsWith (this string ss, String s)
+		{
+			return ss.StartsWith (s, StringComparison.Ordinal);
+		}
+
+		public static bool endsWith (this string ss, String s)
+		{
+			return ss.EndsWith (s, StringComparison.Ordinal);
+		}
+	}
+
 	public class ProcessingUtility
 	{
 		// e.g.:
@@ -76,6 +137,7 @@ namespace ProcessingCli
 			return s.s;
 		}
 
+		/*
 		public int charAt (int index)
 		{
 			return s [index];
@@ -131,6 +193,7 @@ namespace ProcessingCli
 		{
 			return s.ToUpper (CultureInfo.InvariantCulture);
 		}
+		*/
 	}
 
 	public class PImage
