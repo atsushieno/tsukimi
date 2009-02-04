@@ -35,6 +35,29 @@ using ColorMode = System.Int32;
 
 namespace ProcessingCli
 {
+	public class ProcessingUtility
+	{
+		// e.g.:
+		// a = new int [3][4][5] => a = new int [3][][];
+		// for (int i=0;i<3;i++) a[i]=C(typeof(int),1, dims);
+			// a = new int [4][];
+			// for (int i=0;i<4;i++) a[i]=C(typeof(int), 2, dims);
+				// a = new int[5];
+		public static object CreateMultiDimentionArray (Type type, int dimIdx, params int [] dims)
+		{
+			if (dims [dimIdx] < 0)
+				return null; // not initialized
+
+			if (dimIdx + 1 == dims.Length)
+				return Array.CreateInstance (type, dims [dimIdx]);
+			else {
+				Array a = Array.CreateInstance (type.MakeArrayType (), dims [dimIdx]);
+				for (int i = 0; i < dims [dimIdx]; i++)
+					a.SetValue (CreateMultiDimentionArray (type, dimIdx + 1, dims), i);
+				return a;
+			}
+		}
+	}
 	public class PString
 	{
 		string s;
