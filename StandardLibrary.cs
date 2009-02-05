@@ -326,14 +326,14 @@ namespace ProcessingCli
 		[ProcessingStandardFieldAttribute]
 		public const EllipseMode CORNERS = EllipseMode.Corners;
 
-		#region UNDOCUMENTED
+		// They are documented in colorMode() page...
 		[ProcessingStandardField]
 		public const int RGB = 1;
 
 		[ProcessingStandardField]
 		public const int HSB = 2;
-		#endregion
 
+		
 		public static Canvas Host; // set by application
 
 		public static void SetHost (Canvas canvas)
@@ -476,6 +476,7 @@ namespace ProcessingCli
 		mousePressed
 		pmouseY
 */
+		// They are written in "key" and "keyCode" pages...
 		[ProcessingStandardField]
 		public const char BACKSPACE = '\x8';
 

@@ -38,8 +38,8 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
-    <Reference Include="System.Windows" />
-    <Reference Include="System.Windows.Browser" />
+    <Reference Include="System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+    <Reference Include="System.Windows.Browser, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\StandardLibrary.Conversion.cs" />
@@ -49,6 +49,7 @@
     <Compile Include="..\StandardLibrary.cs" />
     <Compile Include="..\StandardLibrary.Files.cs" />
     <Compile Include="..\StandardLibrary.ArrayFunctions.cs" />
+    <Compile Include="..\StandardLibrary.HiddenAPI.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
