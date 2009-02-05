@@ -341,6 +341,8 @@ namespace ProcessingCli
 			Host = canvas;
 			Host.MouseMove += delegate (object o, MouseEventArgs e) { current_mouse = e; };
 		}
+		
+		public static TextWriter StandardOutput = Console.Out;
 
 		static SolidColorBrush stroke_brush;
 		static double? stroke_weight;
@@ -551,7 +553,16 @@ namespace ProcessingCli
 		createWriter()
 		createReader()
 		beginRecord()
-
+*/
+		public static void print (object obj)
+		{
+			StandardOutput.Write (obj);
+		}
+		public static void println (object obj)
+		{
+			StandardOutput.WriteLine (obj);
+		}
+/*
 *** Transform
 
 	function:
