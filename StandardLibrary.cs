@@ -118,6 +118,20 @@ namespace ProcessingCli
 				return a;
 			}
 		}
+
+		public static Stream OpenRead (string s)
+		{
+			var cli = new WebClient ();
+			var wait = new ManualResetEvent (false);
+			Stream result = null;
+			cli.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
+				result = e.Result;
+				wait.Set ();
+			};
+			cli.OpenReadAsync (new Uri (s, UriKind.RelativeOrAbsolute));
+			wait.WaitOne ();
+			return result;
+		}
 	}
 	public class PString
 	{
@@ -851,16 +865,8 @@ namespace ProcessingCli
 		public static PImage loadImage (string uri, string extension)
 		{
 			// FIXME: extension is ignored so far
-			var cli = new WebClient ();
-			var wait = new ManualResetEvent (false);
-			Stream result = null;
-			cli.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
-				result = e.Result;
-				wait.Set ();
-			};
-			wait.WaitOne ();
 			var img = new BitmapImage ();
-			img.SetSource (result);
+			img.SetSource (ProcessingUtility.OpenRead (uri));
 			return new PImage (img);
 		}
 
