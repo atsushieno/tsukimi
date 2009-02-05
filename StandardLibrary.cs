@@ -443,17 +443,6 @@ namespace ProcessingCli
 		}
 
 /*
-		// Array Functions
-
-		shorten()
-		concat()
-		subset()
-		append()
-		sort()
-		arraycopy()
-		reverse()
-		splice()
-		expand()
 
 *** Environment
 

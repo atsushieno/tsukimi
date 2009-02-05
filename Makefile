@@ -14,6 +14,7 @@ CONVERTER_SOURCES = \
 
 CORE_DLL_SOURCES = \
 	StandardLibrary.cs \
+	StandardLibrary.ArrayFunctions.cs \
 	StandardLibrary.Conversion.cs \
 	StandardLibrary.Files.cs \
 	StandardLibrary.StringFunctions.cs \

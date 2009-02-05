@@ -9,6 +9,17 @@ namespace ProcessingCli
 {
 	public static partial class StandardLibrary
 	{
+/*
+ 		// Input - Files.
+
+		createInput()
+		loadBytes()
+		loadStrings()
+		open()
+		selectFolder()
+		selectInput()
+*/
+
 		public static byte [] loadBytes (string file)
 		{
 			var s = ProcessingUtility.OpenRead (file);
