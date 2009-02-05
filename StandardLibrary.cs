@@ -460,18 +460,6 @@ namespace ProcessingCli
 		noCursor()
 		cursor()
 */
-		static MouseEventArgs current_mouse;
-
-		[ProcessingStandardField]
-		public static double mouseX {
-			get { return current_mouse == null ? 0 : current_mouse.GetPosition (null).X; }
-		}
-
-		[ProcessingStandardField]
-		public static double mouseY {
-			get { return current_mouse == null ? 0 : current_mouse.GetPosition (null).Y; }
-		}
-
 /*
 *** Input
 
@@ -485,7 +473,38 @@ namespace ProcessingCli
 		mouseY
 		mousePressed
 		pmouseY
+*/
+		[ProcessingStandardField]
+		public const char BACKSPACE = '\x8';
 
+		[ProcessingStandardField]
+		public const char TAB = '\x9';
+
+		[ProcessingStandardField]
+		public const char ENTER = '\xA';
+
+		[ProcessingStandardField]
+		public const char RETURN = '\xD';
+
+		[ProcessingStandardField]
+		public const char ESC = '\x1B';
+
+		[ProcessingStandardField]
+		public const char DELETE = '\x7F';
+
+		static MouseEventArgs current_mouse;
+
+		[ProcessingStandardField]
+		public static double mouseX {
+			get { return current_mouse == null ? 0 : current_mouse.GetPosition (null).X; }
+		}
+
+		[ProcessingStandardField]
+		public static double mouseY {
+			get { return current_mouse == null ? 0 : current_mouse.GetPosition (null).Y; }
+		}
+		
+/*
 	function:
 		mouseDragged()
 		mouseMoved()
