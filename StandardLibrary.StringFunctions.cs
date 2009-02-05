@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace ProcessingCli
@@ -8,31 +9,33 @@ namespace ProcessingCli
 	{
 		// String functions
 
-		public static string [] split (string s, char token)
+		public static PString [] split (string s, char token)
 		{
-			return s.Split (token);
+			var a = s.Split (token);
+			return a.Cast<PString> ().ToArray ();
 		}
 
-		public static string [] split (string s, string token)
+		public static PString [] split (string s, string token)
 		{
-			return s.Split (new string [] {token}, StringSplitOptions.None);
+			var a = s.Split (new string [] {token}, StringSplitOptions.None);
+			return a.Cast<PString> ().ToArray ();
 		}
 
-		public static string join (string [] arr, string joiner)
+		public static string join (PString [] arr, string joiner)
 		{
-			return String.Join (joiner, arr);
+			return String.Join (joiner, arr.Cast<string> ().ToArray ());
 		}
 
 		static readonly char [] wsChars = {' ', '\n', '\r', '\t'};
 
-		public static string [] splitTokens (string s)
+		public static PString [] splitTokens (string s)
 		{
-			return s.Split (wsChars);
+			return s.Split (wsChars).Cast<PString> ().ToArray ();
 		}
 
-		public static string [] splitTokens (string s, string token)
+		public static PString [] splitTokens (string s, string token)
 		{
-			return s.Split (token.ToCharArray ());
+			return s.Split (token.ToCharArray ()).Cast<PString> ().ToArray ();
 		}
 
 		public static string nf (int n, int digits)
@@ -45,10 +48,10 @@ namespace ProcessingCli
 			return n.ToString ("{0," + left + "," + right + "}", CultureInfo.InvariantCulture);
 		}
 
-		public static string [] match (string str, string regexp)
+		public static PString [] match (string str, string regexp)
 		{
 			var m = Regex.Matches (str, regexp);
-			string [] res = new string [m.Count];
+			PString [] res = new PString [m.Count];
 			for (int i = 0; i < m.Count; i++)
 				res [i] = m [i].Value;
 			return res;
