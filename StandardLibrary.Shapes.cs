@@ -34,6 +34,20 @@ namespace ProcessingCli
 			Host.Children.Add (p);
 		}
 
+		public static void ellipse (double x, double y, double width, double height)
+		{
+			Ellipse r = new Ellipse ();
+			r.Width = width;
+			r.Height = height;
+			r.Stroke = stroke_brush;
+			if (stroke_weight != null)
+				r.StrokeThickness = (double) stroke_weight;
+			r.Fill = fill_brush;
+			Canvas.SetLeft (r, x);
+			Canvas.SetTop (r, y);
+			Host.Children.Add (r);
+		}
+
 		public static void line (int x1, int y1, int x2, int y2)
 		{
 			line ((double) x1, (double) y1, (double) x2, (double) y2);
@@ -78,7 +92,6 @@ namespace ProcessingCli
 			Rectangle r = new Rectangle ();
 			r.Width = width;
 			r.Height = height;
-			// FIXME: consider fill property
 			r.Stroke = stroke_brush;
 			if (stroke_weight != null)
 				r.StrokeThickness = (double) stroke_weight;
