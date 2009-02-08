@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -94,6 +95,16 @@ namespace ProcessingCli
 		public static bool endsWith (this string ss, String s)
 		{
 			return ss.EndsWith (s, StringComparison.Ordinal);
+		}
+		
+		public static string replace (this string ss, char oldChar, char newChar)
+		{
+			return ss.Replace (oldChar, newChar);
+		}
+
+		public static string replaceAll (this string ss, String regex, String replacement)
+		{
+			return new Regex (regex).Replace (ss, replacement, int.MaxValue, 0);
 		}
 	}
 
