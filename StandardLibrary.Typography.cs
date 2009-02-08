@@ -77,7 +77,7 @@ namespace ProcessingCli
 
 		public static PFont createFont (string name, double size, bool smooth, char [] charset)
 		{
-			return createFont (name, size, smooth, charset);
+			return new PFont (name, size, smooth, charset);
 		}
 
 		static void ApplyTextFont (TextBlock tb)
