@@ -7,7 +7,10 @@ namespace ProcessingCli.Ast
 	{
 		public static StatementBlock Block (bool wrap, List<Statement> statements)
 		{
-			return Block (wrap, statements.ToArray ());
+			if (statements == null)
+				return Block (wrap);
+			else
+				return Block (wrap, statements.ToArray ());
 		}
 
 		public static StatementBlock Block (bool wrap, params Statement [] statements)
