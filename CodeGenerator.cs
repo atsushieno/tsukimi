@@ -322,14 +322,16 @@ namespace ProcessingCli
 			}
 		}
 
-		string ResolveGlobalFunction (string name)
+		string ResolveFunction (string name, bool isGlobal)
 		{
-			foreach (GlobalFunctionDefinition g in funcs)
-				if (g.Internal.Name == name)
-					return name;
-			foreach (var n in StandardLibrary.AllFunctionNames)
-				if (n == name)
-					return "StandardLibrary.@" + name;
+			if (isGlobal) {
+				foreach (GlobalFunctionDefinition g in funcs)
+					if (g.Internal.Name == name)
+						return name;
+				foreach (var n in StandardLibrary.AllFunctionNames)
+					if (n == name)
+						return "StandardLibrary.@" + name;
+			}
 			return name;
 		}
 
@@ -385,8 +387,10 @@ namespace ProcessingCli
 				if (f.Target != null) {
 					GenerateExpression (f.Target);
 					w.Write (".");
+					w.Write (ResolveFunction (f.Name, false));
 				}
-				w.Write (ResolveGlobalFunction (f.Name));
+				else
+					w.Write (ResolveFunction (f.Name, true));
 				w.Write (" (");
 				for (int i = 0; i < f.Arguments.Count; i++) {
 					if (i > 0)
