@@ -18,6 +18,7 @@ CORE_DLL_SOURCES = \
 	StandardLibrary.Conversion.cs \
 	StandardLibrary.Files.cs \
 	StandardLibrary.HiddenAPI.cs \
+	StandardLibrary.PImage.cs \
 	StandardLibrary.StringFunctions.cs \
 	StandardLibrary.Math.cs \
 	StandardLibrary.Shapes.cs
