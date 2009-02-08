@@ -868,26 +868,6 @@ namespace ProcessingCli
 		hint()
 		unhint()
 		createGraphics()
-
-*** Typography
-
-	type:
-		PFont
-
-	function:
-		text()
-		createFont()
-		loadFont()
-		textFont()
-
-		textMode()
-		textSize()
-		textAlign()
-		textLeading()
-		textWidth()
-
-		textDescent()
-		textAscent()
 */
 	}
 }

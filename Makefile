@@ -21,7 +21,8 @@ CORE_DLL_SOURCES = \
 	StandardLibrary.PImage.cs \
 	StandardLibrary.StringFunctions.cs \
 	StandardLibrary.Math.cs \
-	StandardLibrary.Shapes.cs
+	StandardLibrary.Shapes.cs \
+	StandardLibrary.Typography.cs
 
 all: $(CORE_DLL) $(CONVERTER_EXE)
 

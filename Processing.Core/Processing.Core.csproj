@@ -51,6 +51,7 @@
     <Compile Include="..\StandardLibrary.ArrayFunctions.cs" />
     <Compile Include="..\StandardLibrary.HiddenAPI.cs" />
     <Compile Include="..\StandardLibrary.PImage.cs" />
+    <Compile Include="..\StandardLibrary.Typography.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
