@@ -199,64 +199,6 @@ namespace ProcessingCli
 		{
 			return s.s;
 		}
-
-		/*
-		public int charAt (int index)
-		{
-			return s [index];
-		}
-
-		public bool equals (String s)
-		{
-			return this.s == s.s;
-		}
-
-		public override bool Equals (object o)
-		{
-			String s = o as String;
-			return s != null && s.s == this.s;
-		}
-
-		public override int GetHashCode ()
-		{
-			return s.GetHashCode ();
-		}
-
-		public int indexOf (String s)
-		{
-			return indexOf (s, 0);
-		}
-
-		public int indexOf (String s, int startIndex)
-		{
-			return this.s.IndexOf (s.s, startIndex, StringComparison.Ordinal);
-		}
-
-		public int length ()
-		{
-			return s.Length;
-		}
-
-		public string substring (int start)
-		{
-			return s.Substring (start);
-		}
-
-		public string substring (int start, int end)
-		{
-			return s.Substring (start, end - start);
-		}
-
-		public string ToLowerCase ()
-		{
-			return s.ToLower (CultureInfo.InvariantCulture);
-		}
-
-		public string ToUpperCase ()
-		{
-			return s.ToUpper (CultureInfo.InvariantCulture);
-		}
-		*/
 	}
 
 	public class PImage
