@@ -768,7 +768,9 @@ namespace ProcessingCli
 		public static Color color (string hex)
 		{
 			uint v = uint.Parse (hex.Substring (1), NumberStyles.HexNumber);
-			return Color.FromArgb ((byte) (v & 0xFF0000 >> 16), (byte) (v & 0xFF00 >> 8), (byte) (v & 0xFF), (byte) (v >> 24));
+			if (hex.Length == 7)
+				v |= 0xFF000000;
+			return Color.FromArgb ((byte) (v >> 24), (byte) ((v & 0xFF0000) >> 16), (byte) ((v & 0xFF00) >> 8), (byte) (v & 0xFF));
 		}
 
 		public static Color color (string hex, double alpha)
