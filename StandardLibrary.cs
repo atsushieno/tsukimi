@@ -234,13 +234,13 @@ namespace ProcessingCli
 		public const double HALF_PI = PI / 2.0;
 		[ProcessingStandardField]
 		public const double TWO_PI = PI * 2.0;
-		[ProcessingStandardFieldAttribute]
+		[ProcessingStandardField]
 		public const EllipseMode Center = EllipseMode.Center;
-		[ProcessingStandardFieldAttribute]
+		[ProcessingStandardField]
 		public const EllipseMode RADIUS = EllipseMode.Radius;
-		[ProcessingStandardFieldAttribute]
+		[ProcessingStandardField]
 		public const EllipseMode CORNER = EllipseMode.Corner;
-		[ProcessingStandardFieldAttribute]
+		[ProcessingStandardField]
 		public const EllipseMode CORNERS = EllipseMode.Corners;
 
 		// They are documented in colorMode() page...
@@ -714,6 +714,11 @@ namespace ProcessingCli
 
 	function:
 
+		*alpha()
+		*red()
+		*blue()
+		*green()
+		*color()
 		blendColor()
 		brightness()
 		saturation()
@@ -773,6 +778,13 @@ namespace ProcessingCli
 			return c;
 		}
 
+		public static Color lerpColor (Color c1, Color c2, double amt)
+		{
+			return Color.FromArgb ((byte) lerp (c1.A, c2.A, amt),
+								    (byte) lerp (c1.R, c2.R, amt),
+								    (byte) lerp (c1.G, c2.G, amt),
+								    (byte) lerp (c1.B, c2.B, amt));
+		}
 /*
 *** Image
 

@@ -168,7 +168,10 @@ namespace ProcessingCli
 			return map (value, low, high, 0, 1);
 		}
 
-
+		public static double lerp (double v1, double v2, double amt)
+		{
+			return v1 + (v2 - v1) * amt;
+		}
 /*
 		mag()
 		log()
