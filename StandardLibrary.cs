@@ -121,6 +121,7 @@ namespace ProcessingCli
 
 		public static Stream OpenRead (string s)
 		{
+			/*
 			var cli = new WebClient ();
 			var wait = new ManualResetEvent (false);
 			Stream result = null;
@@ -131,6 +132,11 @@ namespace ProcessingCli
 			cli.OpenReadAsync (new Uri (s, UriKind.RelativeOrAbsolute));
 			wait.WaitOne ();
 			return result;
+			*/
+			var sri = Application.GetResourceStream (new Uri (s, UriKind.RelativeOrAbsolute));
+			if (sri == null)
+				return null;
+			return sri.Stream;
 		}
 	}
 	public class PString
@@ -139,11 +145,12 @@ namespace ProcessingCli
 
 		public PString (string s)
 		{
+			this.s = s;
 		}
 
-		public static implicit operator String (string s)
+		public static implicit operator PString (string s)
 		{
-			return new String (s);
+			return new PString (s);
 		}
 
 		public static implicit operator string (String s)
@@ -879,7 +886,7 @@ namespace ProcessingCli
 */
 		public static PImage loadImage (string uri)
 		{
-			return new PImage (new BitmapImage (new Uri (uri, UriKind.RelativeOrAbsolute)));
+			return loadImage (uri, uri.Substring (uri.LastIndexOf ('.')));
 		}
 
 		public static PImage loadImage (string uri, string extension)
@@ -901,7 +908,7 @@ namespace ProcessingCli
 			if (img.width != width || img.height != height)
 				i.Arrange (new Rect (0, 0, width, height));
 			Host.Children.Add (i);
-
+			
 			// FIXME: add mask (as alpha channel)
 			//foreach (var mask in img.Masks)
 			//	image (mask, x, y, width, height);
