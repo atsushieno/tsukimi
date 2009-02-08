@@ -220,6 +220,19 @@ namespace ProcessingCli
 		OpenGL
 	}
 
+	public enum TextAlign
+	{
+		// Align
+		Left,
+		Center,
+		Right,
+		// YAlign
+		Top,
+		Bottom,
+		//Center, // identical!
+		Baseline
+	}
+
 	public class ProcessingHostControl : UserControl
 	{
 		public const string ID = "c056f9b5-5fc9-46ef-a42c-ae316631ebd9";
@@ -239,6 +252,8 @@ namespace ProcessingCli
 
 	public static partial class StandardLibrary
 	{
+		// FIXME: those enum constants are not valid approach,
+		// since some enums overlap names in different types.
 		[ProcessingStandardField]
 		public const double PI = System.Math.PI;
 		[ProcessingStandardField]
@@ -253,6 +268,18 @@ namespace ProcessingCli
 		public const ShapeMode CORNER = ShapeMode.Corner;
 		[ProcessingStandardField]
 		public const ShapeMode CORNERS = ShapeMode.Corners;
+		[ProcessingStandardField]
+		public const TextAlign LEFT = TextAlign.Left;
+		[ProcessingStandardField]
+		public const TextAlign CENTER = TextAlign.Center;
+		[ProcessingStandardField]
+		public const TextAlign RIGHT = TextAlign.Right;
+		[ProcessingStandardField]
+		public const TextAlign TOP = TextAlign.Top;
+		[ProcessingStandardField]
+		public const TextAlign BOTTOM = TextAlign.Bottom;
+		[ProcessingStandardField]
+		public const TextAlign BASELINE = TextAlign.Baseline;
 
 		// They are documented in colorMode() page...
 		[ProcessingStandardField]

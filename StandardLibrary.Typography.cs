@@ -95,9 +95,9 @@ namespace ProcessingCli
 			return tb;
 		}
 
-		public static void text (string data, double x, double y)
+		public static void text (object data, double x, double y)
 		{
-			Host.Children.Add (CreateTextBlock (data, x, y));
+			Host.Children.Add (CreateTextBlock (data.ToString (), x, y));
 		}
 
 		public static void text (string data, double x, double y, double width, double height)
@@ -116,6 +116,50 @@ namespace ProcessingCli
 		public static void textFont (PFont font, double size)
 		{
 			text_font = new PFont (font.Name, size, font.Smooth, font.Charset);
+		}
+
+		// FIXME: they are not supported.
+		static TextAlign text_align;
+		static double text_leading;
+		static double text_size;
+
+		public static void textAlign (TextAlign align)
+		{
+			text_align = align;
+		}
+
+		public static void textLeading (double value)
+		{
+			text_leading = value;
+		}
+
+		public static void textSize (double value)
+		{
+			text_size = value;
+		}
+
+		public static double textWidth (char c)
+		{
+			return textWidth (c.ToString ());
+		}
+
+		public static double textWidth (string s)
+		{
+			TextBlock tb = CreateTextBlock (s, 0, 0);
+			tb.Measure (new Size (Host.Width, Host.Height));
+			return tb.DesiredSize.Width;
+		}
+
+		public static double textAscent ()
+		{
+			// FIXME: implement correctly.
+			return text_font.Size;
+		}
+
+		public static double textDescent ()
+		{
+			// FIXME: implement correctly.
+			return 0;
 		}
 	}
 }
