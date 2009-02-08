@@ -149,6 +149,19 @@ namespace ProcessingCli.Parser
 			bool loop = true;
 			while (loop) {
 				int c = ReadChar ();
+				if (c == '\\') { // escape character
+					switch ((c = ReadChar ())) {
+					case '\\':
+						AppendNameChar ('\\', ref index);
+						break;
+					case '"':
+						AppendNameChar ('"', ref index);
+						break;
+					default:
+						throw new ParserException (String.Format ("Invalid escape character after \\: '{0}'", (char) c));
+					}
+					continue;
+				}
 				if (c == '"')
 					break;
 				if (c < 0)
