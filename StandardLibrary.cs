@@ -431,6 +431,9 @@ namespace ProcessingCli
 		mousePressed
 		pmouseY
 */
+		[ProcessingStandardField]
+		public static char key;
+
 		// They are written in "key" and "keyCode" pages...
 		[ProcessingStandardField]
 		public const char BACKSPACE = '\x8';
