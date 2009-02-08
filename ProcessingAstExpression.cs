@@ -188,6 +188,11 @@ namespace ProcessingCli.Ast
 			return new ConstantExpression (value);
 		}
 
+		public static Expression ColorConstant (string value)
+		{
+			return new ColorConstantExpression (value);
+		}
+
 		public static Expression Not (Expression operand)
 		{
 			if (operand == null)
@@ -452,10 +457,6 @@ namespace ProcessingCli.Ast
 		public string Name { get; set; }
 	}
 
-	public class LiteralExpression : Expression
-	{
-	}
-
 	public class FieldAccessExpression : Expression
 	{
 		public FieldAccessExpression (Expression target, string memberName)
@@ -476,6 +477,16 @@ namespace ProcessingCli.Ast
 		}
 
 		public object Value { get; set; }
+	}
+	
+	public class ColorConstantExpression : Expression
+	{
+		public ColorConstantExpression (string value)
+		{
+			Value = value;
+		}
+		
+		public string Value { get; set; }
 	}
 
 	public class FunctionCallExpression : Expression

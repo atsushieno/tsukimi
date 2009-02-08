@@ -267,6 +267,14 @@ namespace ProcessingCli.Parser
 			return (double) new Decimal (bits [0], bits [1], bits [2], negative, (byte) exp);
 		}
 
+		char [] color_literal_buffer = new char[6];
+		string ReadColorLiteral ()
+		{
+			for (int i = 0; i < color_literal_buffer.Length; i++)
+				color_literal_buffer [i] = (char) ReadChar ();
+			return new string (color_literal_buffer);
+		}
+
 		private string ReadOneName ()
 		{
 			int index = 0;
@@ -471,6 +479,9 @@ namespace ProcessingCli.Parser
 			case '\"':
 				current_value = ReadStringLiteral ();
 				return Token.STRING_LITERAL;
+			case '#':
+				current_value = ReadColorLiteral ();
+				return Token.COLOR_LITERAL;
 			default:
 				peek_char = c;
 				if (IsNumericStart ((char) c)) {

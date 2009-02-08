@@ -904,7 +904,7 @@ namespace ProcessingCli
 
 		public static Color color (string hex)
 		{
-			uint v = uint.Parse (hex, NumberStyles.HexNumber);
+			uint v = uint.Parse (hex.Substring (1), NumberStyles.HexNumber);
 			return Color.FromArgb ((byte) (v & 0xFF0000 >> 16), (byte) (v & 0xFF00 >> 8), (byte) (v & 0xFF), (byte) (v >> 24));
 		}
 

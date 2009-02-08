@@ -44,6 +44,7 @@ namespace ProcessingCli.Parser
 %token IDENTIFIER
 %token NUMERIC_LITERAL
 %token STRING_LITERAL
+%token COLOR_LITERAL
 %token CHARACTER_LITERAL
 %token CLASS			//"class"
 %token EXTENDS			//"extends"
@@ -632,7 +633,7 @@ switch_case_default
 	;
 
 switch_case
-	: CASE literal COLON statements
+	: CASE constant_expression COLON statements
 	{
 		var l = (List<Statement>) $4;
 		// must end with break_statement
@@ -685,9 +686,13 @@ primary_expression
 	| parenthesized_expression
 
 constant_expression
-	: literal
+	: raw_literal
 	{
 		$$ = Expression.Constant ($1);
+	}
+	| color_literal
+	{
+		$$ = Expression.ColorConstant ((string) $1);
 	}
 	;
 
@@ -787,7 +792,7 @@ function_arg_list
 	}
 	;
 
-literal
+raw_literal
 	: string_literal
 	| character_literal
 	| numeric_literal
@@ -802,6 +807,8 @@ false_expression : FALSE { $$ = false; } ;
 numeric_literal : NUMERIC_LITERAL
 
 string_literal : STRING_LITERAL
+
+color_literal : COLOR_LITERAL
 
 character_literal : CHARACTER_LITERAL
 

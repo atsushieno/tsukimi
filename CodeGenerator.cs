@@ -415,6 +415,11 @@ namespace ProcessingCli
 				}
 				else
 					w.Write (c.Value);
+			} else if (x is ColorConstantExpression) {
+				var c = (ColorConstantExpression) x;
+				w.Write ("new color (\"#");
+				w.Write (c.Value);
+				w.Write ("\")");
 			} else if (x is NewObjectExpression) {
 				var n = (NewObjectExpression) x;
 				w.Write ("new ");
