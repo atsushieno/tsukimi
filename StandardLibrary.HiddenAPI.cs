@@ -19,10 +19,26 @@ namespace ProcessingCli
 		{
 			return int.Parse (s, NumberFormatInfo.InvariantInfo);
 		}
+		
+		public static int [] parseInt (PString [] arr)
+		{
+			int [] ret = new int [arr.Length];
+			for (int i = 0; i < ret.Length; i++)
+				ret [i] = parseInt (arr [i]);
+			return ret;
+		}
 
 		public static double parseFloat (string s)
 		{
 			return double.Parse (s, NumberFormatInfo.InvariantInfo);
+		}
+		
+		public static double [] parseFloat (PString [] arr)
+		{
+			double [] ret = new double [arr.Length];
+			for (int i = 0; i < ret.Length; i++)
+				ret [i] = parseFloat (arr [i]);
+			return ret;
 		}
 	}
 }
