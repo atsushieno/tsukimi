@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.IsolatedStorage;
 using System.Net;
 using System.Threading;
 using System.Windows;
@@ -96,6 +97,41 @@ namespace ProcessingCli
 		}
 	}
 
+	public class PrintWriter
+	{
+		TextWriter writer;
+
+		internal PrintWriter (TextWriter writer)
+		{
+			this.writer = writer;
+		}
+
+		public void print (object obj)
+		{
+			writer.Write (obj);
+		}
+
+		public void println ()
+		{
+			writer.WriteLine ();
+		}
+
+		public void println (object obj)
+		{
+			writer.WriteLine (obj);
+		}
+
+		public void flush ()
+		{
+			writer.Flush ();
+		}
+
+		public void close ()
+		{
+			writer.Close ();
+		}
+	}
+	
 	public class ProcessingUtility
 	{
 		// e.g.:
@@ -137,6 +173,12 @@ namespace ProcessingCli
 			if (sri == null)
 				return null;
 			return sri.Stream;
+		}
+		
+		public static Stream OpenWrite (string s)
+		{
+			var isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			return new IsolatedStorageFileStream (s, FileMode.Create, isf);
 		}
 	}
 	public class PString
@@ -572,6 +614,11 @@ namespace ProcessingCli
 		createReader()
 		beginRecord()
 */
+		public static PrintWriter createWriter (string filename)
+		{
+			return new PrintWriter (new StreamWriter (ProcessingUtility.OpenWrite (filename)));
+		}
+
 		public static void print (object obj)
 		{
 			StandardOutput.Write (obj);
