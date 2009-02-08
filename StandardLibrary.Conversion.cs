@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
@@ -85,7 +86,7 @@ namespace ProcessingCli
 			return arr;
 		}
 
-		public static int [] @int (string [] values) // including String
+		public static int [] @int (PString [] values) // including String
 		{
 			int [] arr = new int [values.Length];
 			for (int i = 0; i < values.Length; i++)
@@ -303,25 +304,40 @@ namespace ProcessingCli
 		{
 			return double.Parse (v, CultureInfo.InvariantCulture);
 		}
-		public static double @float (int [] v)
+		public static double [] @float (int [] v)
 		{
-			throw new NotImplementedException ();
+			var ret = new double [v.Length];
+			for (int i = 0; i < ret.Length; i++)
+				ret [i] = (double) v [i];
+			return ret;
 		}
-		public static double @float (char [] v)
+		public static double [] @float (char [] v)
 		{
-			throw new NotImplementedException ();
+			var ret = new double [v.Length];
+			for (int i = 0; i < ret.Length; i++)
+				ret [i] = (double) v [i];
+			return ret;
 		}
-		public static double @float (sbyte [] v)
+		public static double [] @float (sbyte [] v)
 		{
-			throw new NotImplementedException ();
+			var ret = new double [v.Length];
+			for (int i = 0; i < ret.Length; i++)
+				ret [i] = (double) v [i];
+			return ret;
 		}
-		public static double @float (bool [] v)
+		public static double [] @float (bool [] v)
 		{
-			throw new NotImplementedException ();
+			var ret = new double [v.Length];
+			for (int i = 0; i < ret.Length; i++)
+				ret [i] = v [i] ? 1 : 0;
+			return ret;
 		}
-		public static double @float (string [] v)
+		public static double [] @float (PString [] v)
 		{
-			throw new NotImplementedException ();
+			var ret = new double [v.Length];
+			for (int i = 0; i < ret.Length; i++)
+				ret [i] = double.Parse (v [i], NumberFormatInfo.InvariantInfo);
+			return ret;
 		}
 	}
 }
