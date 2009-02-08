@@ -229,7 +229,7 @@ namespace ProcessingCli
 	{
 	}
 
-	public enum EllipseMode
+	public enum ShapeMode
 	{
 		Center,
 		Radius,
@@ -246,13 +246,13 @@ namespace ProcessingCli
 		[ProcessingStandardField]
 		public const double TWO_PI = PI * 2.0;
 		[ProcessingStandardField]
-		public const EllipseMode Center = EllipseMode.Center;
+		public const ShapeMode Center = ShapeMode.Center;
 		[ProcessingStandardField]
-		public const EllipseMode RADIUS = EllipseMode.Radius;
+		public const ShapeMode RADIUS = ShapeMode.Radius;
 		[ProcessingStandardField]
-		public const EllipseMode CORNER = EllipseMode.Corner;
+		public const ShapeMode CORNER = ShapeMode.Corner;
 		[ProcessingStandardField]
-		public const EllipseMode CORNERS = EllipseMode.Corners;
+		public const ShapeMode CORNERS = ShapeMode.Corners;
 
 		// They are documented in colorMode() page...
 		[ProcessingStandardField]
@@ -652,6 +652,16 @@ namespace ProcessingCli
 		public static void stroke (string hex, double alpha)
 		{
 			stroke_color = color (hex, alpha);
+		}
+
+		public static void stroke (Color color)
+		{
+			stroke_color = color;
+		}
+
+		public static void stroke (Color color, double alpha)
+		{
+			stroke_color = Color.FromArgb ((byte) alpha, color.R, color.G, color.B);
 		}
 
 		public static void noFill ()

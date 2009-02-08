@@ -101,6 +101,11 @@ namespace ProcessingCli
 			Host.Children.Add (r);
 		}
 
+		public static void rectMode (ShapeMode mode)
+		{
+			Console.WriteLine ("WARNING: no support for rectMode() yet");
+		}
+
 		public static void triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 		{
 			triangle ((double) x1, (double) y1, (double) x2, (double) y2, (double) x3, (double) y3);
@@ -134,7 +139,7 @@ namespace ProcessingCli
 			Console.WriteLine ("WARNING: no support for noSmooth() yet");
 		}
 
-		public static void ellipseMode (EllipseMode mode)
+		public static void ellipseMode (ShapeMode mode)
 		{
 			Console.WriteLine ("WARNING: no support for ellipseMode() yet");
 		}
