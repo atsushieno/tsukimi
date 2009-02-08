@@ -35,7 +35,10 @@ namespace ProcessingCli
 		public static PString [] loadStrings (string file)
 		{
 			try {
-				var sr = new StreamReader (ProcessingUtility.OpenRead (file));
+				var stream = ProcessingUtility.OpenRead (file);
+				if (stream == null)
+					throw new ArgumentException (String.Format ( "File '{0}' does not exist", file));
+				var sr = new StreamReader (stream);
 				var l = new List<PString> ();
 				do {
 					var s = sr.ReadLine ();
@@ -48,7 +51,7 @@ namespace ProcessingCli
 			} catch (Exception ex) {
 				// This is the documented behavior.
 				// Though I'm not sure if this catch is okay.
-				Console.WriteLine (ex.Message);
+				Console.WriteLine (ex);
 				return null;
 			}
 		}
