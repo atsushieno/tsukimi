@@ -540,8 +540,15 @@ expression_list_comma
 
 /// if-else
 
+single_or_blocked_statements
+	: statement
+	{
+		$$ = Statement.Block (false, (Statement) $1);
+	}
+	| statement_block
+
 if_statement
-	: IF OPEN_PAREN expression CLOSE_PAREN statement_block opt_else_block
+	: IF OPEN_PAREN expression CLOSE_PAREN single_or_blocked_statements opt_else_block
 	{
 		var cond = (Expression) $3;
 		var tb = (StatementBlock) $5;
@@ -558,7 +565,7 @@ opt_else_block
 
 else_block
 	: ELSE if_statement { $$ = $2; } // else if
-	| ELSE statement_block { $$ = $2; } // else only
+	| ELSE single_or_blocked_statements { $$ = $2; } // else only
 
 /// for
 

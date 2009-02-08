@@ -365,14 +365,19 @@
 
 	// if-else
 
+	single_or_blocked_statements :=
+		statement
+		| statement_block
+
+	// BUG: the actual syntax allows single curly-less statement.
 	if_statement :=
-		"if" "(" expression ")" statement_block opt_else_block
+		"if" "(" expression ")" single_or_blocked_statements opt_else_block
 
 	opt_else_block :=
 		// empty
 		| else_block
 
-	else_block := "else" statement_block
+	else_block := "else" single_or_blocked_statements
 
 	// for
 
