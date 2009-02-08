@@ -8,17 +8,25 @@ namespace ProcessingCli
 	public static partial class StandardLibrary
 	{
 		// String functions
+		
+		static PString [] Cast (string [] src)
+		{
+			PString [] arr = new PString[src.Length];
+			for (int i = 0; i < arr.Length; i++)
+				arr [i] = src [i];
+			return arr;
+		}
 
 		public static PString [] split (string s, char token)
 		{
 			var a = s.Split (token);
-			return a.Cast<PString> ().ToArray ();
+			return Cast (a);
 		}
 
 		public static PString [] split (string s, string token)
 		{
 			var a = s.Split (new string [] {token}, StringSplitOptions.None);
-			return a.Cast<PString> ().ToArray ();
+			return Cast (a);
 		}
 
 		public static string join (PString [] arr, string joiner)
@@ -30,12 +38,14 @@ namespace ProcessingCli
 
 		public static PString [] splitTokens (string s)
 		{
-			return s.Split (wsChars).Cast<PString> ().ToArray ();
+			var a = s.Split (wsChars);
+			return Cast (a);
 		}
 
 		public static PString [] splitTokens (string s, string token)
 		{
-			return s.Split (token.ToCharArray ()).Cast<PString> ().ToArray ();
+			var a = s.Split (token.ToCharArray ());
+			return Cast (a);
 		}
 
 		public static string nf (int n, int digits)
