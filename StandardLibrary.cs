@@ -220,11 +220,16 @@ namespace ProcessingCli
 	public class PImage
 	{
 		Image img;
+		BitmapImage source;
 		List<PImage> masks;
 
 		internal PImage (BitmapImage bitmap)
 		{
-			img = new Image () { Source = bitmap };
+			img = new Image ();
+			img.ImageFailed += delegate(object sender, ExceptionRoutedEventArgs e) {
+				Console.WriteLine ("############ ImageFailed: {0} {1}", e.OriginalSource, e.ErrorException);
+			};
+			source = bitmap;
 		}
 
 		internal PImage (Color [] pixels)
@@ -235,6 +240,11 @@ namespace ProcessingCli
 			get { return img; }
 		}
 
+		internal void SetSource ()
+		{
+			img.Source = source;
+		}
+		
 		internal List<PImage> Masks {
 			get {
 				if (masks == null)
@@ -886,7 +896,7 @@ namespace ProcessingCli
 */
 		public static PImage loadImage (string uri)
 		{
-			return loadImage (uri, uri.Substring (uri.LastIndexOf ('.')));
+			return loadImage (uri, uri.Substring (uri.LastIndexOf ('.') + 1));
 		}
 
 		public static PImage loadImage (string uri, string extension)
@@ -905,10 +915,13 @@ namespace ProcessingCli
 		public static void image (PImage img, double x, double y, double width, double height)
 		{
 			var i = img.Image;
-			if (img.width != width || img.height != height)
-				i.Arrange (new Rect (0, 0, width, height));
 			Host.Children.Add (i);
-			
+			img.SetSource ();
+			i.UpdateLayout ();
+			// FIXME: width/height calculation is not done yet.
+//			if (img.width != width || img.height != height)
+//				i.Arrange (new Rect (0, 0, width, height));
+
 			// FIXME: add mask (as alpha channel)
 			//foreach (var mask in img.Masks)
 			//	image (mask, x, y, width, height);
