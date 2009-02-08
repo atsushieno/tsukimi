@@ -63,6 +63,8 @@ namespace ProcessingCli
 		textDescent()
 		textAscent()
 */
+		static PFont text_font;
+
 		public static PFont createFont (string name, double size)
 		{
 			return createFont (name, size, false, null);
@@ -104,6 +106,16 @@ namespace ProcessingCli
 			tb.Width = width;
 			tb.Height = height;
 			Host.Children.Add (tb);
+		}
+
+		public static void textFont (PFont font)
+		{
+			text_font = font;
+		}
+		
+		public static void textFont (PFont font, double size)
+		{
+			text_font = new PFont (font.Name, size, font.Smooth, font.Charset);
 		}
 	}
 }
