@@ -10,6 +10,11 @@ namespace ProcessingCli
 		// This source contains the "hidden" APIs that are not
 		// in the reference documentation.
 
+		[ProcessingStandardField]
+		public static readonly double MAX_FLOAT = float.MaxValue;
+		[ProcessingStandardField]
+		public static readonly double MIN_FLOAT = -MAX_FLOAT; // it indeed is.
+
 		public static int parseInt (string s)
 		{
 			return int.Parse (s, NumberFormatInfo.InvariantInfo);
