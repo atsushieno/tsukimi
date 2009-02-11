@@ -210,6 +210,11 @@ namespace ProcessingCli
 		{
 			return s.s;
 		}
+
+		public override string ToString ()
+		{
+			return s;
+		}
 	}
 
 	public enum SizeMode
