@@ -36,5 +36,5 @@ ProcessingParser.cs : ProcessingParser.jay
 	jay -tcv < skeleton.cs  ProcessingParser.jay > ProcessingParser.cs
 
 clean:
-	rm -f $(CORE_DLL) $(CONVERTER_EXE)
+	rm -f $(CORE_DLL) $(CORE_DLL).mdb $(CONVERTER_EXE) $(CONVERTER_EXE).mdb
 
