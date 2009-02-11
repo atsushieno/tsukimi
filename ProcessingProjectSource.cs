@@ -23,6 +23,7 @@ namespace ProcessingCli
 		public string NamespaceName { get; set; }
 		public List<Uri> DataFiles { get; private set; }
 		public List<Uri> Sources { get; private set; }
+		public Dictionary<Uri, TextReader> SourceReaders { get; private set; }
 
 		public static ProcessingProjectSource FromDirectory (string path)
 		{
@@ -73,6 +74,7 @@ namespace ProcessingCli
 		public ProcessingProjectSource ()
 		{
 			Sources = new List<Uri> ();
+			SourceReaders = new Dictionary<Uri, TextReader> ();
 			DataFiles = new List<Uri> ();
 		}
 		
@@ -94,12 +96,12 @@ namespace ProcessingCli
 		{
 			return String.Format (@"ProcessingProjectSource {{
 Namespace: {0}
-Sources:
-{1}
-Data:
-{2}
+Sources: {1}
+Source Readers: {2}
+Data: {3}
 }}", NamespaceName,
 				String.Join (Environment.NewLine, (from uri in Sources select uri.LocalPath).ToArray ()),
+				String.Join (Environment.NewLine, (from uri in SourceReaders.Keys select uri.LocalPath).ToArray ()),
 				String.Join (Environment.NewLine, (from uri in DataFiles select uri.LocalPath).ToArray ()));
 		}
 	}
