@@ -1,4 +1,5 @@
 using System;
+using PString = System.String;
 
 namespace ProcessingCli
 {

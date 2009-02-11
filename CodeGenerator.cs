@@ -220,7 +220,7 @@ namespace ProcessingCli
 			case "byte":
 				return "sbyte";
 			case "String":
-				return "ProcessingCli.PString";
+				return "string";
 			case "float":
 				return "double";
 			case "color":

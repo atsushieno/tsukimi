@@ -4,6 +4,7 @@ using System.IO;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using PString = System.String;
 
 namespace ProcessingCli
 {

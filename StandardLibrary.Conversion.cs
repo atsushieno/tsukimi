@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using PString = System.String;
 
 namespace ProcessingCli
 {

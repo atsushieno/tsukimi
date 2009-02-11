@@ -32,7 +32,7 @@ Object mappings:
 	since it does not exist in processing.
 */
 
-using String = ProcessingCli.PString;
+using PString = System.String;
 using ColorMode = System.Int32;
 
 namespace ProcessingCli
@@ -192,6 +192,7 @@ namespace ProcessingCli
 			return new IsolatedStorageFileStream (s, FileMode.Create, isf);
 		}
 	}
+	/*
 	public class PString
 	{
 		string s;
@@ -216,6 +217,7 @@ namespace ProcessingCli
 			return s;
 		}
 	}
+	*/
 
 	public enum SizeMode
 	{
