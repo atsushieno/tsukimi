@@ -27,6 +27,10 @@ namespace ProcessingCli
 
 		public static ProcessingProjectSource FromDirectory (string path)
 		{
+			if (String.IsNullOrEmpty (path))
+				throw new ArgumentNullException ("path");
+			if (path [path.Length - 1] == Path.DirectorySeparatorChar)
+				path = path.Substring (0, path.Length - 1);
 			path = Path.GetFullPath (path);
 			var uri = new Uri (path);
 			var ns = DetermineNamespace (uri);
