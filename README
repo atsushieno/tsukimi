@@ -7,6 +7,36 @@ moonlight[*2].
 [*1] http://processing.org/
 [*2] http://mono-project.com/Moonlight
 
+So far there are two assemblies as outcome from this project:
+
+	- Processing.Core.dll : this aims to support processing standard
+	  library, to make applications runnable under Moonlight.
+	- processingimporter.exe : this is to import processing application
+	  and generate Moonlight application (xap package etc.).
+	  The resulting application should run under Silverlight too, but
+	  it is not tested at all.
+
+** Dependencies
+
+	You need moon built and installed.
+	Note that I don't mean novell-moonlight.xpi (firefox plugin).
+	This application depends on "mxap".
+
+	Also it depends on "zip" command when it imports application.
+
+** Usage
+
+	First, build the assemblies above by running "make".
+
+	Then, go to processing application directory (I recommend to
+	create a copy of the original application, as this will generate
+	extra files on the directory) and run:
+
+		mono processingimporter.exe --xap .
+
+	Then it will generate xap package, stub html and so on (it is
+	actually what mxap does).
+
 ** Plans
 
 	- Write processing parser that parses processing files (*.pde) to
@@ -15,12 +45,16 @@ moonlight[*2].
 	  classes.
 	- Write code generator that is based on System.Windows.dll.
 	  Not sure we generate either of some source code or direct IL.
+	  So far we generate C# sources directly.
 
-*** Some TODOs
+*** TODOs
 
 	- Make StandardLibrary as an instance so that global variables and
 	  local variables can be distinguished without adding lengthy
 	  "StandardLibrary." to global ones.
+	- support draw(). There is no animation yet.
+	  Not sure if we can support it though.
+	- A lot of library features are missing.
 
 ** Source Files
 
@@ -32,9 +66,9 @@ moonlight[*2].
 
 ** Assemblies
 
-	- Proce55ingCli.Core.dll:
+	- ProcessingCli.Core.dll:
 	  contains StandardLibrary and fundamental control types.
-	- proce55ing2xaml.exe:
+	- processingimporter.exe:
 	  pde parser and XAML generator, possibly more.
 
 ** Parser/Converter
