@@ -13,7 +13,10 @@ You can also try samples from "Visualizing Data" by Ben Fry.
 http://benfry.com/writing/archives/3
 
 So far, some of chapter 3 and chapter 4 would work.
-Though in chapter 4 there are extra dependencies on Java classes such as Float.
+Though in chapter 4 there are some extra dependencies on Java syntax.
+Comment out those lines that contain "throw" statements.
+
+There are also dependencies on Java classes such as Float.
 For Float, you can put the equivalent code below as "Float.cs" :
 
 <code>
