@@ -1,10 +1,35 @@
 
-# Download processing examples from svn:
+With the utility script "create-sample.sh", you can easily try examples
+from processing project (download from svn):
+
+<run>
 wget http://dev.processing.org/source/index.cgi/*checkout*/trunk/processing/build/shared/examples.zip
-
-# then unzip it
 unzip examples.zip
-
-# then run create-sample.sh, with [appname] and [pdefile], for example:
 ./create-sample.sh Array examples/Basics/Arrays/Array/Array.pde
+</run>
+
+
+You can also try samples from "Visualizing Data" by Ben Fry.
+http://benfry.com/writing/archives/3
+
+So far, some of chapter 3 and chapter 4 would work.
+Though in chapter 4 there are extra dependencies on Java classes such as Float.
+For Float, you can put the equivalent code below as "Float.cs" :
+
+<code>
+using System;
+
+public class Float
+{
+	public const double MAX_VALUE = float.MaxValue;
+
+	public static bool isNaN (double value)
+	{
+		return value == double.NaN;
+	}
+}
+</code>
+
+Once you create above, then run processingimporter.exe. It calls mxap and
+it automatically compiles Float.cs too.
 
