@@ -34,7 +34,7 @@ namespace ProcessingCli
 				p.Sources.Add (new Uri (Path.GetFullPath (s)));
 			string datapath = Path.Combine (path, "data");
 			if (Directory.Exists (datapath))
-				foreach (var s in Directory.GetFiles (datapath, "*.pde"))
+				foreach (var s in Directory.GetFiles (datapath))
 					p.DataFiles.Add (new Uri (Path.GetFullPath (s)));
 			foreach (var s in Directory.GetFiles (path, "*.java"))
 				Console.WriteLine ("WARNING: we do not support Java sources");
