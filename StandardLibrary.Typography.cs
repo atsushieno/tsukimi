@@ -120,13 +120,19 @@ namespace ProcessingCli
 		}
 
 		// FIXME: they are not supported.
-		static TextAlign text_align;
+		static TextAlign text_align, text_y_align;
 		static double text_leading;
 		static double text_size;
 
 		public static void textAlign (TextAlign align)
 		{
 			text_align = align;
+		}
+
+		public static void textAlign (TextAlign align, TextAlign yAlign)
+		{
+			text_align = align;
+			text_y_align = yAlign;
 		}
 
 		public static void textLeading (double value)
