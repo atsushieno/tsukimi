@@ -3,6 +3,7 @@ With the utility script "create-sample.sh", you can easily try examples
 from processing project (download from svn):
 
 <run>
+cd processing.org
 wget http://dev.processing.org/source/index.cgi/*checkout*/trunk/processing/build/shared/examples.zip
 unzip examples.zip
 ./create-sample.sh Array examples/Basics/Arrays/Array/Array.pde
