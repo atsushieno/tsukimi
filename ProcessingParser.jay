@@ -14,26 +14,28 @@ namespace ProcessingCli.Parser
 
 	public class ProcessingParser
 	{
-		Uri sourceUri;
-		TextReader source;
+		ProcessingProjectSource source;
 		int yacc_verbose_flag;
 
-		public ProcessingParser (Uri sourceUri, TextReader source)
+		public ProcessingParser (ProcessingProjectSource source)
 		{
-			this.sourceUri = sourceUri;
 			this.source = source;
+			Roots = new List<AstRoot> ();
 		}
 
-		public AstRoot Root { get; set; }
+		public List<AstRoot> Roots { get; private set; }
 
 		public void Parse ()
 		{
-			var t = new Tokenizer (sourceUri, source);
-			try {
-				//Root = (AstRoot) yyparse (t, new yydebug.yyDebugSimple ());
-				Root = (AstRoot) yyparse (t);
-			} catch (yyParser.yyException ex) {
-				throw new ParserException (String.Format ("Irrecoverable syntax error at {0}", t.Location), ex);
+			foreach (var uri in source.Sources) {
+				var tr = source.OpenInput (uri);
+				var t = new Tokenizer (uri, tr);
+				try {
+					//Roots.Add ((AstRoot) yyparse (t, new yydebug.yyDebugSimple ()));
+					Roots.Add ((AstRoot) yyparse (t));
+				} catch (yyParser.yyException ex) {
+					throw new ParserException (String.Format ("Irrecoverable syntax error at {0}", t.Location), ex);
+				}
 			}
 		}
 %}

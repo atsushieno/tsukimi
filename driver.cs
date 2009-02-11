@@ -9,7 +9,13 @@ namespace ProcessingCli
 		public static void Main (string [] args)
 		{
 			foreach (string s in args) {
-				ProcessingSourceImporter.ImportFile (s, Console.Out);
+				ProcessingProjectSource p;
+				if (Directory.Exists (s))
+					p = ProcessingProjectSource.FromDirectory (s);
+				else
+					p = ProcessingProjectSource.FromFile (s);
+				Console.WriteLine ("/*{0}*/", p);
+				ProcessingSourceImporter.Import (p, Console.Out);
 			}
 		}
 	}

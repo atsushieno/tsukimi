@@ -9,7 +9,7 @@ namespace ProcessingCli
 {
 	public class CodeGenerator
 	{
-		AstRoot root;
+		List<AstRoot> roots;
 		TextWriter w;
 		string namespace_name;
 
@@ -32,19 +32,21 @@ namespace ProcessingCli
 			get { return variable_stack.Count > 0 ? variable_stack [variable_stack.Count - 1] : global_variables; }
 		}
 
-		public CodeGenerator (AstRoot root, TextWriter writer, string namespaceName)
+		public CodeGenerator (List<AstRoot> roots, TextWriter writer, string namespaceName)
 		{
-			this.root = root;
+			this.roots = roots;
 			this.w = writer;
 			this.namespace_name = namespaceName ?? "ProcessingCliApplication";
 
-			foreach (ITopLevelContent c in root.Items) {
-				if (c is ClassDefinition)
-					classes.Add ((ClassDefinition) c);
-				else if (c is GlobalFunctionDefinition)
-					funcs.Add ((GlobalFunctionDefinition) c);
-				else if (c is Statement)
-					stmts.Add ((Statement) c);
+			foreach (var root in roots) {
+				foreach (ITopLevelContent c in root.Items) {
+					if (c is ClassDefinition)
+						classes.Add ((ClassDefinition) c);
+					else if (c is GlobalFunctionDefinition)
+						funcs.Add ((GlobalFunctionDefinition) c);
+					else if (c is Statement)
+						stmts.Add ((Statement) c);
+				}
 			}
 		}
 
