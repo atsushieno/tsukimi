@@ -60,12 +60,12 @@ namespace ProcessingCli
 			int last = s.LastIndexOf (".pde", StringComparison.OrdinalIgnoreCase);
 			if (last > 0)
 				s = s.Substring (0, last);
-			last = s.LastIndexOf ('/');
+			last = s.LastIndexOf (Path.DirectorySeparatorChar);
 			if (last > 0)
 				s = s.Substring (last + 1);
 			if (s.Length == 0)
 				s = "MyApp";
-			else if (s [0] == '/')
+			else if (s [0] == Path.DirectorySeparatorChar)
 				s = s.Substring (1);
 			return s;
 		}
