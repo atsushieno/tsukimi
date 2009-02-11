@@ -48,7 +48,7 @@ namespace ProcessingCli
 				string mdb = dll + ".mdb";
 				Copy (exedir, curdir, dll);
 				Copy (exedir, curdir, mdb);
-				Process.Start ("mxap").WaitForExit ();
+				Process.Start ("mxap", "--application-name " + p.NamespaceName).WaitForExit ();
 				if (p.DataFiles.Count > 0) {
 					var l = new List<string> ();
 					l.Add ("-j");
