@@ -35,6 +35,12 @@ $(CORE_DLL) : $(CORE_DLL_SOURCES)
 ProcessingParser.cs : ProcessingParser.jay
 	jay -tcv < skeleton.cs  ProcessingParser.jay > ProcessingParser.cs
 
+EXTRA_DISTFILES = Makefile README processing_syntax.txt
+
+DISTFILES = $(CONVERTER_SOURCES) $(CORE_DLL_SOURCES) $(EXTRA_DISTFILES)
+
 clean:
 	rm -f $(CORE_DLL) $(CORE_DLL).mdb $(CONVERTER_EXE) $(CONVERTER_EXE).mdb
 
+dist:
+	tar jcf tsukimi.tar.bz2 $(DISTFILES)
