@@ -227,7 +227,7 @@ namespace ProcessingCli
 		OpenGL
 	}
 
-	public enum TextAlign
+	public enum Constants
 	{
 		// Align
 		Left,
@@ -237,7 +237,12 @@ namespace ProcessingCli
 		Top,
 		Bottom,
 		//Center, // identical!
-		Baseline
+		Baseline,
+		// shape mode
+		//Center, // identical
+		Radius,
+		Corner,
+		Corners,
 	}
 
 	public class ProcessingHostControl : UserControl
@@ -247,14 +252,6 @@ namespace ProcessingCli
 
 	public class ProcessingStandardFieldAttribute : Attribute
 	{
-	}
-
-	public enum ShapeMode
-	{
-		Center,
-		Radius,
-		Corner,
-		Corners
 	}
 
 	public static partial class StandardLibrary
@@ -268,25 +265,25 @@ namespace ProcessingCli
 		[ProcessingStandardField]
 		public const double TWO_PI = PI * 2.0;
 		[ProcessingStandardField]
-		public const ShapeMode Center = ShapeMode.Center;
+		public const Constants Center = Constants.Center;
 		[ProcessingStandardField]
-		public const ShapeMode RADIUS = ShapeMode.Radius;
+		public const Constants RADIUS = Constants.Radius;
 		[ProcessingStandardField]
-		public const ShapeMode CORNER = ShapeMode.Corner;
+		public const Constants CORNER = Constants.Corner;
 		[ProcessingStandardField]
-		public const ShapeMode CORNERS = ShapeMode.Corners;
+		public const Constants CORNERS = Constants.Corners;
 		[ProcessingStandardField]
-		public const TextAlign LEFT = TextAlign.Left;
+		public const Constants LEFT = Constants.Left;
 		[ProcessingStandardField]
-		public const TextAlign CENTER = TextAlign.Center;
+		public const Constants CENTER = Constants.Center;
 		[ProcessingStandardField]
-		public const TextAlign RIGHT = TextAlign.Right;
+		public const Constants RIGHT = Constants.Right;
 		[ProcessingStandardField]
-		public const TextAlign TOP = TextAlign.Top;
+		public const Constants TOP = Constants.Top;
 		[ProcessingStandardField]
-		public const TextAlign BOTTOM = TextAlign.Bottom;
+		public const Constants BOTTOM = Constants.Bottom;
 		[ProcessingStandardField]
-		public const TextAlign BASELINE = TextAlign.Baseline;
+		public const Constants BASELINE = Constants.Baseline;
 
 		// They are documented in colorMode() page...
 		[ProcessingStandardField]
@@ -424,6 +421,13 @@ namespace ProcessingCli
 		noCursor()
 		cursor()
 */
+		[ProcessingStandardField]
+		public static int frameRateField;
+
+		public static void frameRate (int value)
+		{
+			frameRateField = value;
+		}
 /*
 *** Input
 

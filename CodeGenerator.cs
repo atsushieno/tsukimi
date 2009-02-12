@@ -357,6 +357,13 @@ namespace ProcessingCli
 				if (s.Name == name)
 					return name; // local variable.
 
+			// Alias. Since some fields seem to have the same names
+			// as some functions, they have to be explicitly replaced
+			// with different ones.
+			switch (name) {
+			case "frameRate":
+				return "StandardLibrary.frameRateField";
+			}
 			foreach (var n in StandardLibrary.AllFieldNames)
 				if (n == name)
 					return "StandardLibrary." + name;

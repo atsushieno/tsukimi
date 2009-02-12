@@ -102,7 +102,7 @@ namespace ProcessingCli
 			Host.Children.Add (r);
 		}
 
-		public static void rectMode (ShapeMode mode)
+		public static void rectMode (Constants mode)
 		{
 			Console.WriteLine ("WARNING: no support for rectMode() yet");
 		}
@@ -140,7 +140,7 @@ namespace ProcessingCli
 			Console.WriteLine ("WARNING: no support for noSmooth() yet");
 		}
 
-		public static void ellipseMode (ShapeMode mode)
+		public static void ellipseMode (Constants mode)
 		{
 			Console.WriteLine ("WARNING: no support for ellipseMode() yet");
 		}
