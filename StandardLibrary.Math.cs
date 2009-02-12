@@ -251,5 +251,31 @@ namespace ProcessingCli
 		noiseDetail()
 		random()
 */
+		static readonly Random rnd = new Random ();
+
+		public static int random (int high)
+		{
+			lock (rnd)
+				return rnd.Next (high);
+		}
+
+		public static int random (int low, int high)
+		{
+			lock (rnd)
+				return rnd.Next (low, high);
+		}
+
+		public static double random (double high)
+		{
+			lock (rnd)
+				return rnd.NextDouble () * high;
+		}
+
+		public static double random (double low, double high)
+		{
+			lock (rnd)
+				// FIXME: am I sure?
+				return (high - low) * rnd.NextDouble () + low;
+		}
 	}
 }
