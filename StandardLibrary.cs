@@ -245,11 +245,6 @@ namespace ProcessingCli
 		Corners,
 	}
 
-	public class ProcessingHostControl : UserControl
-	{
-		public const string ID = "c056f9b5-5fc9-46ef-a42c-ae316631ebd9";
-	}
-
 	public class ProcessingStandardFieldAttribute : Attribute
 	{
 	}
