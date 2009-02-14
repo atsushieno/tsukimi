@@ -15,6 +15,7 @@ CONVERTER_SOURCES = \
 CORE_DLL_SOURCES = \
 	StandardLibrary.cs \
 	StandardLibrary.ArrayFunctions.cs \
+	StandardLibrary.Color.cs \
 	StandardLibrary.Conversion.cs \
 	StandardLibrary.Files.cs \
 	StandardLibrary.HiddenAPI.cs \
