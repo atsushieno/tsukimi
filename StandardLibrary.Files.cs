@@ -8,7 +8,7 @@ using PString = System.String;
 
 namespace ProcessingCli
 {
-	public static partial class StandardLibrary
+	public partial class StandardLibrary
 	{
 /*
  		// Input - Files.

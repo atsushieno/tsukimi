@@ -7,7 +7,7 @@ using PString = System.String;
 
 namespace ProcessingCli
 {
-	public static partial class StandardLibrary
+	public partial class StandardLibrary
 	{
 		public static void arc (int x, int y, int width, int height, int start, int stop)
 		{

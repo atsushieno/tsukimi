@@ -3,7 +3,7 @@ using PString = System.String;
 
 namespace ProcessingCli
 {
-	public static partial class StandardLibrary
+	public partial class StandardLibrary
 	{
 		public static int min (int value1, int value2)
 		{
