@@ -10,7 +10,7 @@ namespace ProcessingCli
 {
 	public class PFont
 	{
-		static readonly PString [] default_fonts = {
+		readonly PString [] default_fonts = {
 			"Arial",
 			"Arial Black",
 			"Comic Sans MS",
@@ -22,7 +22,7 @@ namespace ProcessingCli
 			"Verdana",
 		};
 
-		public static PString [] list ()
+		public PString [] list ()
 		{
 			return default_fonts;
 		}
@@ -41,7 +41,7 @@ namespace ProcessingCli
 		public char [] Charset { get; set; }
 	}
 
-	public static partial class StandardLibrary
+	public partial class ProcessingApplication
 	{
 /*
 *** Typography
@@ -64,29 +64,29 @@ namespace ProcessingCli
 		textDescent()
 		textAscent()
 */
-		static PFont text_font;
+		PFont text_font;
 
-		public static PFont createFont (string name, double size)
+		public PFont createFont (string name, double size)
 		{
 			return createFont (name, size, false, null);
 		}
 
-		public static PFont createFont (string name, double size, bool smooth)
+		public PFont createFont (string name, double size, bool smooth)
 		{
 			return createFont (name, size, smooth, null);
 		}
 
-		public static PFont createFont (string name, double size, bool smooth, char [] charset)
+		public PFont createFont (string name, double size, bool smooth, char [] charset)
 		{
 			return new PFont (name, size, smooth, charset);
 		}
 
-		static void ApplyTextFont (TextBlock tb)
+		void ApplyTextFont (TextBlock tb)
 		{
 			// FIXME: support textFont.
 		}
 
-		static TextBlock CreateTextBlock (string data, double x, double y)
+		TextBlock CreateTextBlock (string data, double x, double y)
 		{
 			TextBlock tb = new TextBlock ();
 			tb.Inlines.Add (data);
@@ -96,12 +96,12 @@ namespace ProcessingCli
 			return tb;
 		}
 
-		public static void text (object data, double x, double y)
+		public void text (object data, double x, double y)
 		{
 			Host.Children.Add (CreateTextBlock (data.ToString (), x, y));
 		}
 
-		public static void text (string data, double x, double y, double width, double height)
+		public void text (string data, double x, double y, double width, double height)
 		{
 			TextBlock tb = CreateTextBlock (data, x, y);
 			tb.Width = width;
@@ -109,61 +109,61 @@ namespace ProcessingCli
 			Host.Children.Add (tb);
 		}
 
-		public static void textFont (PFont font)
+		public void textFont (PFont font)
 		{
 			text_font = font;
 		}
 		
-		public static void textFont (PFont font, double size)
+		public void textFont (PFont font, double size)
 		{
 			text_font = new PFont (font.Name, size, font.Smooth, font.Charset);
 		}
 
 		// FIXME: they are not supported.
-		static Constants text_align, text_y_align;
-		static double text_leading;
-		static double text_size;
+		Constants text_align, text_y_align;
+		double text_leading;
+		double text_size;
 
-		public static void textAlign (Constants align)
+		public void textAlign (Constants align)
 		{
 			text_align = align;
 		}
 
-		public static void textAlign (Constants align, Constants yAlign)
+		public void textAlign (Constants align, Constants yAlign)
 		{
 			text_align = align;
 			text_y_align = yAlign;
 		}
 
-		public static void textLeading (double value)
+		public void textLeading (double value)
 		{
 			text_leading = value;
 		}
 
-		public static void textSize (double value)
+		public void textSize (double value)
 		{
 			text_size = value;
 		}
 
-		public static double textWidth (char c)
+		public double textWidth (char c)
 		{
 			return textWidth (c.ToString ());
 		}
 
-		public static double textWidth (string s)
+		public double textWidth (string s)
 		{
 			TextBlock tb = CreateTextBlock (s, 0, 0);
 			tb.Measure (new Size (Host.Width, Host.Height));
 			return tb.DesiredSize.Width;
 		}
 
-		public static double textAscent ()
+		public double textAscent ()
 		{
 			// FIXME: implement correctly.
 			return text_font.Size;
 		}
 
-		public static double textDescent ()
+		public double textDescent ()
 		{
 			// FIXME: implement correctly.
 			return 0;

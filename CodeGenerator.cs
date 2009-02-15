@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 using ProcessingCli.Ast;
 
@@ -61,17 +62,16 @@ namespace ProcessingCli
 			w.WriteLine ("namespace {0}", namespace_name);
 			w.WriteLine ("{");
 
-			foreach (var c in classes)
-				GenerateClass (c);
-			w.WriteLine ("public class App : Application");
+			w.WriteLine ("public class App : ProcessingApplication");
 			w.WriteLine ("{");
 			w.WriteLine ("public App ()");
 			w.WriteLine ("{");
+			w.WriteLine ("Current = this;");
 			w.WriteLine ("Startup += delegate (object sender_, StartupEventArgs se) {");
 			w.WriteLine ("var c = new Canvas ();");
 			w.WriteLine ("this.RootVisual = c;");
 			w.WriteLine ("c.Loaded += delegate (object sender, RoutedEventArgs e) { Run (); };");
-			w.WriteLine ("StandardLibrary.SetHost (c);");
+			w.WriteLine ("ProcessingApplication.Current.SetHost (c);");
 			w.WriteLine ("}; // end of ApplicationStartup delegate");
 			w.WriteLine ("} // end of App.ctor()");
 			w.WriteLine ();
@@ -90,6 +90,7 @@ namespace ProcessingCli
 					var v = s as VariableDeclarationStatement;
 					if (v == null)
 						continue;
+					w.Write ("internal "); // since they can be accessed by user classes.
 					w.Write ("static ");
 					GenerateType (v.Type);
 					w.Write (' ');
@@ -118,12 +119,18 @@ namespace ProcessingCli
 					w.WriteLine ("draw ();");
 			w.WriteLine ("}");
 			w.WriteLine ("}");
+
+			in_global_context = false;
+			foreach (var c in classes)
+				GenerateClass (c);
+			in_global_context = true;
+
 			w.WriteLine ("}");
 		}
 
 		void GenerateClass (ClassDefinition c)
 		{
-			current_class =c;
+			current_class = c;
 			w.Write ("public class ");
 			w.Write (c.Name);
 			if (c.Interfaces != null) {
@@ -290,6 +297,8 @@ namespace ProcessingCli
 				}
 			} else if (s is ForStatement) {
 				var f = (ForStatement) s;
+				// for local initializers
+				variable_stack.Add (new VariableScope ());
 				w.Write ("for (");
 				writeSemicolon = false;
 				if (f.Initializers != null) {
@@ -306,6 +315,7 @@ namespace ProcessingCli
 				w.WriteLine (")");
 				writeSemicolon = true;
 				GenerateStatement (f.Body);
+				variable_stack.RemoveAt (variable_stack.Count - 1);
 			} else if (s is BreakStatement) {
 				w.WriteLine ("break;");
 			} else if (s is ContinueStatement) {
@@ -330,18 +340,16 @@ namespace ProcessingCli
 				foreach (GlobalFunctionDefinition g in funcs)
 					if (g.Internal.Name == name)
 						return name;
-				foreach (var n in StandardLibrary.AllFunctionNames)
+				foreach (var n in ProcessingApplication.AllFunctionNames)
 					if (n == name)
-						return "StandardLibrary.@" + name;
+						return "ProcessingApplication.Current.@" + name;
 			}
 			return name;
 		}
 
 		string ResolveVariableIdentifier (string name)
 		{
-			// FIXME: implement
-			// resolve local variable -> class field -> global variable
-
+			// resolve local variable -> class field -> global variable.
 			for (int i = variable_stack.Count - 1; i >= 0; i--)
 				foreach (var s in variable_stack [i])
 					if (s.Name == name)
@@ -355,18 +363,26 @@ namespace ProcessingCli
 
 			foreach (var s in global_variables)
 				if (s.Name == name)
-					return name; // local variable.
+					// global variable. Note that we need the container
+					// type name since the reference might be from another class.
+					return "App." + name;
 
 			// Alias. Since some fields seem to have the same names
 			// as some functions, they have to be explicitly replaced
 			// with different ones.
 			switch (name) {
 			case "frameRate":
-				return "StandardLibrary.frameRateField";
+				return "ProcessingApplication.Current.frameRateField";
 			}
-			foreach (var n in StandardLibrary.AllFieldNames)
-				if (n == name)
-					return "StandardLibrary." + name;
+			foreach (var m in ProcessingApplication.AllFields) {
+				if (m.Name == name) {
+					FieldInfo fi = m as FieldInfo;
+					if (fi != null && (fi.IsLiteral || fi.IsStatic))
+						return "ProcessingApplication." + name;
+					else
+						return "ProcessingApplication.Current." + name;
+				}
+			}
 
 			return name;
 		}
@@ -426,7 +442,7 @@ namespace ProcessingCli
 					w.Write (c.Value);
 			} else if (x is ColorConstantExpression) {
 				var c = (ColorConstantExpression) x;
-				w.Write ("StandardLibrary.color (\"#");
+				w.Write ("ProcessingApplication.Current.color (\"#");
 				w.Write (c.Value);
 				w.Write ("\")");
 			} else if (x is NewObjectExpression) {

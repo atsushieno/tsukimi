@@ -3,19 +3,19 @@ using PString = System.String;
 
 namespace ProcessingCli
 {
-	public partial class StandardLibrary
+	public partial class ProcessingApplication
 	{
-		public static int min (int value1, int value2)
+		public int min (int value1, int value2)
 		{
 			return value1 < value2 ? value1 : value2;
 		}
 
-		public static int min (int value1, int value2, int value3)
+		public int min (int value1, int value2, int value3)
 		{
 			return min (min (value1, value2), value3);
 		}
 
-		public static int min (int [] arr)
+		public int min (int [] arr)
 		{
 			if (arr.Length == 0)
 				throw new ArgumentException ("no array item");
@@ -26,17 +26,17 @@ namespace ProcessingCli
 			return x;
 		}
 
-		public static double min (double value1, double value2)
+		public double min (double value1, double value2)
 		{
 			return value1 < value2 ? value1 : value2;
 		}
 
-		public static double min (double value1, double value2, double value3)
+		public double min (double value1, double value2, double value3)
 		{
 			return min (min (value1, value2), value3);
 		}
 
-		public static double min (double [] arr)
+		public double min (double [] arr)
 		{
 			if (arr.Length == 0)
 				throw new ArgumentException ("no array item");
@@ -47,17 +47,17 @@ namespace ProcessingCli
 			return x;
 		}
 
-		public static int max (int value1, int value2)
+		public int max (int value1, int value2)
 		{
 			return value1 > value2 ? value1 : value2;
 		}
 
-		public static int max (int value1, int value2, int value3)
+		public int max (int value1, int value2, int value3)
 		{
 			return max (max (value1, value2), value3);
 		}
 
-		public static int max (int [] arr)
+		public int max (int [] arr)
 		{
 			if (arr.Length == 0)
 				throw new ArgumentException ("no array item");
@@ -68,17 +68,17 @@ namespace ProcessingCli
 			return x;
 		}
 
-		public static double max (double value1, double value2)
+		public double max (double value1, double value2)
 		{
 			return value1 > value2 ? value1 : value2;
 		}
 
-		public static double max (double value1, double value2, double value3)
+		public double max (double value1, double value2, double value3)
 		{
 			return max (max (value1, value2), value3);
 		}
 
-		public static double max (double [] arr)
+		public double max (double [] arr)
 		{
 			if (arr.Length == 0)
 				throw new ArgumentException ("no array item");
@@ -89,64 +89,64 @@ namespace ProcessingCli
 			return x;
 		}
 
-		public static int round (double value)
+		public int round (double value)
 		{
 			return (int) Math.Round (value);
 		}
 
 		/*
-		public static int dist (int x1, int y1, int x2, int y2)
+		public int dist (int x1, int y1, int x2, int y2)
 		{
 			return (int) Math.Sqrt ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 		}
 
-		public static int dist (int x1, int y1, int z1, int x2, int y2, int z2)
+		public int dist (int x1, int y1, int z1, int x2, int y2, int z2)
 		{
 			throw new NotImplementedException ();
 		}
 		*/
 
-		public static double dist (double x1, double y1, double x2, double y2)
+		public double dist (double x1, double y1, double x2, double y2)
 		{
 			return Math.Sqrt ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 		}
 
-		public static double dist (double x1, double y1, double z1, double x2, double y2, double z2)
+		public double dist (double x1, double y1, double z1, double x2, double y2, double z2)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public static double exp (double value)
+		public double exp (double value)
 		{
 			return Math.Exp (value);
 		}
 
-		public static double pow (double x, double y)
+		public double pow (double x, double y)
 		{
 			return Math.Pow (x, y);
 		}
 
-		public static int floor (double value)
+		public int floor (double value)
 		{
 			return (int) Math.Floor (value);
 		}
 
-		public static double sqrt (double value)
+		public double sqrt (double value)
 		{
 			return Math.Sqrt (value);
 		}
 
-		public static int abs (int value)
+		public int abs (int value)
 		{
 			return value < 0 ? -value : value;
 		}
 
-		public static double abs (double value)
+		public double abs (double value)
 		{
 			return value < 0 ? -value : value;
 		}
 
-		public static int constrain (int value, int min, int max)
+		public int constrain (int value, int min, int max)
 		{
 			if (value < min)
 				return min;
@@ -155,7 +155,7 @@ namespace ProcessingCli
 			return value;
 		}
 
-		public static double constrain (double value, double min, double max)
+		public double constrain (double value, double min, double max)
 		{
 			if (value < min)
 				return min;
@@ -164,12 +164,12 @@ namespace ProcessingCli
 			return value;
 		}
 
-		public static double norm (double value, double low, double high)
+		public double norm (double value, double low, double high)
 		{
 			return map (value, low, high, 0, 1);
 		}
 
-		public static double lerp (double v1, double v2, double amt)
+		public double lerp (double v1, double v2, double amt)
 		{
 			return v1 + (v2 - v1) * amt;
 		}
@@ -179,67 +179,67 @@ namespace ProcessingCli
 		lerp()
 */
 
-		public static int sq (int value)
+		public int sq (int value)
 		{
 			return value * value;
 		}
 
-		public static double sq (double value)
+		public double sq (double value)
 		{
 			return value * value;
 		}
 
-		public static int ceil (double value)
+		public int ceil (double value)
 		{
 			return (int) Math.Ceiling (value);
 		}
 
-		public static double map (double value, double low1, double high1, double low2, double high2)
+		public double map (double value, double low1, double high1, double low2, double high2)
 		{
 			return (value - low1) * (high2 - low2) / (high1 - low1) + low2;
 		}
 
-		public static double acos (double d)
+		public double acos (double d)
 		{
 			return Math.Acos (d);
 		}
 
-		public static double tan (double d)
+		public double tan (double d)
 		{
 			return Math.Tan (d);
 		}
 
-		public static double sin (double d)
+		public double sin (double d)
 		{
 			return Math.Sin (d);
 		}
 
-		public static double cos (double d)
+		public double cos (double d)
 		{
 			return Math.Cos (d);
 		}
 
-		public static double degrees (double d)
+		public double degrees (double d)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public static double atan2 (double y, double x)
+		public double atan2 (double y, double x)
 		{
 			return Math.Atan2 (y, x);
 		}
 
-		public static double atan (double d)
+		public double atan (double d)
 		{
 			return Math.Atan (d);
 		}
 
-		public static double radians (double d)
+		public double radians (double d)
 		{
 			return PI * d / 180.0;
 		}
 
-		public static double asin (double d)
+		public double asin (double d)
 		{
 			return Math.Asin (d);
 		}
@@ -251,27 +251,27 @@ namespace ProcessingCli
 		noiseDetail()
 		random()
 */
-		static readonly Random rnd = new Random ();
+		readonly Random rnd = new Random ();
 
-		public static int random (int high)
+		public int random (int high)
 		{
 			lock (rnd)
 				return rnd.Next (high);
 		}
 
-		public static int random (int low, int high)
+		public int random (int low, int high)
 		{
 			lock (rnd)
 				return rnd.Next (low, high);
 		}
 
-		public static double random (double high)
+		public double random (double high)
 		{
 			lock (rnd)
 				return rnd.NextDouble () * high;
 		}
 
-		public static double random (double low, double high)
+		public double random (double low, double high)
 		{
 			lock (rnd)
 				// FIXME: am I sure?

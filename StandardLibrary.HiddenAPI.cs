@@ -6,22 +6,22 @@ using PString = System.String;
 
 namespace ProcessingCli
 {
-	public partial class StandardLibrary
+	public partial class ProcessingApplication
 	{
 		// This source contains the "hidden" APIs that are not
 		// in the reference documentation.
 
 		[ProcessingStandardField]
-		public static readonly double MAX_FLOAT = float.MaxValue;
+		public const double MAX_FLOAT = float.MaxValue;
 		[ProcessingStandardField]
-		public static readonly double MIN_FLOAT = -MAX_FLOAT; // it indeed is.
+		public const double MIN_FLOAT = -MAX_FLOAT; // it indeed is.
 
-		public static int parseInt (string s)
+		public int parseInt (string s)
 		{
 			return int.Parse (s, NumberFormatInfo.InvariantInfo);
 		}
 		
-		public static int [] parseInt (PString [] arr)
+		public int [] parseInt (PString [] arr)
 		{
 			int [] ret = new int [arr.Length];
 			for (int i = 0; i < ret.Length; i++)
@@ -29,12 +29,12 @@ namespace ProcessingCli
 			return ret;
 		}
 
-		public static double parseFloat (string s)
+		public double parseFloat (string s)
 		{
 			return double.Parse (s, NumberFormatInfo.InvariantInfo);
 		}
 		
-		public static double [] parseFloat (PString [] arr)
+		public double [] parseFloat (PString [] arr)
 		{
 			double [] ret = new double [arr.Length];
 			for (int i = 0; i < ret.Length; i++)

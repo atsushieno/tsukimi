@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -26,7 +27,7 @@ Object mappings:
 	Array -> (no direct mapping. System.Array is implicitly used)
 	Object -> System.Object
 
-	When converting pde to XAML, it should filter every
+	When converting pde to XAP, it should filter every
 	method invocation to reject invalid calls. For example,
 	call to GetHashCode() in processing object must be rejected
 	since it does not exist in processing.
@@ -37,8 +38,10 @@ using ColorMode = System.Int32;
 
 namespace ProcessingCli
 {
-	public partial class StandardLibrary
+	public partial class ProcessingApplication : Application
 	{
+		public static ProcessingApplication Current { get; set; }
+
 		// FIXME: those enum constants are not valid approach,
 		// since some enums overlap names in different types.
 		[ProcessingStandardField]
@@ -76,62 +79,63 @@ namespace ProcessingCli
 		public const int HSB = 2;
 
 		
-		public static Canvas Host; // set by application
+		public Canvas Host; // set by application
 
-		public static void SetHost (Canvas canvas)
+		public void SetHost (Canvas canvas)
 		{
 			Host = canvas;
 			Host.MouseMove += delegate (object o, MouseEventArgs e) { current_mouse = e; };
 		}
 		
-		public static TextWriter StandardOutput = Console.Out;
+		public TextWriter StandardOutput = Console.Out;
 
-		static SolidColorBrush stroke_brush;
-		static double? stroke_weight;
+		SolidColorBrush stroke_brush;
+		double? stroke_weight;
 
-		static Color? stroke_color {
+		Color? stroke_color {
 			get { return stroke_brush != null ? (Color?) stroke_brush.Color : null; }
 			set { stroke_brush = value != null ? new SolidColorBrush ((Color) value) : null; }
 		}
 
-		static SolidColorBrush fill_brush;
+		SolidColorBrush fill_brush;
 
-		static Color? fill_color {
+		Color? fill_color {
 			get { return fill_brush != null ? (Color?) fill_brush.Color : null; }
 			set { fill_brush = value != null ? new SolidColorBrush ((Color) value) : null; }
 		}
 
 		[ProcessingStandardField]
-		public static int width {
+		public int width {
 			get { return (int) Host.Width; }
 		}
 
 		[ProcessingStandardField]
-		public static int height {
+		public int height {
 			get { return (int) Host.Height; }
 		}
 
-		static string [] all_field_names, all_func_names;
+		static string [] all_func_names;
+		static MemberInfo [] all_fields;
 
-		public static string [] AllFieldNames {
+		public static IEnumerable<MemberInfo> AllFields {
 			get {
-				if (all_field_names != null)
-					return all_field_names;
-				var names = new List<string> ();
-				foreach (var mi in typeof (StandardLibrary).GetMembers ())
+				if (all_fields != null)
+					return all_fields;
+				var l = new List<MemberInfo> ();
+				foreach (var mi in typeof (ProcessingApplication).GetMembers ())
 					if (mi.GetCustomAttributes (typeof (ProcessingStandardFieldAttribute), false).Length > 0)
-						names.Add (mi.Name);
-				all_field_names = names.ToArray ();
-				return all_field_names;
+						l.Add (mi);
+				all_fields = l.ToArray ();
+				return all_fields;
 			}
 		}
 
-		public static string [] AllFunctionNames {
+		public static IEnumerable<string> AllFunctionNames {
 			get {
 				if (all_func_names != null)
 					return all_func_names;
 				var names = new List<string> ();
-				foreach (var mi in typeof (StandardLibrary).GetMethods ())
+				foreach (var mi in typeof (ProcessingApplication).GetMethods ())
 					if (true) // (mi.GetCustomAttributes (typeof (ProcessingStandardFieldAttribute), false).Length > 0)
 						names.Add (mi.Name);
 				all_func_names = names.ToArray ();
@@ -148,17 +152,17 @@ namespace ProcessingCli
 		// (It is possible that noLoop() and loop() could become
 		// like them.)
 
-		public static void exit ()
+		public void exit ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public static void size (int width, int height)
+		public void size (int width, int height)
 		{
 			size (width, height, SizeMode.Java2D);
 		}
 
-		public static void size (int width, int height, SizeMode sizeMode)
+		public void size (int width, int height, SizeMode sizeMode)
 		{
 			// FIXME: check sizeMode and reject some.
 
@@ -166,22 +170,22 @@ namespace ProcessingCli
 			Host.Height = height;
 		}
 
-		public static void noLoop ()
+		public void noLoop ()
 		{
 			Console.WriteLine ("WARNING: not implemented function noLoop()");
 		}
 
-		public static void delay (int milliseconds)
+		public void delay (int milliseconds)
 		{
 			Thread.Sleep (milliseconds);
 		}
 
-		public static void loop ()
+		public void loop ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public static void redraw ()
+		public void redraw ()
 		{
 			throw new NotImplementedException ();
 		}
@@ -205,9 +209,9 @@ namespace ProcessingCli
 		cursor()
 */
 		[ProcessingStandardField]
-		public static int frameRateField;
+		public int frameRateField;
 
-		public static void frameRate (int value)
+		public void frameRate (int value)
 		{
 			frameRateField = value;
 		}
@@ -226,7 +230,7 @@ namespace ProcessingCli
 		pmouseY
 */
 		[ProcessingStandardField]
-		public static char key;
+		public char key;
 
 		// They are written in "key" and "keyCode" pages...
 		[ProcessingStandardField]
@@ -247,15 +251,15 @@ namespace ProcessingCli
 		[ProcessingStandardField]
 		public const char DELETE = '\x7F';
 
-		static MouseEventArgs current_mouse;
+		MouseEventArgs current_mouse;
 
 		[ProcessingStandardField]
-		public static double mouseX {
+		public double mouseX {
 			get { return current_mouse == null ? 0 : current_mouse.GetPosition (null).X; }
 		}
 
 		[ProcessingStandardField]
-		public static double mouseY {
+		public double mouseY {
 			get { return current_mouse == null ? 0 : current_mouse.GetPosition (null).Y; }
 		}
 		
@@ -287,7 +291,16 @@ namespace ProcessingCli
 		month()
 		day()
 		second()
+*/
+		public int year () { return DateTime.Now.Year; }
+		public int month () { return DateTime.Now.Month; }
+		public int day () { return DateTime.Now.Day; }
+		public int hour () { return DateTime.Now.Hour; }
+		public int minute () { return DateTime.Now.Minute; }
+		public int second () { return DateTime.Now.Second; }
+		public int millis () { return DateTime.Now.Millisecond; }
 
+/*
 *** Output
 
 	type:
@@ -307,16 +320,16 @@ namespace ProcessingCli
 		createReader()
 		beginRecord()
 */
-		public static PrintWriter createWriter (string filename)
+		public PrintWriter createWriter (string filename)
 		{
 			return new PrintWriter (new StreamWriter (ProcessingUtility.OpenWrite (filename)));
 		}
 
-		public static void print (object obj)
+		public void print (object obj)
 		{
 			StandardOutput.Write (obj);
 		}
-		public static void println (object obj)
+		public void println (object obj)
 		{
 			StandardOutput.WriteLine (obj);
 		}
@@ -396,12 +409,12 @@ namespace ProcessingCli
 		loadPixels()
 		get()
 */
-		public static PImage loadImage (string uri)
+		public PImage loadImage (string uri)
 		{
 			return loadImage (uri, uri.Substring (uri.LastIndexOf ('.') + 1));
 		}
 
-		public static PImage loadImage (string uri, string extension)
+		public PImage loadImage (string uri, string extension)
 		{
 			// FIXME: extension is ignored so far
 			var img = new BitmapImage ();
@@ -409,12 +422,12 @@ namespace ProcessingCli
 			return new PImage (img);
 		}
 
-		public static void image (PImage img, double x, double y)
+		public void image (PImage img, double x, double y)
 		{
 			image (img, x, y, img.width, img.height);
 		}
 
-		public static void image (PImage img, double x, double y, double width, double height)
+		public void image (PImage img, double x, double y, double width, double height)
 		{
 			var i = img.Image;
 			Host.Children.Add (i);
@@ -429,7 +442,7 @@ namespace ProcessingCli
 			//	image (mask, x, y, width, height);
 		}
 
-		public static void set (double x, double y, Color c)
+		public void set (double x, double y, Color c)
 		{
 			var l = new Line ();
 			l.X1 = x;

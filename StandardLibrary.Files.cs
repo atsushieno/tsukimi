@@ -8,7 +8,7 @@ using PString = System.String;
 
 namespace ProcessingCli
 {
-	public partial class StandardLibrary
+	public partial class ProcessingApplication
 	{
 /*
  		// Input - Files.
@@ -21,7 +21,7 @@ namespace ProcessingCli
 		selectInput()
 */
 
-		public static byte [] loadBytes (string file)
+		public byte [] loadBytes (string file)
 		{
 			var s = ProcessingUtility.OpenRead (file);
 			byte [] bytes = new byte[s.Length];
@@ -33,7 +33,7 @@ namespace ProcessingCli
 		// since this function is used in *.pde, the returned
 		// value must be still in PString[] (unlike PString,
 		// PString[] is not implicitly convertible to string[]).
-		public static PString [] loadStrings (string file)
+		public PString [] loadStrings (string file)
 		{
 			try {
 				var stream = ProcessingUtility.OpenRead (file);
@@ -57,12 +57,12 @@ namespace ProcessingCli
 			}
 		}
 
-		public static string selectInput ()
+		public string selectInput ()
 		{
 			return selectInput (null);
 		}
 
-		public static string selectInput (string message)
+		public string selectInput (string message)
 		{
 			// message is ignored.
 
