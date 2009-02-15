@@ -34,6 +34,6 @@ public class Float
 }
 </code>
 
-Once you create above, then run processingimporter.exe. It calls mxap and
+Once you create above, then run tsukimi-tool.exe. It calls mxap and
 it automatically compiles Float.cs too.
 

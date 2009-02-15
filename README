@@ -11,7 +11,7 @@ So far there are two assemblies as outcome from this project:
 
 	- Processing.Core.dll : this aims to support processing standard
 	  library, to make applications runnable under Moonlight.
-	- processingimporter.exe : this is to import processing application
+	- tsukimi-tool.exe : this is to import processing application
 	  and generate Moonlight application (xap package etc.).
 	  The resulting application should run under Silverlight too, but
 	  it is not tested at all.
@@ -32,7 +32,7 @@ So far there are two assemblies as outcome from this project:
 	create a copy of the original application, as this will generate
 	extra files on the directory) and run:
 
-		mono processingimporter.exe --xap .
+		mono tsukimi-tool.exe --xap .
 
 	Then it will generate xap package, stub html and so on (it is
 	actually what mxap does).
@@ -68,7 +68,7 @@ So far there are two assemblies as outcome from this project:
 
 	- ProcessingCli.Core.dll:
 	  contains StandardLibrary and fundamental control types.
-	- processingimporter.exe:
+	- tsukimi-tool.exe:
 	  pde parser and XAML generator, possibly more.
 
 ** Parser/Converter

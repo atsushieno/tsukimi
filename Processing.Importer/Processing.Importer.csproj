@@ -48,9 +48,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Processing.Core.CLR\Processing.Core.CLR.csproj">
+    <ProjectReference Include="..\Processing.Core\Processing.Core.csproj">
       <Project>{A5E97F38-F66D-4C45-B41B-C509C20EDB6E}</Project>
-      <Name>Processing.Core.CLR</Name>
+      <Name>Processing.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>
