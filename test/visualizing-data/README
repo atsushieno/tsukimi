@@ -1,0 +1,16 @@
+This directory can be used to test processingimporter against Ben Fry's
+"Visualizing Data" examples.
+http://benfry.com/writing/archives/3
+
+To retrieve examples, download zip files from there:
+
+wget http://benfry.com/writing/map/ch03-usmap.zip
+wget http://benfry.com/writing/series/ch04-milkteacoffee.zip
+wget http://benfry.com/writing/salaryper/ch05-salaryper.zip
+wget http://benfry.com/writing/zipdecode/ch06-zipdecode.zip
+wget http://benfry.com/writing/treemap/ch07-hierarchies.zip
+wget http://benfry.com/writing/graphlayout/ch08-graphlayout.zip
+
+Note that a lot of samples won't work since they are dependent on Java.
+(see ../README for more details.)
+
