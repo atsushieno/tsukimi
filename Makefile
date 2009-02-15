@@ -46,3 +46,4 @@ clean:
 
 dist:
 	tar jcf tsukimi.tar.bz2 $(DISTFILES)
+	tar jcf tsukimi-bin.tar.bz2 Processing.Core.dll Processing.Core.dll.mdb processingimporter.exe processingimporter.exe.mdb README processing_syntax.txt
