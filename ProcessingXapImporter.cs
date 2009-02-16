@@ -49,7 +49,7 @@ namespace ProcessingCli
 
 			ProcessStartInfo psi = new ProcessStartInfo ();
 			psi.FileName = "mxap";
-			psi.Arguments = "--application-name " + p.NamespaceName;
+			psi.Arguments = "--application-name " + p.AssemblyName + " --entry-point-type " + p.NamespaceName + ".App";
 			psi.WorkingDirectory = dir.FullName;
 			Process proc = Process.Start (psi);
 			proc.WaitForExit ();
@@ -158,25 +158,25 @@ namespace ProcessingCli
 			ProcessingProjectSource source = Source;
 			var sw = new StringWriter ();
 			ProcessingSourceImporter.Import (source, sw);
-			using (var writer = new StreamWriter (CreateOutputStream (source.NamespaceName + ".cs"))) {
+			using (var writer = new StreamWriter (CreateOutputStream (source.AssemblyName + ".cs"))) {
 				writer.Write (sw.ToString ());
 			}
 			using (var writer = new StreamWriter (CreateOutputStream ("AppManifest.xaml"))) {
-				writer.Write (CreateAppManifest (source.NamespaceName));
+				writer.Write (CreateAppManifest (source.NamespaceName, source.AssemblyName));
 			}
 		}
 
 		const string manifest_template = @"
-<Deployment xmlns='http://schemas.microsoft.com/client/2007/deployment' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' EntryPointAssembly='REPLACE_HERE' EntryPointType='REPLACE_HERE.App' RuntimeVersion='2.0.31005.0'>
+<Deployment xmlns='http://schemas.microsoft.com/client/2007/deployment' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' EntryPointAssembly='ASSEMBLY_NAME' EntryPointType='NAMESPACE_NAME.App' RuntimeVersion='2.0.31005.0'>
   <Deployment.Parts>
     <AssemblyPart x:Name='Proce55ing.Core' Source='Proce55ing.Core.dll' />
-    <AssemblyPart x:Name='REPLACE_HERE' Source='REPLACE_HERE.dll' />
+    <AssemblyPart x:Name='ASSEMBLY_NAME' Source='ASSEMBLY_NAME.dll' />
   </Deployment.Parts>
 </Deployment>";
 
-		public static string CreateAppManifest (string namespaceName)
+		public static string CreateAppManifest (string namespaceName, string assemblyName)
 		{
-			return manifest_template.Replace ("REPLACE_HERE", namespaceName);
+			return manifest_template.Replace ("ASSEMBLY_NAME", assemblyName).Replace ("NAMESPACE_NAME", namespaceName);
 		}
 	}
 }
