@@ -18,6 +18,8 @@ namespace ProcessingCli
 		{
 			Path p = new Path ();
 			PathGeometry pg = new PathGeometry ();
+			// FIXME: moonlight should be fixed to automatically ceate Figures.
+			pg.Figures = new PathFigureCollection ();
 
 			PathFigure pf = new PathFigure ();
 			pf.StartPoint = new Point (x, y);
@@ -32,6 +34,7 @@ namespace ProcessingCli
 			p.Stroke = stroke_brush;
 			if (stroke_weight != null)
 				p.StrokeThickness = (double) stroke_weight;
+			p.Data = pg;
 			Host.Children.Add (p);
 		}
 
