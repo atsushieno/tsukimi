@@ -334,13 +334,25 @@ namespace ProcessingCli
 			}
 		}
 
+		static readonly Type app_type = Assembly.Load ("ProcessingCore").GetType ("ProcessingCli.ProcessingApplication");
+
+		static IEnumerable<FieldInfo> AllFields ()
+		{
+			return app_type.GetFields ();
+		}
+
+		static string [] AllFunctionNames ()
+		{
+			return (string []) app_type.GetProperty ("AllFunctionNames").GetValue (null, null);
+		}
+
 		string ResolveFunction (string name, bool isGlobal)
 		{
 			if (isGlobal) {
 				foreach (GlobalFunctionDefinition g in funcs)
 					if (g.Internal.Name == name)
 						return name;
-				foreach (var n in ProcessingApplication.AllFunctionNames)
+				foreach (var n in AllFunctionNames ())
 					if (n == name)
 						return "ProcessingApplication.Current.@" + name;
 			}
@@ -374,7 +386,7 @@ namespace ProcessingCli
 			case "frameRate":
 				return "ProcessingApplication.Current.frameRateField";
 			}
-			foreach (var m in ProcessingApplication.AllFields) {
+			foreach (var m in AllFields ()) {
 				if (m.Name == name) {
 					FieldInfo fi = m as FieldInfo;
 					if (fi != null && (fi.IsLiteral || fi.IsStatic))

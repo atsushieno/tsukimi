@@ -5,8 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A5E97F38-F66D-4C45-B41B-C509C20EDB6E}</ProjectGuid>
+    <ProjectGuid>{5AAFC3EA-8922-43BA-9E70-8A0DBD861DB1}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>false</ThrowErrorsInValidation>
+    <AssemblyName>Processing.Core</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -16,9 +21,6 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <StartupObject />
-    <AssemblyName>Processing.Core</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -26,20 +28,21 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <StartupObject />
-    <AssemblyName>Processing.Core.CLR</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Windows" />
+    <Reference Include="mscorlib" />
     <Reference Include="System" />
-    <Reference Include="System.Windows, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="System.Windows.Browser, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\StandardLibrary.ArrayFunctions.cs" />
     <Compile Include="..\StandardLibrary.Color.cs" />
     <Compile Include="..\StandardLibrary.Conversion.cs" />
+    <Compile Include="..\StandardLibrary.cs" />
     <Compile Include="..\StandardLibrary.Files.cs" />
     <Compile Include="..\StandardLibrary.HiddenAPI.cs" />
     <Compile Include="..\StandardLibrary.Math.cs" />
@@ -48,12 +51,12 @@
     <Compile Include="..\StandardLibrary.Shapes.cs" />
     <Compile Include="..\StandardLibrary.StringFunctions.cs" />
     <Compile Include="..\StandardLibrary.Typography.cs" />
-    <Compile Include="..\StandardLibrary.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties InternalTargetFrameworkVersion="3.5" />
+      <Properties InternalTargetFrameworkVersion="2.1" />
     </MonoDevelop>
   </ProjectExtensions>
 </Project>

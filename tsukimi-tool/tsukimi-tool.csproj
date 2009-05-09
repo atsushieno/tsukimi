@@ -17,7 +17,6 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -25,7 +24,6 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\driver.cs" />
@@ -33,7 +31,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Processing.Importer\Processing.Importer.csproj">
-      <Project>{1E49529C-EEE0-4376-AECF-8494AA895B76}</Project>
+      <Project>{91EF1C90-6ABE-4318-A5BC-7641E2AC6575}</Project>
       <Name>Processing.Importer</Name>
     </ProjectReference>
   </ItemGroup>
