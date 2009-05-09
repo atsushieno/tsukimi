@@ -334,7 +334,7 @@ namespace ProcessingCli
 			}
 		}
 
-		static readonly Type app_type = Assembly.Load ("ProcessingCore").GetType ("ProcessingCli.ProcessingApplication");
+		static readonly Type app_type = Assembly.Load ("Processing.Core").GetType ("ProcessingCli.ProcessingApplication");
 
 		static IEnumerable<FieldInfo> AllFields ()
 		{
