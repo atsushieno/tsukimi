@@ -4,6 +4,7 @@ using System.IO;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using PString = System.String;
 
 namespace ProcessingCli
@@ -29,13 +30,18 @@ namespace ProcessingCli
 
 		public PFont (string name, double size, bool smooth, char [] charset)
 		{
-			Name = name;
+			Family = new FontFamily (name);
 			Size = size;
 			Smooth = smooth;
 			Charset = charset;
 		}
 		
-		public string Name { get; set; }
+		public FontFamily Family;
+		
+		public string Name {
+			get { return Family.Source; }
+			set { Family = new FontFamily (value); }
+		}
 		public double Size { get; set; }
 		public bool Smooth { get; set; }
 		public char [] Charset { get; set; }
@@ -89,6 +95,8 @@ namespace ProcessingCli
 		void ApplyTextFont (TextBlock tb)
 		{
 			// FIXME: support textFont.
+			tb.FontFamily = text_font.Family;
+			tb.FontSize = text_font.Size;
 		}
 
 		TextBlock CreateTextBlock (string data, double x, double y)
