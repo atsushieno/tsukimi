@@ -339,13 +339,16 @@ namespace ProcessingCli
 
 		static CodeGenerator ()
 		{
+			var ass = Assembly.ReflectionOnlyLoad ("Processing.Core");
+			app_type = ass.GetType ("ProcessingCli.ProcessingApplication");
+			std_field_attr_type = ass.GetType ("ProcessingCli.ProcessingStandardFieldAttribute");
 			all_funcs = from m in app_type.GetMethods () select m.Name;
 			all_fields = from f in app_type.GetFields ()
 				where f.GetCustomAttributes (std_field_attr_type, false).Length > 0
 				select f;
 		}
-		static readonly Type app_type = Assembly.Load ("Processing.Core").GetType ("ProcessingCli.ProcessingApplication");
-		static readonly Type std_field_attr_type = Assembly.Load ("Processing.Core").GetType ("ProcessingCli.ProcessingStandardFieldAttribute");
+		static readonly Type app_type = Assembly.ReflectionOnlyLoad ("Processing.Core").GetType ("ProcessingCli.ProcessingApplication");
+		static readonly Type std_field_attr_type = Assembly.ReflectionOnlyLoad ("Processing.Core").GetType ("ProcessingCli.ProcessingStandardFieldAttribute");
 
 		static IEnumerable<FieldInfo> AllFields ()
 		{
