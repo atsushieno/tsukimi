@@ -73,7 +73,7 @@ namespace ProcessingCli
 			background (color (hex, alpha));
 		}
 
-		void background (Color c)
+		public void background (Color c)
 		{
 			Host.Background = new SolidColorBrush (c);
 		}
