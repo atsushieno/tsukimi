@@ -47,19 +47,19 @@ namespace ProcessingCli
 *** Typography
 
 	type:
-		PFont
+		*PFont
 
 	function:
-		*createFont()
-		loadFont()
-		text()
-		textFont()
+		* createFont()
+		- loadFont()
+		* text()
+		* textFont()
 
 		textMode()
-		textSize()
-		textAlign()
+		* textSize()
+		* textAlign()
 		textLeading()
-		textWidth()
+		* textWidth()
 
 		textDescent()
 		textAscent()
@@ -83,7 +83,7 @@ namespace ProcessingCli
 
 		public PFont loadFont (string name)
 		{
-			throw new NotImplementedException ("Use createFont instead");
+			throw new NotSupportedException ("Use createFont instead");
 		}
 
 		void ApplyTextFont (TextBlock tb)
@@ -127,7 +127,6 @@ namespace ProcessingCli
 		// FIXME: they are not supported.
 		Constants text_align, text_y_align;
 		double text_leading;
-		double text_size;
 
 		public void textAlign (Constants align)
 		{
@@ -147,7 +146,7 @@ namespace ProcessingCli
 
 		public void textSize (double value)
 		{
-			text_size = value;
+			text_font = new PFont (text_font.Name, value, text_font.Smooth, text_font.Charset);
 		}
 
 		public double textWidth (char c)

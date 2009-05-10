@@ -171,32 +171,6 @@ namespace ProcessingCli
 			return new IsolatedStorageFileStream (s, FileMode.Create, isf);
 		}
 	}
-	/*
-	public class PString
-	{
-		string s;
-
-		public PString (string s)
-		{
-			this.s = s;
-		}
-
-		public static implicit operator PString (string s)
-		{
-			return new PString (s);
-		}
-
-		public static implicit operator string (String s)
-		{
-			return s.s;
-		}
-
-		public override string ToString ()
-		{
-			return s;
-		}
-	}
-	*/
 
 	public enum SizeMode
 	{

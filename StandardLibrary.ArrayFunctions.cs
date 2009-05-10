@@ -8,20 +8,9 @@ namespace ProcessingCli
 {
 	public partial class ProcessingApplication
 	{
-/*
-		// Array Functions
+        // All done for 1.0.
 
-		append()
-		arraycopy()
-		concat()
-		expand()
-		reverse()
-		shorten()
-		sort()
-		splice()
-		subset()
-*/
-		Array Create (Array src, int length)
+        Array Create (Array src, int length)
 		{
 			return Array.CreateInstance (src.GetType ().GetElementType (), length);
 		}

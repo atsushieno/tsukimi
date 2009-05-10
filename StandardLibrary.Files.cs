@@ -14,11 +14,11 @@ namespace ProcessingCli
  		// Input - Files.
 
 		createInput()
-		loadBytes()
-		loadStrings()
+		* loadBytes()
+		* loadStrings()
 		open()
 		selectFolder()
-		selectInput()
+		* selectInput()
 */
 
 		public byte [] loadBytes (string file)

@@ -176,7 +176,6 @@ namespace ProcessingCli
 /*
 		mag()
 		log()
-		lerp()
 */
 
 		public int sq (int value)
@@ -249,7 +248,6 @@ namespace ProcessingCli
 		noiseSeed()
 		randomSeed()
 		noiseDetail()
-		random()
 */
 		readonly Random rnd = new Random ();
 
