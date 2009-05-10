@@ -96,7 +96,7 @@ namespace ProcessingCli
 			TextBlock tb = new TextBlock ();
 			tb.Inlines.Add (data);
 			Canvas.SetLeft (tb, x);
-			Canvas.SetTop (tb, y);
+			Canvas.SetTop (tb, y - text_font.Size);
 			ApplyTextFont (tb);
 			tb.Foreground = fill_brush;
 			return tb;
