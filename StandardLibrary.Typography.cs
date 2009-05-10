@@ -98,6 +98,7 @@ namespace ProcessingCli
 			Canvas.SetLeft (tb, x);
 			Canvas.SetTop (tb, y);
 			ApplyTextFont (tb);
+			tb.Foreground = fill_brush;
 			return tb;
 		}
 
