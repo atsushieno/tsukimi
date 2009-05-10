@@ -225,7 +225,10 @@ namespace ProcessingCli
 		// stroke join
 		Miter,
 		Bevel,
-		Round,
+		Round, // also used for stroke cap
+		// stroke cap
+		Project,
+		Square,
 	}
 
 	public class ProcessingStandardFieldAttribute : Attribute

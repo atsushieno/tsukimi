@@ -76,6 +76,10 @@ namespace ProcessingCli
 		public const Constants MITER = Constants.Miter;
 		[ProcessingStandardField]
 		public const Constants BEVEL = Constants.Bevel;
+		[ProcessingStandardField]
+		public const Constants PROJECT = Constants.Project;
+		[ProcessingStandardField]
+		public const Constants SQUARE = Constants.Square;
 
 		// They are documented in colorMode() page...
 		[ProcessingStandardField]
@@ -98,6 +102,7 @@ namespace ProcessingCli
 		SolidColorBrush stroke_brush;
 		double? stroke_weight;
 		PenLineJoin stroke_join = PenLineJoin.Miter;
+		PenLineCap stroke_cap = PenLineCap.Round;
 
 		Color? stroke_color {
 			get { return stroke_brush != null ? (Color?) stroke_brush.Color : null; }

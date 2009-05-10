@@ -35,6 +35,7 @@ namespace ProcessingCli
 			if (stroke_weight != null)
 				p.StrokeThickness = (double) stroke_weight;
 			p.StrokeLineJoin = stroke_join;
+			p.StrokeStartLineCap = p.StrokeEndLineCap = stroke_cap;
 			p.Data = pg;
 			Host.Children.Add (p);
 		}
@@ -48,6 +49,7 @@ namespace ProcessingCli
 			if (stroke_weight != null)
 				r.StrokeThickness = (double) stroke_weight;
 			r.StrokeLineJoin = stroke_join;
+			r.StrokeStartLineCap = r.StrokeEndLineCap = stroke_cap;
 			r.Fill = fill_brush;
 			Canvas.SetLeft (r, x);
 			Canvas.SetTop (r, y);
@@ -71,6 +73,7 @@ namespace ProcessingCli
 			if (stroke_weight != null)
 				l.StrokeThickness = (double) stroke_weight;
 			l.StrokeLineJoin = stroke_join;
+			l.StrokeStartLineCap = l.StrokeEndLineCap = stroke_cap;
 			Host.Children.Add (l);
 		}
 
@@ -103,6 +106,7 @@ namespace ProcessingCli
 			if (stroke_weight != null)
 				r.StrokeThickness = (double) stroke_weight;
 			r.StrokeLineJoin = stroke_join;
+			r.StrokeStartLineCap = r.StrokeEndLineCap = stroke_cap;
 			r.Fill = fill_brush;
 			Canvas.SetLeft (r, x);
 			Canvas.SetTop (r, y);
@@ -130,6 +134,7 @@ namespace ProcessingCli
 			if (stroke_weight != null)
 				p.StrokeThickness = (double) stroke_weight;
 			p.StrokeLineJoin = stroke_join;
+			p.StrokeStartLineCap = p.StrokeEndLineCap = stroke_cap;
 			Host.Children.Add (p);
 		}
 
@@ -166,7 +171,24 @@ namespace ProcessingCli
 				stroke_join = PenLineJoin.Bevel;
 				break;
 			default:
-				throw new ArgumentException ("Invalid enumeration value: " + value);
+				throw new ArgumentException ("Invalid strokeJoin enumeration value: " + value);
+			}
+		}
+		
+		public void strokeCap (Constants value)
+		{
+			switch (value) {
+			case Constants.Round:
+				stroke_cap = PenLineCap.Round;
+				break;
+			case Constants.Square:
+				stroke_cap = PenLineCap.Square;
+				break;
+			case Constants.Project:
+				stroke_cap = PenLineCap.Flat;
+				break;
+			default:
+				throw new ArgumentException ("Invalid strokeCap enumeration argument: " + value);
 			}
 		}
 /*
@@ -196,11 +218,11 @@ namespace ProcessingCli
 		Attributes
 		*strokeWeight()
 		*smooth()
-		strokeJoin()
+		*strokeJoin()
 		*noSmooth()
 		*ellipseMode()
 		rectMode()
-		strokeCap()
+		*strokeCap()
 
 		vertex()
 		bezierVertex()
