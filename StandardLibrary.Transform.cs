@@ -26,19 +26,24 @@ namespace ProcessingCli
 
 		public void pushMatrix ()
 		{
-			throw new NotImplementedException ();
+			var p = new Canvas ();
+			p.Width = Host.Width;
+			p.Height = Host.Height;
+			host_stack.Push (p);
 		}
 		public void popMatrix ()
 		{
-			throw new NotImplementedException ();
+			if (host_stack.Count == 0)
+				throw new InvalidOperationException ("No stacked matrix anymore.");
+			host_stack.Pop ();
 		}
 		public void translate (double x, double y)
 		{
-			throw new NotImplementedException ();
+			Host.RenderTransformOrigin = new Point (x, y);
 		}
 		public void translate (int x, int y)
 		{
-			throw new NotImplementedException ();
+			translate ((double) x, (double) y);
 		}
 		public void translate (double x, double y, double z)
 		{

@@ -88,12 +88,16 @@ namespace ProcessingCli
 		[ProcessingStandardField]
 		public const int HSB = 2;
 
-		
-		public Canvas Host; // set by application
-
-		public void SetHost (Canvas canvas)
+		Stack<Panel> host_stack = new Stack<Panel> ();
+		public Panel Host { // set by application
+			get { return host_stack.Count == 0 ? null : host_stack.Peek (); }
+		}
+			
+		public void SetHost (Panel panel)
 		{
-			Host = canvas;
+			if (host_stack.Count != 0)
+				throw new InvalidOperationException ("Internal error: SetHost() must not be called twice");
+			host_stack.Push (panel);
 			Host.MouseMove += delegate (object o, MouseEventArgs e) { current_mouse = e; };
 		}
 		
