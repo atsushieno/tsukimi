@@ -334,16 +334,27 @@ namespace ProcessingCli
 			}
 		}
 
+		static IEnumerable<string> all_funcs;
+		static IEnumerable<FieldInfo> all_fields;
+
+		static CodeGenerator ()
+		{
+			all_funcs = from m in app_type.GetMethods () select m.Name;
+			all_fields = from f in app_type.GetFields ()
+				where f.GetCustomAttributes (std_field_attr_type, false).Length > 0
+				select f;
+		}
 		static readonly Type app_type = Assembly.Load ("Processing.Core").GetType ("ProcessingCli.ProcessingApplication");
+		static readonly Type std_field_attr_type = Assembly.Load ("Processing.Core").GetType ("ProcessingCli.ProcessingStandardFieldAttribute");
 
 		static IEnumerable<FieldInfo> AllFields ()
 		{
-			return app_type.GetFields ();
+			return all_fields;
 		}
 
-		static string [] AllFunctionNames ()
+		static IEnumerable<string> AllFunctionNames ()
 		{
-			return (string []) app_type.GetProperty ("AllFunctionNames").GetValue (null, null);
+			return all_funcs;
 		}
 
 		string ResolveFunction (string name, bool isGlobal)
