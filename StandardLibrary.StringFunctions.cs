@@ -51,7 +51,7 @@ namespace ProcessingCli
 
 		public string nf (int n, int digits)
 		{
-			return n.ToString ("{0," + digits + "}", CultureInfo.InvariantCulture);
+			return String.Format (CultureInfo.InvariantCulture, "{0," + digits + "}", n);
 		}
 
 		public string nf (double n, int left, int right)
