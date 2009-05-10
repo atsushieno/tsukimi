@@ -222,6 +222,10 @@ namespace ProcessingCli
 		Radius,
 		Corner,
 		Corners,
+		// stroke join
+		Miter,
+		Bevel,
+		Round,
 	}
 
 	public class ProcessingStandardFieldAttribute : Attribute

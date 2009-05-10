@@ -34,6 +34,7 @@ namespace ProcessingCli
 			p.Stroke = stroke_brush;
 			if (stroke_weight != null)
 				p.StrokeThickness = (double) stroke_weight;
+			p.StrokeLineJoin = stroke_join;
 			p.Data = pg;
 			Host.Children.Add (p);
 		}
@@ -46,6 +47,7 @@ namespace ProcessingCli
 			r.Stroke = stroke_brush;
 			if (stroke_weight != null)
 				r.StrokeThickness = (double) stroke_weight;
+			r.StrokeLineJoin = stroke_join;
 			r.Fill = fill_brush;
 			Canvas.SetLeft (r, x);
 			Canvas.SetTop (r, y);
@@ -68,6 +70,7 @@ namespace ProcessingCli
 			l.Stroke = stroke_brush;
 			if (stroke_weight != null)
 				l.StrokeThickness = (double) stroke_weight;
+			l.StrokeLineJoin = stroke_join;
 			Host.Children.Add (l);
 		}
 
@@ -99,6 +102,7 @@ namespace ProcessingCli
 			r.Stroke = stroke_brush;
 			if (stroke_weight != null)
 				r.StrokeThickness = (double) stroke_weight;
+			r.StrokeLineJoin = stroke_join;
 			r.Fill = fill_brush;
 			Canvas.SetLeft (r, x);
 			Canvas.SetTop (r, y);
@@ -125,6 +129,7 @@ namespace ProcessingCli
 			p.Stroke = stroke_brush;
 			if (stroke_weight != null)
 				p.StrokeThickness = (double) stroke_weight;
+			p.StrokeLineJoin = stroke_join;
 			Host.Children.Add (p);
 		}
 
@@ -146,6 +151,23 @@ namespace ProcessingCli
 		public void ellipseMode (Constants mode)
 		{
 			Console.WriteLine ("WARNING: no support for ellipseMode() yet");
+		}
+		
+		public void strokeJoin (Constants value)
+		{
+			switch (value) {
+			case Constants.Round:
+				stroke_join = PenLineJoin.Round;
+				break;
+			case Constants.Miter:
+				stroke_join = PenLineJoin.Miter;
+				break;
+			case Constants.Bevel:
+				stroke_join = PenLineJoin.Bevel;
+				break;
+			default:
+				throw new ArgumentException ("Invalid enumeration value: " + value);
+			}
 		}
 /*
 *** Shape

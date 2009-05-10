@@ -81,6 +81,11 @@ namespace ProcessingCli
 			return new PFont (name, size, smooth, charset);
 		}
 
+		public PFont loadFont (string name)
+		{
+			throw new NotImplementedException ("Use createFont instead");
+		}
+
 		void ApplyTextFont (TextBlock tb)
 		{
 			// FIXME: support textFont.
