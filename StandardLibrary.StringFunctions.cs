@@ -51,12 +51,12 @@ namespace ProcessingCli
 
 		public string nf (int n, int digits)
 		{
-			return String.Format (CultureInfo.InvariantCulture, "{0," + digits + "}", n);
+			return String.Format (CultureInfo.InvariantCulture, "{0,0" + digits + "}", n);
 		}
 
 		public string nf (double n, int left, int right)
 		{
-			return n.ToString ("{0," + left + "," + right + "}", CultureInfo.InvariantCulture);
+			return String.Format (CultureInfo.InvariantCulture, "{0,0" + left + "," + right + "}", n);
 		}
 
 		public PString [] match (string str, string regexp)
