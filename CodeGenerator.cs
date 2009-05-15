@@ -334,30 +334,25 @@ namespace ProcessingCli
 			}
 		}
 
-		static IEnumerable<string> all_funcs;
-		static IEnumerable<FieldInfo> all_fields;
+		static List<string> all_funcs;
+		static List<string> all_fields;
+		static List<string> all_consts;
 
 		static CodeGenerator ()
 		{
-			var ass = Assembly.ReflectionOnlyLoad ("Processing.Core");
-			app_type = ass.GetType ("ProcessingCli.ProcessingApplication");
-			std_field_attr_type = ass.GetType ("ProcessingCli.ProcessingStandardFieldAttribute");
-			all_funcs = from m in app_type.GetMethods () select m.Name;
-			all_fields = from f in app_type.GetFields ()
-				where f.GetCustomAttributes (std_field_attr_type, false).Length > 0
-				select f;
-		}
-		static readonly Type app_type = Assembly.ReflectionOnlyLoad ("Processing.Core").GetType ("ProcessingCli.ProcessingApplication");
-		static readonly Type std_field_attr_type = Assembly.ReflectionOnlyLoad ("Processing.Core").GetType ("ProcessingCli.ProcessingStandardFieldAttribute");
-
-		static IEnumerable<FieldInfo> AllFields ()
-		{
-			return all_fields;
-		}
-
-		static IEnumerable<string> AllFunctionNames ()
-		{
-			return all_funcs;
+			all_funcs = new List<string> ();
+			all_consts = new List<string> ();
+			all_fields = new List<string> ();
+			string [] lines = new StreamReader (typeof (CodeGenerator).Assembly.GetManifestResourceStream ("apilist.txt"))
+				.ReadToEnd ().Split (new char [] {'\n'});
+			foreach (string line in lines) {
+				if (line.StartsWith ("Method "))
+					all_funcs.Add (line.Substring (7));
+				else if (line.StartsWith ("Const "))
+					all_consts.Add (line.Substring (6));
+				else if (line.StartsWith ("Field "))
+					all_fields.Add (line.Substring (6));
+			}
 		}
 
 		string ResolveFunction (string name, bool isGlobal)
@@ -366,7 +361,7 @@ namespace ProcessingCli
 				foreach (GlobalFunctionDefinition g in funcs)
 					if (g.Internal.Name == name)
 						return name;
-				foreach (var n in AllFunctionNames ())
+				foreach (var n in all_funcs)
 					if (n == name)
 						return "ProcessingApplication.Current.@" + name;
 			}
@@ -400,15 +395,12 @@ namespace ProcessingCli
 			case "frameRate":
 				return "ProcessingApplication.Current.frameRateField";
 			}
-			foreach (var m in AllFields ()) {
-				if (m.Name == name) {
-					FieldInfo fi = m as FieldInfo;
-					if (fi != null && (fi.IsLiteral || fi.IsStatic))
-						return "ProcessingApplication." + name;
-					else
+			foreach (var m in all_consts)
+				if (m == name)
+					return "ProcessingApplication." + name;
+			foreach (var m in all_fields)
+				if (m == name)
 						return "ProcessingApplication.Current." + name;
-				}
-			}
 
 			return name;
 		}

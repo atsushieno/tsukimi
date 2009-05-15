@@ -35,7 +35,7 @@ $(CONVERTER_EXE) : $(CONVERTER_EXE_SOURCES) $(CONVERTER_DLL)
 	gmcs -debug -out:$(CONVERTER_EXE) $(CONVERTER_EXE_SOURCES) -r:$(CONVERTER_DLL)
 
 $(CONVERTER_DLL) : $(CORE_DLL) $(CONVERTER_DLL_SOURCES)
-	gmcs -debug -t:library -out:$(CONVERTER_DLL) $(CONVERTER_DLL_SOURCES)
+	gmcs -debug -t:library -out:$(CONVERTER_DLL) $(CONVERTER_DLL_SOURCES) -resource:apilist.txt
 
 $(CORE_DLL) : $(CORE_DLL_SOURCES)
 	smcs -debug -t:library -out:$(CORE_DLL) $(CORE_DLL_SOURCES)
@@ -47,6 +47,12 @@ EXTRA_DISTFILES = Makefile README processing_syntax.txt
 
 DISTFILES = $(CONVERTER_EXE_SOURCES) $(CONVERTER_DLL_SOURCES) $(CORE_DLL_SOURCES) $(EXTRA_DISTFILES)
 BINFILES = $(CORE_DLL) $(CORE_DLL).mdb $(CONVERTER_DLL) $(CONVERTER_DLL).mdb $(CONVERTER_EXE) $(CONVERTER_EXE).mdb
+
+apigen:
+	mv libs/Mono.Cecil.dll .
+	gmcs processing-apilist-generator.cs -r:Mono.Cecil.dll
+	mono processing-apilist-generator.exe | sort | uniq > apilist.txt
+	mv Mono.Cecil.dll libs
 
 clean:
 	rm -f $(BINFILES)

@@ -159,6 +159,21 @@ namespace ProcessingCli
 			}
 		}
 
+#if MEMBER_EXPORTER
+		public static void Main ()
+		{
+			Console.WriteLine ("<functions>");
+			foreach (var f in AllFunctionNames)
+				Console.WriteLine (f);
+			Console.WriteLine ("<fields>");
+			foreach (var m in AllFields) {
+				var fi = m as FieldInfo;
+				// name || name* (dynamic/static)
+				Console.WriteLine ("{0}{1}", m.Name, fi.IsLiteral || fi.IsStatic ? "*" : "");
+			}
+		}
+#endif
+
 		// The functions below are not defined in the standard library.
 		// They are resolved only internally.
 		//

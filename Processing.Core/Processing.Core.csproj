@@ -70,4 +70,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <ItemGroup>
+    <EmbeddedResource Include="..\apilist.txt" />
+  </ItemGroup>
 </Project>
