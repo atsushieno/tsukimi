@@ -30,10 +30,13 @@ namespace ProcessingCli.ApiGeneration
 			foreach (MethodDefinition m in app_type.Methods)
 				if (m.IsPublic)
 					Console.WriteLine ("Method " + m.Name);
-			// fields
+			// fields (and properties)
 			foreach (FieldDefinition f in app_type.Fields)
-				if (f.IsPublic && f.CustomAttributes.Find<CustomAttribute> (x => x.Constructor.DeclaringType.Name == "ProcessingStandardFieldAttribute") != null)
+				if (f.CustomAttributes.Find<CustomAttribute> (x => x.Constructor.DeclaringType.Name == "ProcessingStandardFieldAttribute") != null)
 					Console.WriteLine ("{0} {1}", f.IsStatic || f.HasConstant ? "Const" : "Field", f.Name);
+			foreach (PropertyDefinition f in app_type.Properties)
+				if (f.CustomAttributes.Find<CustomAttribute> (x => x.Constructor.DeclaringType.Name == "ProcessingStandardFieldAttribute") != null)
+					Console.WriteLine ("{0} {1}", f.GetMethod.IsStatic || f.HasConstant ? "Const" : "Field", f.Name);
 		}
 	}
 

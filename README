@@ -12,7 +12,8 @@
 	- Processing.Importer.dll : this is to import processing application
 	  and generate Moonlight application (xap package etc.).
 	  The resulting application should run under Silverlight too, but
-	  it is not tested at all.
+	  it is not tested very often.
+	  Since it internally invokes mxap, it won't work without moonlight.
 	- tsukimi-tool.exe : console frontend to the importer.
 
 	It is still in early stage and everything is subject to change.
@@ -22,8 +23,10 @@
 
 ** Dependencies
 
-	You need moon (from trunk) built and installed.
-	Note that I don't mean novell-moonlight.xpi (firefox plugin).
+	To build it or use the importer, you need moon (from trunk) built
+	and installed. To run tsukimi-based app, you just need either
+	moonlight 2.0 (preview) or silverlight 2.0.
+	Though by "moon" I don't mean novell-moonlight.xpi (firefox plugin).
 	This application depends on its command line tool "mxap".
 
 	Also it depends on "zip" command when it imports application data.
@@ -66,6 +69,11 @@
 	- skeleton.cs :
 	  taken from mcs (jay).
 
+	- apilist.txt :
+	  It is embedded into Processing.Importer.dll to identify
+	  processing native members in users code. It can be generated
+	  by "make apigen".
+
 ** Parser/Converter
 
 *** Some Details
@@ -74,7 +82,8 @@
 	- "ProcessingApplication" class is generated to hold global members.
 	- For each top level contents in AstRoot:
 	-- A class is converted to generate a managed class.
-	-- A global function definition is converted to a method of Global class.
+	-- A global function definition is converted to a method of 
+	   ProcessingApplication class.
 	-- A statement is converted to become a statement in the global Run().
 
 

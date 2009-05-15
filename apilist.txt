@@ -27,7 +27,11 @@ Const TAB
 Const TOP
 Const TWO_PI
 Field frameRateField
+Field height
 Field key
+Field mouseX
+Field mouseY
+Field width
 Method SetHost
 Method abs
 Method acos
