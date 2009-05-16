@@ -393,7 +393,7 @@ namespace ProcessingCli
 			// with different ones.
 			switch (name) {
 			case "frameRate":
-				return "ProcessingApplication.Current.frameRateField";
+				return "ProcessingApplication.Current.frameRateResult";
 			}
 			foreach (var m in all_consts)
 				if (m == name)

@@ -240,11 +240,16 @@ namespace ProcessingCli
 		cursor()
 */
 		[ProcessingStandardField]
-		public int frameRateField;
+		public int frameRateSetting = 60;
+		// score of the previous second
+		[ProcessingStandardField]
+		public int frameRateResult = 10;
+		// Incremented in each draw(). After one second passed, it is let to frameRateResult and reset.
+		int frame_rate_counting = 0;
 
 		public void frameRate (int value)
 		{
-			frameRateField = value;
+			frameRateSetting = value;
 		}
 /*
 *** Input
