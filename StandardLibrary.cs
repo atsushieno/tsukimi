@@ -130,50 +130,6 @@ namespace ProcessingCli
 			get { return (int) Host.Height; }
 		}
 
-		static string [] all_func_names;
-		static MemberInfo [] all_fields;
-
-		public static IEnumerable<MemberInfo> AllFields {
-			get {
-				if (all_fields != null)
-					return all_fields;
-				var l = new List<MemberInfo> ();
-				foreach (var mi in typeof (ProcessingApplication).GetMembers ())
-					if (mi.GetCustomAttributes (typeof (ProcessingStandardFieldAttribute), false).Length > 0)
-						l.Add (mi);
-				all_fields = l.ToArray ();
-				return all_fields;
-			}
-		}
-
-		public static IEnumerable<string> AllFunctionNames {
-			get {
-				if (all_func_names != null)
-					return all_func_names;
-				var names = new List<string> ();
-				foreach (var mi in typeof (ProcessingApplication).GetMethods ())
-					if (true) // (mi.GetCustomAttributes (typeof (ProcessingStandardFieldAttribute), false).Length > 0)
-						names.Add (mi.Name);
-				all_func_names = names.ToArray ();
-				return all_func_names;
-			}
-		}
-
-#if MEMBER_EXPORTER
-		public static void Main ()
-		{
-			Console.WriteLine ("<functions>");
-			foreach (var f in AllFunctionNames)
-				Console.WriteLine (f);
-			Console.WriteLine ("<fields>");
-			foreach (var m in AllFields) {
-				var fi = m as FieldInfo;
-				// name || name* (dynamic/static)
-				Console.WriteLine ("{0}{1}", m.Name, fi.IsLiteral || fi.IsStatic ? "*" : "");
-			}
-		}
-#endif
-
 		// The functions below are not defined in the standard library.
 		// They are resolved only internally.
 		//
