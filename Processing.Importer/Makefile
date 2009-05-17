@@ -21,10 +21,10 @@ ProcessingParser.cs : ProcessingParser.jay
 BINFILES = $(CONVERTER_DLL) $(CONVERTER_DLL).mdb
 
 apigen:
-	mv ../libs/Mono.Cecil.dll .
+	mv ../build/Mono.Cecil.dll .
 	gmcs processing-apilist-generator.cs -r:Mono.Cecil.dll
 	mono processing-apilist-generator.exe | sort | uniq > apilist.txt
-	mv Mono.Cecil.dll ../libs
+	mv Mono.Cecil.dll ../build
 
 clean:
 	rm -f $(BINFILES)
