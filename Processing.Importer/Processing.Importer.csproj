@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -40,23 +40,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\CodeGenerator.cs" />
-    <Compile Include="..\ProcessingAst.cs" />
-    <Compile Include="..\ProcessingAstExpression.cs" />
-    <Compile Include="..\ProcessingParser.cs" />
-    <Compile Include="..\ProcessingProjectSource.cs" />
-    <Compile Include="..\ProcessingSourceImporter.cs" />
-    <Compile Include="..\ProcessingTokenizer.cs" />
-    <Compile Include="..\ProcessingXapImporter.cs" />
+    <Compile Include="CodeGenerator.cs" />
+    <Compile Include="ProcessingAst.cs" />
+    <Compile Include="ProcessingAstExpression.cs" />
+    <Compile Include="ProcessingParser.cs" />
+    <Compile Include="ProcessingProjectSource.cs" />
+    <Compile Include="ProcessingSourceImporter.cs" />
+    <Compile Include="ProcessingTokenizer.cs" />
+    <Compile Include="ProcessingXapImporter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\ProcessingParser.jay" />
+    <None Include="ProcessingParser.jay" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
-    <MonoDevelop>
-      <Properties InternalTargetFrameworkVersion="3.5" />
-    </MonoDevelop>
     <VisualStudio />
   </ProjectExtensions>
+  <ItemGroup>
+    <EmbeddedResource Include="apilist.txt" />
+  </ItemGroup>
 </Project>

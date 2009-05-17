@@ -32,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\driver.cs" />
+    <Compile Include="driver.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core">
