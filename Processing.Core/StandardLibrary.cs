@@ -46,15 +46,14 @@ namespace ProcessingCli
 	{
 		public static ProcessingApplication Current { get; set; }
 
-		public ProcessingApplication ()
+		public ProcessingApplication (Action run)
 		{
 			Current = this;
 			Startup += delegate {
 				var c = new Canvas ();
 				this.RootVisual = c;
-				c.Loaded += delegate {
-					ProcessingApplication.Current.SetHost (c);
-				};
+				c.Loaded += delegate { run (); };
+				ProcessingApplication.Current.SetHost (c);
 			};
 		}
 		

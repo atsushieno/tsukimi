@@ -64,7 +64,7 @@ namespace ProcessingCli
 
 			w.WriteLine ("public class App : ProcessingApplication");
 			w.WriteLine ("{");
-			w.WriteLine ("public App ()");
+			w.WriteLine ("public App () : base (() => Run ())");
 			w.WriteLine ("{");
 			w.WriteLine ("} // end of App.ctor()");
 			w.WriteLine ();
@@ -106,7 +106,6 @@ namespace ProcessingCli
 			foreach (var f in funcs)
 				if (f.Internal.Name == "setup")
 					w.WriteLine ("setup ();");
-			// FIXME: draw() is not just one shot function.
 			foreach (var f in funcs)
 				if (f.Internal.Name == "draw")
 					w.WriteLine ("RegisterDraw (() => draw ());");
