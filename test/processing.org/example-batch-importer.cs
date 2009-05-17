@@ -39,7 +39,7 @@ public class Test
 					psi.FileName = "mono";
 					psi.WorkingDirectory = dstappfull;
 					psi.UseShellExecute = true;
-					string exepath = Path.GetFullPath ("../../tsukimi-tool.exe");
+					string exepath = Path.GetFullPath ("../../../build/tsukimi-tool.exe");
 					psi.Arguments = "--debug " + exepath + " --xap " + appfull;
 					var p = Process.Start (psi);
 					p.WaitForExit ();
