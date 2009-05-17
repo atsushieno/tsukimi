@@ -13,6 +13,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+#if !DESKTOP
+using System.Windows.Browser;
+#endif
 
 /*
 
@@ -41,6 +45,31 @@ namespace ProcessingCli
 	public partial class ProcessingApplication : Application
 	{
 		public static ProcessingApplication Current { get; set; }
+
+		public ProcessingApplication ()
+		{
+			Current = this;
+			Startup += delegate {
+				var c = new Canvas ();
+				this.RootVisual = c;
+				c.Loaded += delegate {
+					ProcessingApplication.Current.SetHost (c);
+				};
+			};
+		}
+		
+		public static void RegisterDraw (Action action)
+		{
+#if DESKTOP
+			// FIXME: any equivalents for sync invocation?
+			throw new NotImplementedException ();
+#else
+			DispatcherTimer timer = new DispatcherTimer ();
+			timer.Interval = TimeSpan.FromMilliseconds (1000 / 60);
+			timer.Tick += ((o, e) => System.Windows.Browser.HtmlPage.Window.Dispatcher.BeginInvoke (action));
+			timer.Start ();
+#endif
+		}
 
 		// FIXME: those enum constants are not valid approach,
 		// since some enums overlap names in different types.

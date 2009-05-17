@@ -66,13 +66,6 @@ namespace ProcessingCli
 			w.WriteLine ("{");
 			w.WriteLine ("public App ()");
 			w.WriteLine ("{");
-			w.WriteLine ("Current = this;");
-			w.WriteLine ("Startup += delegate (object sender_, StartupEventArgs se) {");
-			w.WriteLine ("var c = new Canvas ();");
-			w.WriteLine ("this.RootVisual = c;");
-			w.WriteLine ("c.Loaded += delegate (object sender, RoutedEventArgs e) { Run (); };");
-			w.WriteLine ("ProcessingApplication.Current.SetHost (c);");
-			w.WriteLine ("}; // end of ApplicationStartup delegate");
 			w.WriteLine ("} // end of App.ctor()");
 			w.WriteLine ();
 
@@ -116,7 +109,7 @@ namespace ProcessingCli
 			// FIXME: draw() is not just one shot function.
 			foreach (var f in funcs)
 				if (f.Internal.Name == "draw")
-					w.WriteLine ("draw ();");
+					w.WriteLine ("RegisterDraw (() => draw ());");
 			w.WriteLine ("}");
 			w.WriteLine ("}");
 
