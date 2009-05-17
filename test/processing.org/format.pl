@@ -2,7 +2,7 @@
 # This script could be used once example-batch-importer ran through the
 # entire examples. Usage:
 #	find . -name *.html > index.txt
-#	format.pl < index.txt > index.html
+#	perl format.pl < index.txt > index.html
 # Then upload the entire output directory.
 @line = <STDIN>;
 print <<END;
