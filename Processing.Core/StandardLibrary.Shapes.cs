@@ -42,16 +42,45 @@ namespace ProcessingCli
 		public void ellipse (double x, double y, double width, double height)
 		{
 			Ellipse r = new Ellipse ();
-			r.Width = width;
-			r.Height = height;
+			switch (ellipse_mode) {
+			case Constants.Corner:
+				Canvas.SetLeft (r, x);
+				Canvas.SetTop (r, y);
+				r.Width = width + 1;
+				r.Height = height + 1;
+				break;
+			case Constants.Corners:
+				Canvas.SetLeft (r, x);
+				Canvas.SetTop (r, y);
+				r.Width = width - x + 1;
+				r.Height = height - y + 1;
+				break;
+			case Constants.Center:
+				Canvas.SetLeft (r, x - (width / 2));
+				Canvas.SetTop (r, y - (height / 2));
+				r.Width = width + 1;
+				r.Height = height + 1;
+				break;
+			case Constants.Radius:
+				Canvas.SetLeft (r, x - width);
+				Canvas.SetTop (r, y - height);
+				r.Width = width * 2 + 1;
+				r.Height = height * 2 + 1;
+				break;
+			}
 			r.Stroke = stroke_brush;
 			r.StrokeThickness = stroke_weight;
 			r.StrokeLineJoin = stroke_join;
 			r.StrokeStartLineCap = r.StrokeEndLineCap = stroke_cap;
 			r.Fill = fill_brush;
-			Canvas.SetLeft (r, x);
-			Canvas.SetTop (r, y);
 			Host.Children.Add (r);
+		}
+
+		Constants ellipse_mode = Constants.Center;
+
+		public void ellipseMode (Constants mode)
+		{
+			ellipse_mode = mode;
 		}
 
 		public void line (int x1, int y1, int x2, int y2)
@@ -171,11 +200,6 @@ namespace ProcessingCli
 		public void noSmooth ()
 		{
 			Console.WriteLine ("WARNING: no support for noSmooth() yet");
-		}
-
-		public void ellipseMode (Constants mode)
-		{
-			Console.WriteLine ("WARNING: no support for ellipseMode() yet");
 		}
 		
 		public void strokeJoin (Constants value)
