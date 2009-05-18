@@ -587,6 +587,11 @@ namespace ProcessingCli
 				GenerateExpression (a.Target);
 				w.Write ('.');
 				w.Write (ResolveFieldMemberName (a.Target, a.MemberName));
+			} else if (x is ParenthesizedExpression) {
+				var p = (ParenthesizedExpression) x;
+				w.Write ('(');
+				GenerateExpression (p.Body);
+				w.Write (')');
 			} else {
 				Console.Error.WriteLine (x);
 				throw new NotImplementedException ("Not implemented expression: " + x);

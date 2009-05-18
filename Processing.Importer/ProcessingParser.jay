@@ -875,7 +875,7 @@ array_access_expression
 
 null_expression : NULL { $$ = Expression.Null (); };
 
-parenthesized_expression : OPEN_PAREN expression CLOSE_PAREN { $$ = $2; };
+parenthesized_expression : OPEN_PAREN expression CLOSE_PAREN { $$ = Expression.Parenthesized ($2); };
 
 cast_expression
 	: OPEN_PAREN type_name CLOSE_PAREN prefixed_unary_expression

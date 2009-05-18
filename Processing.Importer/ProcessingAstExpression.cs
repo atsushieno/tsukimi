@@ -333,6 +333,10 @@ namespace ProcessingCli.Ast
 		{
 			return new ArithmeticExpression (left, right, ArithmeticKind.BitwiseOr);
 		}
+		public static Expression Parenthesized (Expression exp)
+		{
+			return new ParenthesizedExpression (exp);
+		}
 	}
 
 	public class AssignmentExpression : Expression
@@ -550,5 +554,15 @@ namespace ProcessingCli.Ast
 
 		public Expression Array { get; set; }
 		public Expression Index { get; set; }
+	}
+
+	public class ParenthesizedExpression : Expression
+	{
+		public ParenthesizedExpression (Expression exp)
+		{
+			Body = exp;
+		}
+
+		public Expression Body { get; set; }
 	}
 }
