@@ -9,10 +9,10 @@ namespace ProcessingCli.ApiGeneration
 {
 	public class ApiGenerator
 	{
-		public static void Main ()
+		public static void Main (string [] args)
 		{
 			var ass = AssemblyFactory.GetAssembly (
-				File.OpenRead ("Processing.Core.dll"));
+				File.OpenRead (args [0]));
 			var mod = ass.Modules [0];
 			TypeDefinition app_type = null, fld_type = null;
 			foreach (TypeDefinition t in mod.Types) {

@@ -12,6 +12,7 @@ CORE_DLL_SOURCES = \
 	StandardLibrary.StringFunctions.cs \
 	StandardLibrary.Math.cs \
 	StandardLibrary.Shapes.cs \
+	StandardLibrary.Transform.cs \
 	StandardLibrary.Typography.cs
 
 all: $(CORE_DLL)

@@ -23,7 +23,7 @@ BINFILES = $(CONVERTER_DLL) $(CONVERTER_DLL).mdb
 apigen:
 	mv ../build/Mono.Cecil.dll .
 	gmcs processing-apilist-generator.cs -r:Mono.Cecil.dll
-	mono processing-apilist-generator.exe | sort | uniq > apilist.txt
+	mono processing-apilist-generator.exe ../build/Processing.Core.dll | sort | uniq > apilist.txt
 	mv Mono.Cecil.dll ../build
 
 clean:
