@@ -132,7 +132,7 @@ namespace ProcessingCli
 		public TextWriter StandardOutput = Console.Out;
 
 		SolidColorBrush stroke_brush;
-		double? stroke_weight;
+		double stroke_weight = 1.0;
 		PenLineJoin stroke_join = PenLineJoin.Miter;
 		PenLineCap stroke_cap = PenLineCap.Round;
 

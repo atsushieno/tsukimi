@@ -32,8 +32,7 @@ namespace ProcessingCli
 			pg.Figures.Add (pf);
 
 			p.Stroke = stroke_brush;
-			if (stroke_weight != null)
-				p.StrokeThickness = (double) stroke_weight;
+			p.StrokeThickness = stroke_weight;
 			p.StrokeLineJoin = stroke_join;
 			p.StrokeStartLineCap = p.StrokeEndLineCap = stroke_cap;
 			p.Data = pg;
@@ -46,8 +45,7 @@ namespace ProcessingCli
 			r.Width = width;
 			r.Height = height;
 			r.Stroke = stroke_brush;
-			if (stroke_weight != null)
-				r.StrokeThickness = (double) stroke_weight;
+			r.StrokeThickness = stroke_weight;
 			r.StrokeLineJoin = stroke_join;
 			r.StrokeStartLineCap = r.StrokeEndLineCap = stroke_cap;
 			r.Fill = fill_brush;
@@ -68,10 +66,9 @@ namespace ProcessingCli
 			l.Y1 = y1;
 			l.X2 = x2;
 			l.Y2 = y2;
-			// FIXME: consider fill property
 			l.Stroke = stroke_brush;
-			if (stroke_weight != null)
-				l.StrokeThickness = (double) stroke_weight;
+			l.Fill = fill_brush;
+			l.StrokeThickness = stroke_weight;
 			l.StrokeLineJoin = stroke_join;
 			l.StrokeStartLineCap = l.StrokeEndLineCap = stroke_cap;
 			Host.Children.Add (l);
@@ -100,22 +97,46 @@ namespace ProcessingCli
 		public void rect (double x, double y, double width, double height)
 		{
 			Rectangle r = new Rectangle ();
-			r.Width = width;
-			r.Height = height;
+			switch (rect_mode) {
+			case Constants.Corner:
+				Canvas.SetLeft (r, x);
+				Canvas.SetTop (r, y);
+				r.Width = width;
+				r.Height = height;
+				break;
+			case Constants.Corners:
+				Canvas.SetLeft (r, x);
+				Canvas.SetTop (r, y);
+				r.Width = width - x;
+				r.Height = height - y;
+				break;
+			case Constants.Center:
+				Canvas.SetLeft (r, x - (width / 2));
+				Canvas.SetTop (r, y - (height / 2));
+				r.Width = width;
+				r.Height = height;
+				break;
+			case Constants.Radius:
+				Canvas.SetLeft (r, x - width);
+				Canvas.SetTop (r, y - height);
+				r.Width = width * 2;
+				r.Height = height * 2;
+				break;
+			}
+				
 			r.Stroke = stroke_brush;
-			if (stroke_weight != null)
-				r.StrokeThickness = (double) stroke_weight;
+			r.StrokeThickness = stroke_weight;
 			r.StrokeLineJoin = stroke_join;
 			r.StrokeStartLineCap = r.StrokeEndLineCap = stroke_cap;
 			r.Fill = fill_brush;
-			Canvas.SetLeft (r, x);
-			Canvas.SetTop (r, y);
 			Host.Children.Add (r);
 		}
 
+		Constants rect_mode = Constants.Corner;
+
 		public void rectMode (Constants mode)
 		{
-			Console.WriteLine ("WARNING: no support for rectMode() yet");
+			this.rect_mode = mode;
 		}
 
 		public void triangle (int x1, int y1, int x2, int y2, int x3, int y3)
@@ -129,10 +150,9 @@ namespace ProcessingCli
 			p.Points.Add (new Point (x1, y1));
 			p.Points.Add (new Point (x2, y2));
 			p.Points.Add (new Point (x3, y3));
-			// FIXME: consider fill property
 			p.Stroke = stroke_brush;
-			if (stroke_weight != null)
-				p.StrokeThickness = (double) stroke_weight;
+			p.Fill = fill_brush;
+			p.StrokeThickness = stroke_weight;
 			p.StrokeLineJoin = stroke_join;
 			p.StrokeStartLineCap = p.StrokeEndLineCap = stroke_cap;
 			Host.Children.Add (p);
