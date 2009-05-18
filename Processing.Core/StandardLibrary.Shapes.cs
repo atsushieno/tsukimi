@@ -101,26 +101,26 @@ namespace ProcessingCli
 			case Constants.Corner:
 				Canvas.SetLeft (r, x);
 				Canvas.SetTop (r, y);
-				r.Width = width;
-				r.Height = height;
+				r.Width = width + 1;
+				r.Height = height + 1;
 				break;
 			case Constants.Corners:
 				Canvas.SetLeft (r, x);
 				Canvas.SetTop (r, y);
-				r.Width = width - x;
-				r.Height = height - y;
+				r.Width = width - x + 1;
+				r.Height = height - y + 1;
 				break;
 			case Constants.Center:
 				Canvas.SetLeft (r, x - (width / 2));
 				Canvas.SetTop (r, y - (height / 2));
-				r.Width = width;
-				r.Height = height;
+				r.Width = width + 1;
+				r.Height = height + 1;
 				break;
 			case Constants.Radius:
 				Canvas.SetLeft (r, x - width);
 				Canvas.SetTop (r, y - height);
-				r.Width = width * 2;
-				r.Height = height * 2;
+				r.Width = width * 2 + 1;
+				r.Height = height * 2 + 1;
 				break;
 			}
 				
