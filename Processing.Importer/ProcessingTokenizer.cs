@@ -157,6 +157,9 @@ namespace ProcessingCli.Parser
 					case '"':
 						AppendNameChar ('"', ref index);
 						break;
+					case 'u':
+						AppendNameChar (ReadHex (4), ref index);
+						break;
 					default:
 						throw new ParserException (String.Format ("Invalid escape character after \\: '{0}'", (char) c));
 					}
@@ -185,6 +188,25 @@ namespace ProcessingCli.Parser
 			}
 			else
 				nameBuffer [index++] = (char) c;
+		}
+
+		char ReadHex (int digits)
+		{
+			int val = 0;
+			for (int i = 0; i < digits; i++) {
+				int c = ReadChar ();
+				int h = 0;
+				if ('A' <= c && c <= 'F')
+					h = 10 + c - 'A';
+				else if ('a' <= c && c <= 'f')
+					h = 10 + c - 'a';
+				else if ('0' <= c && c <= '9')
+					h = c - '0';
+				else
+					throw new ParserException (String.Format ("Invalid hexadecimal character: {0:X} ('{1}')", c, (char) c));
+				val = (val << 8) + h;
+			}
+			return (char) val;
 		}
 
 		// taken from System.Json/JsonReader.cs
