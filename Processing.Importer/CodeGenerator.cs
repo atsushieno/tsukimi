@@ -62,7 +62,7 @@ namespace ProcessingCli
 			w.WriteLine ("namespace {0}", namespace_name);
 			w.WriteLine ("{");
 
-			w.WriteLine ("public class App : ProcessingApplication");
+			w.WriteLine ("public partial class App : ProcessingApplication");
 			w.WriteLine ("{");
 			w.WriteLine ("public App () : base (() => Run ())");
 			w.WriteLine ("{");
