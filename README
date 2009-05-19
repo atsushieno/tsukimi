@@ -7,13 +7,14 @@
 
 	So far there are three assemblies as outcome from this project:
 
-	- Processing.Core.dll : this aims to support processing standard
-	  library, to make application runnable under Moonlight.
-	- Processing.Importer.dll : this is to import processing application
-	  and generate Moonlight application (xap package etc.).
+	- Processing.Core.dll : it implements processing standard library,
+	  to make application runnable under Moonlight.
+	- Processing.Importer.dll : it is to import processing application
+	  (pde) and generate Moonlight application (xap package etc.).
 	  The resulting application should run under Silverlight too, but
 	  it is not tested very often.
-	  Since it internally invokes mxap, it won't work without moonlight.
+	  Since it internally invokes mxap, it requires moon installation
+	  (moonlight.xpi is not enough.)
 	- tsukimi-tool.exe : console frontend to the importer.
 
 	It is still in early stage and everything is subject to change.
@@ -25,9 +26,7 @@
 
 	To build it or use the importer, you need moon (from trunk) built
 	and installed. To run tsukimi-based app, you just need either
-	moonlight 2.0 (preview) or silverlight 2.0.
-	Though by "moon" I don't mean novell-moonlight.xpi (firefox plugin).
-	This application depends on its command line tool "mxap".
+	moonlight 2.0 (preview) or silverlight 2.0 or later.
 
 	Also it depends on "zip" command when it imports application data.
 
@@ -49,16 +48,14 @@
 	- Processing parser that parses processing files (*.pde) to the AST.
 	- "processing standard library" for common functions and classes.
 	  It is based on System.Windows.dll
-	- Code generator that is based on the standard library.
+	- Code generator that writes code that uses the standard library.
 	  Not sure we generate either of some source code or direct IL.
 	  So far we generate C# sources directly. (We could generate python
 	  or ruby sources and make it work with dynamic silverlight, but
-	  it adds somewhat heavy dependency. We avoid it so far.)
+	  it adds somewhat heavy dependency. I avoid it so far.)
 
 *** TODOs
 
-	- support draw(). There is no animation yet.
-	  Not sure if we can support it though.
 	- A lot of library features are missing.
 
 ** Source Files
@@ -67,7 +64,7 @@
 	  my analysis on processing syntax. It is based on 1.0 beta.
 
 	- skeleton.cs :
-	  taken from mcs (jay).
+	  taken from mcs, required for jay.
 
 	- apilist.txt :
 	  It is embedded into Processing.Importer.dll to identify
