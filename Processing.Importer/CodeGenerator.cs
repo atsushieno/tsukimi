@@ -109,6 +109,7 @@ namespace ProcessingCli
 			foreach (var f in funcs)
 				if (f.Internal.Name == "draw")
 					w.WriteLine ("RegisterDraw (() => draw ());");
+			w.WriteLine ("OnApplicationSetup (this);");
 			w.WriteLine ("}");
 			w.WriteLine ("}");
 

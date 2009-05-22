@@ -128,7 +128,16 @@ namespace ProcessingCli
 			host_stack.Push (panel);
 			Host.MouseMove += delegate (object o, MouseEventArgs e) { current_mouse = e; };
 		}
-		
+
+		protected static void OnApplicationSetup (ProcessingApplication app)
+		{
+			app.OnApplicationSetup ();
+		}
+
+		protected virtual void OnApplicationSetup ()
+		{
+		}
+
 		public TextWriter StandardOutput = Console.Out;
 
 		SolidColorBrush stroke_brush;
