@@ -51,8 +51,8 @@ namespace ProcessingCli
 			Current = this;
 			Startup += delegate {
 				var c = new Canvas ();
-				this.RootVisual = c;
 				c.Loaded += delegate { run (); };
+				this.RootVisual = c;
 				ProcessingApplication.Current.SetHost (c);
 			};
 		}
