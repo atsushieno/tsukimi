@@ -109,7 +109,7 @@ namespace ProcessingCli
 			foreach (var f in funcs)
 				if (f.Internal.Name == "draw")
 					w.WriteLine ("RegisterDraw (() => draw ());");
-			w.WriteLine ("OnApplicationSetup (this);");
+			w.WriteLine ("OnApplicationSetup (ProcessingApplication.Current);");
 			w.WriteLine ("}");
 			w.WriteLine ("}");
 
@@ -336,7 +336,7 @@ namespace ProcessingCli
 			all_funcs = new List<string> ();
 			all_consts = new List<string> ();
 			all_fields = new List<string> ();
-			string [] lines = new StreamReader (typeof (CodeGenerator).Assembly.GetManifestResourceStream ("apilist.txt"))
+			string [] lines = new StreamReader (typeof (CodeGenerator).Assembly.GetManifestResourceStream ("Processing.Importer.apilist.txt"))
 				.ReadToEnd ().Split (new char [] {'\n'});
 			foreach (string line in lines) {
 				if (line.StartsWith ("Method "))
