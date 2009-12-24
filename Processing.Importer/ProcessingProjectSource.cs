@@ -20,9 +20,9 @@ namespace ProcessingCli
 {
 	public class ProcessingProjectSource
 	{
-public string AssemblyName {
-	get { return NamespaceName.Substring (8); }
-}
+		public string AssemblyName {
+			get { return NamespaceName; }
+		}
 		public string NamespaceName { get; set; }
 		public List<Uri> DataFiles { get; private set; }
 		public List<Uri> Sources { get; private set; }
@@ -36,7 +36,7 @@ public string AssemblyName {
 				path = path.Substring (0, path.Length - 1);
 			path = Path.GetFullPath (path);
 			var uri = new Uri (path);
-			var ns = "Tsukimi." + DetermineNamespace (uri);
+			var ns = DetermineNamespace (uri);
 			var p = new ProcessingProjectSource () {NamespaceName = ns};
 			foreach (var s in Directory.GetFiles (path, "*.pde"))
 				p.Sources.Add (new Uri (Path.GetFullPath (s)));

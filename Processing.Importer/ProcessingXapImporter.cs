@@ -93,6 +93,8 @@ namespace ProcessingCli
 					File.Delete (dstfile);
 				File.Copy (srcfile, dstfile);
 			}
+			else
+				Console.Error.WriteLine ("warning!! copy source {0} not found.", srcfile);
 		}
 	}
 
@@ -167,7 +169,10 @@ namespace ProcessingCli
 		}
 
 		const string manifest_template = @"
-<Deployment xmlns='http://schemas.microsoft.com/client/2007/deployment' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' EntryPointAssembly='ASSEMBLY_NAME' EntryPointType='NAMESPACE_NAME.App' RuntimeVersion='2.0.31005.0'>
+<Deployment xmlns='http://schemas.microsoft.com/client/2007/deployment'
+  xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+  EntryPointAssembly='ASSEMBLY_NAME'
+  EntryPointType='NAMESPACE_NAME.App' RuntimeVersion='2.0.31005.0'>
   <Deployment.Parts>
     <AssemblyPart x:Name='Proce55ing.Core' Source='Proce55ing.Core.dll' />
     <AssemblyPart x:Name='ASSEMBLY_NAME' Source='ASSEMBLY_NAME.dll' />
