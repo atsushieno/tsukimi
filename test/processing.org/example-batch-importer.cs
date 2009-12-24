@@ -36,11 +36,11 @@ public class Test
 					if (!Directory.Exists (dstappfull))
 						Directory.CreateDirectory (dstappfull);
 					var psi = new ProcessStartInfo ();
-					psi.FileName = "mono";
+					psi.FileName = "tsukimi-tool"; //"mono";
 					psi.WorkingDirectory = dstappfull;
 					psi.UseShellExecute = true;
 					string exepath = Path.GetFullPath ("../../tsukimi-tool/bin/Debug/tsukimi-tool.exe");
-					psi.Arguments = "--debug " + exepath + " --xap " + appfull;
+					psi.Arguments = /*"--debug " + exepath + */ " --xap " + appfull;
 					var p = Process.Start (psi);
 					p.WaitForExit ();
 				}
