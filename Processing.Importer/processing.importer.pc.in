@@ -1,6 +1,6 @@
 Name: Processing.Importer
 Description: Processing.Importer
-Version: 0.1
+Version: 0.2
 
 Requires: 
 Libs: -r:@expanded_libdir@/@PACKAGE@/Processing.Importer.dll

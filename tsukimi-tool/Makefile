@@ -19,6 +19,8 @@ PROJECT_REFERENCES =  \
 BUILD_DIR = bin/Debug
 
 PROCESSING_IMPORTER_DLL_SOURCE=../Processing.Importer/bin/Debug/Processing.Importer.dll
+PROCESSING_IMPORTER_DLL_MDB_SOURCE=../Processing.Importer/bin/Debug/Processing.Importer.dll.mdb
+PROCESSING_IMPORTER_DLL_MDB=$(BUILD_DIR)/Processing.Importer.dll.mdb
 TSUKIMI_TOOL_EXE_MDB_SOURCE=bin/Debug/tsukimi-tool.exe.mdb
 TSUKIMI_TOOL_EXE_MDB=$(BUILD_DIR)/tsukimi-tool.exe.mdb
 
@@ -35,6 +37,7 @@ PROJECT_REFERENCES =  \
 BUILD_DIR = bin/Release
 
 PROCESSING_IMPORTER_DLL_SOURCE=../Processing.Importer/bin/Release/Processing.Importer.dll
+PROCESSING_IMPORTER_DLL_MDB=
 TSUKIMI_TOOL_EXE_MDB=
 
 endif
@@ -44,6 +47,7 @@ SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll
 
 PROGRAMFILES = \
 	$(PROCESSING_IMPORTER_DLL) \
+	$(PROCESSING_IMPORTER_DLL_MDB) \
 	$(TSUKIMI_TOOL_EXE_MDB)  
 
 BINARIES = \
@@ -81,6 +85,7 @@ include $(top_srcdir)/Makefile.include
 
 
 $(eval $(call emit-deploy-target,PROCESSING_IMPORTER_DLL))
+$(eval $(call emit-deploy-target,PROCESSING_IMPORTER_DLL_MDB))
 $(eval $(call emit-deploy-wrapper,TSUKIMI_TOOL,tsukimi-tool,x))
 
 
@@ -105,6 +110,7 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	$(call cp,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(PROCESSING_IMPORTER_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call cp,$(PROCESSING_IMPORTER_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(TSUKIMI_TOOL_EXE_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	mkdir -p '$(DESTDIR)$(bindir)'
 	$(call cp,$(TSUKIMI_TOOL),$(DESTDIR)$(bindir))
@@ -116,6 +122,7 @@ uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	$(call rm,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(PROCESSING_IMPORTER_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(PROCESSING_IMPORTER_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(TSUKIMI_TOOL_EXE_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(TSUKIMI_TOOL),$(DESTDIR)$(bindir))
 	make post-uninstall-local-hook prefix=$(prefix)
