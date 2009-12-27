@@ -4,7 +4,7 @@ PACKAGE=tsukimi
 prefix=/usr/local
 config=DEBUG
 configurations=" DEBUG RELEASE"
-common_packages=" moonlight-gtk;2.9"
+common_packages=" cecil;2.6.1"
 
 
 usage ()

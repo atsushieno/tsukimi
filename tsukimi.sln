@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Processing.Core", "Processi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Processing.Importer", "Processing.Importer\Processing.Importer.csproj", "{91EF1C90-6ABE-4318-A5BC-7641E2AC6575}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Processing.Core.CLR", "Processing.Core.CLR\Processing.Core.CLR.csproj", "{67423514-E4BA-470B-B1CF-23964299B287}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "processing-api-generator", "processing-api-generator\processing-api-generator.csproj", "{8BD9D6F3-686B-4BE7-A586-4FBB44BE2754}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{5AAFC3EA-8922-43BA-9E70-8A0DBD861DB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AAFC3EA-8922-43BA-9E70-8A0DBD861DB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AAFC3EA-8922-43BA-9E70-8A0DBD861DB1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{67423514-E4BA-470B-B1CF-23964299B287}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{67423514-E4BA-470B-B1CF-23964299B287}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{67423514-E4BA-470B-B1CF-23964299B287}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{67423514-E4BA-470B-B1CF-23964299B287}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BD9D6F3-686B-4BE7-A586-4FBB44BE2754}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BD9D6F3-686B-4BE7-A586-4FBB44BE2754}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BD9D6F3-686B-4BE7-A586-4FBB44BE2754}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BD9D6F3-686B-4BE7-A586-4FBB44BE2754}.Release|Any CPU.Build.0 = Release|Any CPU
 		{91EF1C90-6ABE-4318-A5BC-7641E2AC6575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{91EF1C90-6ABE-4318-A5BC-7641E2AC6575}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91EF1C90-6ABE-4318-A5BC-7641E2AC6575}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -14,9 +14,11 @@ ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize- -debug "-
 ASSEMBLY = bin/Debug/Processing.Importer.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
-PROJECT_REFERENCES = 
+PROJECT_REFERENCES =  \
+	../processing-api-generator/bin/Debug/processing-api-generator.exe
 BUILD_DIR = bin/Debug
 
+PROCESSING_API_GENERATOR_EXE_SOURCE=../processing-api-generator/bin/Debug/processing-api-generator.exe
 PROCESSING_IMPORTER_DLL_MDB_SOURCE=bin/Debug/Processing.Importer.dll.mdb
 PROCESSING_IMPORTER_DLL_MDB=$(BUILD_DIR)/Processing.Importer.dll.mdb
 
@@ -28,9 +30,11 @@ ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize-
 ASSEMBLY = bin/Release/Processing.Importer.dll
 ASSEMBLY_MDB = 
 COMPILE_TARGET = library
-PROJECT_REFERENCES = 
+PROJECT_REFERENCES =  \
+	../processing-api-generator/bin/Release/processing-api-generator.exe
 BUILD_DIR = bin/Release
 
+PROCESSING_API_GENERATOR_EXE_SOURCE=../processing-api-generator/bin/Release/processing-api-generator.exe
 PROCESSING_IMPORTER_DLL_MDB=
 
 endif
@@ -39,6 +43,7 @@ AL=al2
 SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll
 
 PROGRAMFILES = \
+	$(PROCESSING_API_GENERATOR_EXE) \
 	$(PROCESSING_IMPORTER_DLL_MDB)  
 
 LINUX_PKGCONFIG = \
@@ -47,6 +52,7 @@ LINUX_PKGCONFIG = \
 
 RESGEN=resgen2
 
+PROCESSING_API_GENERATOR_EXE = $(BUILD_DIR)/processing-api-generator.exe
 PROCESSING_IMPORTER_PC = $(BUILD_DIR)/processing.importer.pc
 
 FILES = \
@@ -84,12 +90,17 @@ include $(top_srcdir)/Makefile.include
 
 
 
+$(eval $(call emit-deploy-target,PROCESSING_API_GENERATOR_EXE))
 $(eval $(call emit-deploy-wrapper,PROCESSING_IMPORTER_PC,processing.importer.pc))
 
 
 $(eval $(call emit_resgen_targets))
 $(build_xamlg_list): %.xaml.g.cs: %.xaml
 	xamlg '$<'
+
+# Targets for Custom commands
+DEBUG_BeforeBuild:
+	(cd /Users/atsushieno/svn/tsukimi && sh apigen.sh)
 
 
 $(ASSEMBLY_MDB): $(ASSEMBLY)
@@ -107,6 +118,7 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	mkdir -p '$(DESTDIR)$(libdir)/$(PACKAGE)'
 	$(call cp,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call cp,$(PROCESSING_API_GENERATOR_EXE),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(PROCESSING_IMPORTER_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	mkdir -p '$(DESTDIR)$(libdir)/pkgconfig'
 	$(call cp,$(PROCESSING_IMPORTER_PC),$(DESTDIR)$(libdir)/pkgconfig)
@@ -117,6 +129,7 @@ uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make uninstall-satellite-assemblies prefix=$(prefix)
 	$(call rm,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(PROCESSING_API_GENERATOR_EXE),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(PROCESSING_IMPORTER_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(PROCESSING_IMPORTER_PC),$(DESTDIR)$(libdir)/pkgconfig)
 	make post-uninstall-local-hook prefix=$(prefix)

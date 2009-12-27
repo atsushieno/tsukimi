@@ -12,10 +12,10 @@ include $(top_srcdir)/rules.make
 
 #Warning: This is an automatically generated file, do not edit!
 ifeq ($(CONFIG),DEBUG)
- SUBDIRS =  Processing.Core Processing.Importer Processing.Core.CLR tsukimi-tool
+ SUBDIRS =  Processing.Core processing-api-generator Processing.Importer tsukimi-tool
 endif
 ifeq ($(CONFIG),RELEASE)
- SUBDIRS =  Processing.Core Processing.Importer Processing.Core.CLR tsukimi-tool
+ SUBDIRS =  Processing.Core processing-api-generator Processing.Importer tsukimi-tool
 endif
 
 

@@ -26,6 +26,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="sh apigen.sh" workingdir="${SolutionDir}" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -60,5 +65,11 @@
   </ProjectExtensions>
   <ItemGroup>
     <EmbeddedResource Include="apilist.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\processing-api-generator\processing-api-generator.csproj">
+      <Project>{8BD9D6F3-686B-4BE7-A586-4FBB44BE2754}</Project>
+      <Name>processing-api-generator</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
