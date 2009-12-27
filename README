@@ -69,7 +69,7 @@
 	- apilist.txt :
 	  It is embedded into Processing.Importer.dll to identify
 	  processing native members in users code. It can be generated
-	  by "make apigen".
+	  by "apigen.sh".
 
 ** Parser/Converter
 
