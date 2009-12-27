@@ -5,6 +5,11 @@ namespace ProcessingCli.Ast
 {
 	public abstract class Statement : ITopLevelContent
 	{
+		public static Statement CallSuper ()
+		{
+			return new SuperConstructorCallStatement ();
+		}
+
 		public static StatementBlock Block (bool wrap, List<Statement> statements)
 		{
 			if (statements == null)
@@ -71,6 +76,10 @@ namespace ProcessingCli.Ast
 		{
 			return new CallableExpressionStatement (exp);
 		}
+	}
+
+	public class SuperConstructorCallStatement : Statement
+	{
 	}
 
 	public class VariableDeclarationStatement : Statement
@@ -170,6 +179,15 @@ namespace ProcessingCli.Ast
 
 	public abstract class Expression
 	{
+		public static Expression This ()
+		{
+			return new ThisReferenceExpression ();
+		}
+		
+		public static Expression Super ()
+		{
+			return new SuperReferenceExpression ();
+		}
 
 		public static Expression Null ()
 		{
@@ -564,5 +582,13 @@ namespace ProcessingCli.Ast
 		}
 
 		public Expression Body { get; set; }
+	}
+	
+	public class ThisReferenceExpression : Expression
+	{
+	}
+	
+	public class SuperReferenceExpression : Expression
+	{
 	}
 }

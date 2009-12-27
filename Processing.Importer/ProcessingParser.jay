@@ -401,7 +401,7 @@ decrement_expression
 call_super_statement
 	: SUPER OPEN_PAREN function_args CLOSE_PAREN
 	{
-		// FIXME: get current type, find base constructor, and call it.
+		$$ = Statement.CallSuper ();
 	}
 	;
 
@@ -855,14 +855,14 @@ function_access_expression
 super_expression
 	: SUPER
 	{
-		$$ = null; // FIXME: needs current type context, Type, and then base type
+		$$ = Expression.Super ();
 	}
 	;
 
 this_expression
 	: THIS
 	{
-		$$ = null;
+		$$ = Expression.This ();
 	}
 	; // FIXME: how can I represent it?
 
