@@ -37,7 +37,8 @@ namespace ProcessingApiGenerator
 
 			foreach (MethodDefinition method in type.Methods)
 				if ((method.Attributes & MethodAttributes.Public) != 0)
-				Console.WriteLine ("Method " + method.Name);
+					if (method.Name != "OnApplicationSetup") // FIXME: hack
+						Console.WriteLine ("Method " + method.Name);
 		}
 	}
 }
