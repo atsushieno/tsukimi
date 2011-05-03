@@ -1,3 +1,5 @@
+// To generate ProcessingParser.cs, use jay in mono/mcs/jay (run "make install" to install it first)
+// as: jay -cv <skeleton.cs ProcessingParser.jay > ProcessingParser.cs
 
 %{
 using System;

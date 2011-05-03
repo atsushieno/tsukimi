@@ -23,6 +23,9 @@
 .    yyerror(message, null);
 .  }
 .
+.  /* An EOF token */
+.  public int eof_token;
+.
 .  /** (syntax) error message.
 .      Can be overwritten to control message format.
 .      @param message text to be displayed.
@@ -56,14 +59,14 @@ t    if ((name = yyNames[token]) != null) return name;
 t    return "[unknown]";
 t  }
 .
+.  int yyExpectingState;
 .  /** computes list of expected tokens on error by tracing the tables.
 .      @param state for which to compute the list.
 .      @return list of token names.
 .    */
-.  protected string[] yyExpecting (int state) {
+.  protected int [] yyExpectingTokens (int state){
 .    int token, n, len = 0;
 .    bool[] ok = new bool[yyNames.Length];
-.
 .    if ((n = yySindex[state]) != 0)
 .      for (token = n < 0 ? -n : 0;
 .           (token < yyNames.Length) && (n+token < yyTable.Length); ++ token)
@@ -78,10 +81,16 @@ t  }
 .          ++ len;
 .          ok[token] = true;
 .        }
-.
-.    string [] result = new string[len];
+.    int [] result = new int [len];
 .    for (n = token = 0; n < len;  ++ token)
-.      if (ok[token]) result[n++] = yyNames[token];
+.      if (ok[token]) result[n++] = token;
+.    return result;
+.  }
+.  protected string[] yyExpecting (int state) {
+.    int [] tokens = yyExpectingTokens (state);
+.    string [] result = new string[tokens.Length];
+.    for (int n = 0; n < tokens.Length;  n++)
+.      result[n++] = yyNames[tokens [n]];
 .    return result;
 .  }
 .
@@ -114,6 +123,14 @@ t    this.debug = (yydebug.yyDebug)yyd;
 .    return first;
 .  }
 .
+.	static int[] global_yyStates;
+.	static object[] global_yyVals;
+.	protected bool use_global_stacks;
+.	object[] yyVals;					// value stack
+.	object yyVal;						// value stack ptr
+.	int yyToken;						// current input
+.	int yyTop;
+.
 .  /** the generated parser.
 .      Maintains a state and a value stack, currently with fixed maximum size.
 .      @param yyLex scanner.
@@ -122,30 +139,36 @@ t    this.debug = (yydebug.yyDebug)yyd;
 .    */
 .  internal Object yyparse (yyParser.yyInput yyLex)
 .  {
-.    if (yyMax <= 0) yyMax = 256;			// initial size
-.    int yyState = 0;                                   // state stack ptr
-.    int [] yyStates = new int[yyMax];	                // state stack 
-.    Object yyVal = null;                               // value stack ptr
-.    Object [] yyVals = new Object[yyMax];	        // value stack
-.    int yyToken = -1;					// current input
+.    if (yyMax <= 0) yyMax = 256;		// initial size
+.    int yyState = 0;                   // state stack ptr
+.    int [] yyStates;               	// state stack 
+.    yyVal = null;
+.    yyToken = -1;
 .    int yyErrorFlag = 0;				// #tks to shift
+.	if (use_global_stacks && global_yyStates != null) {
+.		yyVals = global_yyVals;
+.		yyStates = global_yyStates;
+.   } else {
+.		yyVals = new object [yyMax];
+.		yyStates = new int [yyMax];
+.		if (use_global_stacks) {
+.			global_yyVals = yyVals;
+.			global_yyStates = yyStates;
+.		}
+.	}
 .
  local		## %{ ... %} after the first %%
 
-.    /*yyLoop:*/ for (int yyTop = 0;; ++ yyTop) {
+.    /*yyLoop:*/ for (yyTop = 0;; ++ yyTop) {
 .      if (yyTop >= yyStates.Length) {			// dynamically increase
-.        int[] i = new int[yyStates.Length+yyMax];
-.        yyStates.CopyTo (i, 0);
-.        yyStates = i;
-.        Object[] o = new Object[yyVals.Length+yyMax];
-.        yyVals.CopyTo (o, 0);
-.        yyVals = o;
+.        global::System.Array.Resize (ref yyStates, yyStates.Length+yyMax);
+.        global::System.Array.Resize (ref yyVals, yyVals.Length+yyMax);
 .      }
 .      yyStates[yyTop] = yyState;
 .      yyVals[yyTop] = yyVal;
 t      if (debug != null) debug.push(yyState, yyVal);
 .
-.      /*yyDiscarded:*/ for (;;) {	// discarding a token does not change stack
+.      /*yyDiscarded:*/ while (true) {	// discarding a token does not change stack
 .        int yyN;
 .        if ((yyN = yyDefRed[yyState]) == 0) {	// else [default] reduce (yyN)
 .          if (yyToken < 0) {
@@ -171,8 +194,10 @@ t              debug.shift(yyState, yyTable[yyN], yyErrorFlag-1);
 .            switch (yyErrorFlag) {
 .  
 .            case 0:
+.              yyExpectingState = yyState;
 .              // yyerror(String.Format ("syntax error, got token `{0}'", yyname (yyToken)), yyExpecting(yyState));
 t              if (debug != null) debug.error("syntax error");
+.              if (yyToken == 0 /*eof*/ || yyToken == eof_token) throw new yyParser.yyUnexpectedEof ();
 .              goto case 1;
 .            case 1: case 2:
 .              yyErrorFlag = 3;
@@ -206,7 +231,7 @@ t  							yyLex.value());
 .        int yyV = yyTop + 1-yyLen[yyN];
 t        if (debug != null)
 t          debug.reduce(yyState, yyStates[yyV-1], yyN, YYRules.getRule (yyN), yyLen[yyN]);
-.        yyVal = yyDefault(yyV > yyTop ? null : yyVals[yyV]);
+.        yyVal = yyV > yyTop ? null : yyVals[yyV]; // yyVal = yyDefault(yyV > yyTop ? null : yyVals[yyV]);
 .        switch (yyN) {
 
  actions		## code from the actions within the grammar
@@ -237,9 +262,9 @@ t            if (debug != null) debug.accept(yyVal);
 .          yyState = yyDgoto[yyM];
 t        if (debug != null) debug.shift(yyStates[yyTop], yyState);
 .	 goto continue_yyLoop;
-.      continue_yyDiscarded: continue;	// implements the named-loop continue: 'continue yyDiscarded'
+.      continue_yyDiscarded: ;	// implements the named-loop continue: 'continue yyDiscarded'
 .      }
-.    continue_yyLoop: continue;		// implements the named-loop continue: 'continue yyLoop'
+.    continue_yyLoop: ;		// implements the named-loop continue: 'continue yyLoop'
 .    }
 .  }
 .
@@ -330,6 +355,12 @@ t        if (debug != null) debug.shift(yyStates[yyTop], yyState);
 .    */
 .  internal class yyException : System.Exception {
 .    public yyException (string message) : base (message) {
+.    }
+.  }
+.  internal class yyUnexpectedEof : yyException {
+.    public yyUnexpectedEof (string message) : base (message) {
+.    }
+.    public yyUnexpectedEof () : base ("") {
 .    }
 .  }
 .

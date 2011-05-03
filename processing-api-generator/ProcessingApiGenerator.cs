@@ -8,9 +8,9 @@ namespace ProcessingApiGenerator
 {
 	class Driver
 	{
-		public static void Main (string[] args)
+		public static void Main (string [] args)
 		{
-			var ass = AssemblyFactory.GetAssembly (args [0]);
+			var ass = AssemblyDefinition.ReadAssembly (args [0]);
 			foreach (ModuleDefinition mod in ass.Modules)
 				foreach (TypeDefinition type in mod.Types)
 					if (type.Name == "ProcessingApplication")

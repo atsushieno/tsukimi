@@ -9,7 +9,7 @@ top_srcdir=..
 include $(top_srcdir)/config.make
 
 ifeq ($(CONFIG),DEBUG)
-ASSEMBLY_COMPILER_COMMAND = smcs
+ASSEMBLY_COMPILER_COMMAND = mcs -sdk:moonlight
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize- -debug "-define:DEBUG"
 ASSEMBLY = bin/Debug/Processing.Core.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
@@ -23,7 +23,7 @@ PROCESSING_CORE_DLL_MDB=$(BUILD_DIR)/Processing.Core.dll.mdb
 endif
 
 ifeq ($(CONFIG),RELEASE)
-ASSEMBLY_COMPILER_COMMAND = smcs
+ASSEMBLY_COMPILER_COMMAND = mcs -sdk:moonlight
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize-
 ASSEMBLY = bin/Release/Processing.Core.dll
 ASSEMBLY_MDB = 
