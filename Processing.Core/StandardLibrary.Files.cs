@@ -64,12 +64,15 @@ namespace ProcessingCli
 
 		public string selectInput (string message)
 		{
+#if WINDOWS_PHONE
+            throw new NotImplementedException ();
+#else
 			// message is ignored.
-
 			var d = new OpenFileDialog ();
 			d.Multiselect = false;
 			d.ShowDialog ();
 			return d.File.FullName;
+#endif
 		}
 	}
 }

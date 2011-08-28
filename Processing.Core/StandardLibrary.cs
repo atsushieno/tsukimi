@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-#if !DESKTOP
+#if !DESKTOP && !WINDOWS_PHONE
 using System.Windows.Browser;
 #endif
 
@@ -59,9 +59,8 @@ namespace ProcessingCli
 		
 		public static void RegisterDraw (Action action)
 		{
-#if DESKTOP
-			// FIXME: any equivalents for sync invocation?
-			throw new NotImplementedException ();
+#if DESKTOP || WINDOWS_PHONE
+            action ();
 #else
 			DispatcherTimer timer = new DispatcherTimer ();
 			timer.Interval = TimeSpan.FromMilliseconds (1000 / 60);
