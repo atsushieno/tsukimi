@@ -7,12 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Android.Graphics;
 
 namespace ProcessingCli
 {
@@ -147,22 +142,7 @@ namespace ProcessingCli
 
 		public static Stream OpenRead (string s)
 		{
-			/*
-			var cli = new WebClient ();
-			var wait = new ManualResetEvent (false);
-			Stream result = null;
-			cli.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
-				result = e.Result;
-				wait.Set ();
-			};
-			cli.OpenReadAsync (new Uri (s, UriKind.RelativeOrAbsolute));
-			wait.WaitOne ();
-			return result;
-			*/
-			var sri = Application.GetResourceStream (new Uri (s, UriKind.RelativeOrAbsolute));
-			if (sri == null)
-				return null;
-			return sri.Stream;
+			return ProcessingApplication.Current.Assets.Open (s);
 		}
 		
 		public static Stream OpenWrite (string s)

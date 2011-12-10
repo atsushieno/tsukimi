@@ -1,8 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Windows;
-using System.Windows.Media;
+using Android.Graphics;
 using PString = System.String;
 
 namespace ProcessingCli

@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Controls;
+using Android.Graphics;
 using PString = System.String;
 
 namespace ProcessingCli
@@ -64,15 +63,8 @@ namespace ProcessingCli
 
 		public string selectInput (string message)
 		{
-#if WINDOWS_PHONE
-            throw new NotImplementedException ();
-#else
-			// message is ignored.
-			var d = new OpenFileDialog ();
-			d.Multiselect = false;
-			d.ShowDialog ();
-			return d.File.FullName;
-#endif
+			// FIXME: open some implicit intent? is it even doable?
+			throw new NotImplementedException ();
 		}
 	}
 }

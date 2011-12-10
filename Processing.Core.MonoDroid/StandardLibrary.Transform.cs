@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
+using Android.Graphics;
 using PString = System.String;
 
 namespace ProcessingCli
@@ -24,24 +22,23 @@ namespace ProcessingCli
 		{
 			throw new NotImplementedException ();
 		}
-
+		
+		Stack<Matrix> matrices = new Stack<Matrix> ();
 		public void pushMatrix ()
 		{
-			var p = new Canvas ();
-			p.Width = Host.Width;
-			p.Height = Host.Height;
-			Host.Children.Add (p);
-			host_stack.Push (p);
+			var m = new Matrix (Host.Matrix);
+			matrices.Push (host.Matrix);
+			Host.Matrix = m;
 		}
 		public void popMatrix ()
 		{
-			if (host_stack.Count == 0)
+			if (matrices.Count == 0)
 				throw new InvalidOperationException ("No stacked matrix anymore.");
-			host_stack.Pop ();
+			host.Matrix = matrices.Pop ();
 		}
 		public void translate (double x, double y)
 		{
-			Host.RenderTransform = new TranslateTransform () { X = x, Y = y };
+			Host.Translate ((float) x, (float) y);
 		}
 		public void translate (int x, int y)
 		{

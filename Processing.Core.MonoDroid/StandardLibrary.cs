@@ -7,16 +7,10 @@ using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-#if !DESKTOP && !WINDOWS_PHONE
-using System.Windows.Browser;
-#endif
+using Android.App;
+using Android.Graphics;
+using Android.Text;
+using Android.Views;
 
 /*
 
@@ -42,31 +36,36 @@ using ColorMode = System.Int32;
 
 namespace ProcessingCli
 {
-	public partial class ProcessingApplication : Application
+	public partial class ProcessingApplication : Activity
 	{
 		public static ProcessingApplication Current { get; set; }
-
+		
+		Action run;
 		public ProcessingApplication (Action run)
 		{
-			Current = this;
-			Startup += delegate {
-				var c = new Canvas ();
-				c.Loaded += delegate { run (); };
-				this.RootVisual = c;
-				ProcessingApplication.Current.SetHost (c);
-			};
+			this.run = run;
 		}
+		
+		protected override void OnCreate (Android.OS.Bundle savedInstanceState)
+		{
+			base.OnCreate (savedInstanceState);
+			run ();
+		}
+		
+		Timer timer;
 		
 		public static void RegisterDraw (Action action)
 		{
-#if DESKTOP || WINDOWS_PHONE
-            action ();
-#else
-			DispatcherTimer timer = new DispatcherTimer ();
-			timer.Interval = TimeSpan.FromMilliseconds (1000 / 60);
-			timer.Tick += ((o, e) => System.Windows.Browser.HtmlPage.Window.Dispatcher.BeginInvoke (action));
-			timer.Start ();
-#endif
+			ProcessingApplication.Current.RegisterDrawTimer (action);
+		}
+		
+		void RegisterDrawTimer (Action action)
+		{
+			timer = new Timer ((state) => {
+				host = view.Holder.LockCanvas ();
+				action ();
+				view.Holder.UnlockCanvasAndPost (host);
+			});
 		}
 
 		// FIXME: those enum constants are not valid approach,
@@ -114,18 +113,28 @@ namespace ProcessingCli
 
 		[ProcessingStandardField]
 		public const int HSB = 2;
-
-		Stack<Panel> host_stack = new Stack<Panel> ();
-		public Panel Host { // set by application
-			get { return host_stack.Count == 0 ? null : host_stack.Peek (); }
+		
+		Canvas host;
+		SurfaceView view;
+		public Canvas Host { // set by application
+			get { return host; }
+		}
+		TextPaint paint = new TextPaint ();
+		public TextPaint HostPaint {
+			get { return paint; }
 		}
 			
-		public void SetHost (Panel panel)
+		public void SetHost (SurfaceView view)
 		{
-			if (host_stack.Count != 0)
+			if (this.view != null)
 				throw new InvalidOperationException ("Internal error: SetHost() must not be called twice");
-			host_stack.Push (panel);
-			Host.MouseMove += delegate (object o, MouseEventArgs e) { current_mouse = e; };
+			this.view = view;
+		}
+		
+		public override bool OnTouchEvent (MotionEvent e)
+		{
+			current_mouse = e;
+			return base.OnTouchEvent (e);
 		}
 
 		protected static void OnApplicationSetup (ProcessingApplication app)
@@ -139,22 +148,13 @@ namespace ProcessingCli
 
 		public TextWriter StandardOutput = Console.Out;
 
-		SolidColorBrush stroke_brush;
 		double stroke_weight = 1.0;
-		PenLineJoin stroke_join = PenLineJoin.Miter;
-		PenLineCap stroke_cap = PenLineCap.Round;
+		Paint.Join stroke_join = Paint.Join.Miter;
+		Paint.Cap stroke_cap = Paint.Cap.Round;
 
-		Color? stroke_color {
-			get { return stroke_brush != null ? (Color?) stroke_brush.Color : null; }
-			set { stroke_brush = value != null ? new SolidColorBrush ((Color) value) : null; }
-		}
+		Color stroke_color { get; set; }
 
-		SolidColorBrush fill_brush;
-
-		Color? fill_color {
-			get { return fill_brush != null ? (Color?) fill_brush.Color : null; }
-			set { fill_brush = value != null ? new SolidColorBrush ((Color) value) : null; }
-		}
+		Color? fill_color { get; set; }
 
 		[ProcessingStandardField]
 		public int width {
@@ -188,9 +188,7 @@ namespace ProcessingCli
 		public void size (int width, int height, SizeMode sizeMode)
 		{
 			// FIXME: check sizeMode and reject some.
-
-			Host.Width = width;
-			Host.Height = height;
+			Host.SetViewport (width, height);
 		}
 
 		public void noLoop ()
@@ -279,16 +277,16 @@ namespace ProcessingCli
 		[ProcessingStandardField]
 		public const char DELETE = '\x7F';
 
-		MouseEventArgs current_mouse;
+		MotionEvent current_mouse;
 
 		[ProcessingStandardField]
 		public double mouseX {
-			get { return current_mouse == null ? 0 : current_mouse.GetPosition (null).X; }
+			get { return current_mouse.GetX (); }
 		}
 
 		[ProcessingStandardField]
 		public double mouseY {
-			get { return current_mouse == null ? 0 : current_mouse.GetPosition (null).Y; }
+			get { return current_mouse.GetY (); }
 		}
 		
 /*
@@ -444,10 +442,8 @@ namespace ProcessingCli
 
 		public PImage loadImage (string uri, string extension)
 		{
+			return new PImage (BitmapFactory.DecodeStream (Assets.Open (uri)));
 			// FIXME: extension is ignored so far
-			var img = new BitmapImage ();
-			img.SetSource (ProcessingUtility.OpenRead (uri));
-			return new PImage (img);
 		}
 
 		public void image (PImage img, double x, double y)
@@ -457,14 +453,7 @@ namespace ProcessingCli
 
 		public void image (PImage img, double x, double y, double width, double height)
 		{
-			var i = img.Image;
-			Host.Children.Add (i);
-			img.SetSource ();
-			i.UpdateLayout ();
-			// FIXME: width/height calculation is not done yet.
-//			if (img.width != width || img.height != height)
-//				i.Arrange (new Rect (0, 0, width, height));
-
+			Host.DrawBitmap (img.Image, new Rect (0, 0, img.Image.Width, img.Image.Height), ToRectF (x, y, width, height), HostPaint);
 			// FIXME: add mask (as alpha channel)
 			//foreach (var mask in img.Masks)
 			//	image (mask, x, y, width, height);
@@ -472,14 +461,10 @@ namespace ProcessingCli
 
 		public void set (double x, double y, Color c)
 		{
-			var l = new Line ();
-			l.X1 = x;
-			l.Y1 = y;
-			l.X2 = x + 1;
-			l.Y2 = y + 1;
-			// FIXME: consider fill property
-			l.Stroke = new SolidColorBrush (c);;
-			Host.Children.Add (l);
+			var bak = HostPaint.Color;
+			HostPaint.Color = c.ToArgb ();
+			Host.DrawPoint ((float) x, (float) y, HostPaint);
+			HostPaint.Color = bak;
 		}
 
 /*

@@ -6,12 +6,7 @@ using System.IO.IsolatedStorage;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Android.Graphics;
 
 using PString = System.String;
 using ColorMode = System.Int32;
@@ -75,7 +70,7 @@ namespace ProcessingCli
 
 		public void background (Color c)
 		{
-			Host.Background = new SolidColorBrush (c);
+			HostPaint.BgColor = c.ToArgb ();
 		}
 
 		public void colorMode (ColorMode mode)
@@ -135,17 +130,17 @@ namespace ProcessingCli
 
 		public void stroke (Color color, double alpha)
 		{
-			stroke_color = Color.FromArgb ((byte) alpha, color.R, color.G, color.B);
+			stroke_color = new Color (color.R, color.G, color.B, (byte) alpha);
 		}
 
 		public void noFill ()
 		{
-			fill_color = null;
+			fill_color = Color.Transparent;
 		}
 
 		public void noStroke ()
 		{
-			stroke_color = null;
+			stroke_color = Color.Transparent;
 		}
 
 		/*
@@ -257,7 +252,7 @@ namespace ProcessingCli
 
 		public Color color (double r, double g, double b, double a)
 		{
-			return Color.FromArgb ((byte) (int) a, (byte) (int) r, (byte) (int) g, (byte) (int) b);
+			return new Color ((byte) (int) r, (byte) (int) g, (byte) (int) b, (byte) (int) a);
 		}
 
 		public Color color (string hex)
@@ -265,7 +260,7 @@ namespace ProcessingCli
 			uint v = uint.Parse (hex.Substring (1), NumberStyles.HexNumber);
 			if (hex.Length == 7)
 				v |= 0xFF000000;
-			return Color.FromArgb ((byte) (v >> 24), (byte) ((v & 0xFF0000) >> 16), (byte) ((v & 0xFF00) >> 8), (byte) (v & 0xFF));
+			return new Color ((byte) ((v & 0xFF0000) >> 16), (byte) ((v & 0xFF00) >> 8), (byte) (v & 0xFF), (byte) (v >> 24));
 		}
 
 		public Color color (string hex, double alpha)
@@ -277,10 +272,11 @@ namespace ProcessingCli
 
 		public Color lerpColor (Color c1, Color c2, double amt)
 		{
-			return Color.FromArgb ((byte) lerp (c1.A, c2.A, amt),
-								    (byte) lerp (c1.R, c2.R, amt),
-								    (byte) lerp (c1.G, c2.G, amt),
-								    (byte) lerp (c1.B, c2.B, amt));
+			return new Color (
+				(byte) lerp (c1.R, c2.R, amt),
+				(byte) lerp (c1.G, c2.G, amt),
+				(byte) lerp (c1.B, c2.B, amt),
+				(byte) lerp (c1.A, c2.A, amt));
 		}
 	}
 }

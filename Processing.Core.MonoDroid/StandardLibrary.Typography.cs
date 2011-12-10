@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
+using Android.Graphics;
+using Android.Text;
 using PString = System.String;
 
 namespace ProcessingCli
@@ -30,17 +29,17 @@ namespace ProcessingCli
 
 		public PFont (string name, double size, bool smooth, char [] charset)
 		{
-			Family = new FontFamily (name);
+			Name = name;
 			Size = size;
 			Smooth = smooth;
 			Charset = charset;
 		}
 		
-		public FontFamily Family;
+		public Typeface Family;
 		
 		public string Name {
-			get { return Family.Source; }
-			set { Family = new FontFamily (value); }
+			get { return Family.ToString (); }
+			set { Family = Typeface.Create (value, TypefaceStyle.Normal); }
 		}
 		public double Size { get; set; }
 		public bool Smooth { get; set; }
@@ -92,35 +91,24 @@ namespace ProcessingCli
 			throw new NotSupportedException ("Use createFont instead");
 		}
 
-		void ApplyTextFont (TextBlock tb)
+		void ApplyTextFont ()
 		{
-			// FIXME: support textFont.
-			tb.FontFamily = text_font.Family;
-			tb.FontSize = text_font.Size;
-		}
-
-		TextBlock CreateTextBlock (string data, double x, double y)
-		{
-			TextBlock tb = new TextBlock ();
-			tb.Inlines.Add (data);
-			Canvas.SetLeft (tb, x);
-			Canvas.SetTop (tb, y - text_font.Size);
-			ApplyTextFont (tb);
-			tb.Foreground = fill_brush;
-			return tb;
+			HostPaint.TextSize = (float) text_font.Size;
+			HostPaint.SetTypeface (text_font.Family);
 		}
 
 		public void text (object data, double x, double y)
 		{
-			Host.Children.Add (CreateTextBlock (data.ToString (), x, y));
+			ApplyTextFont ();
+			Host.DrawText (data.ToString (), (float) x, (float) y, HostPaint);
 		}
 
 		public void text (string data, double x, double y, double width, double height)
 		{
-			TextBlock tb = CreateTextBlock (data, x, y);
-			tb.Width = width;
-			tb.Height = height;
-			Host.Children.Add (tb);
+			ApplyTextFont ();
+			// FIXME: height is not considered.
+			HostPaint.TextScaleX = (float) (width / HostPaint.MeasureText (data));
+			Host.DrawText (data, (float) x, (float) y, HostPaint);
 		}
 
 		public void textFont (PFont font)
@@ -139,13 +127,18 @@ namespace ProcessingCli
 
 		public void textAlign (Constants align)
 		{
-			text_align = align;
+			switch (align) {
+			case Constants.Left: HostPaint.TextAlign = Paint.Align.Left; break;
+			case Constants.Center: HostPaint.TextAlign = Paint.Align.Center; break;
+			case Constants.Right: HostPaint.TextAlign = Paint.Align.Right; break;
+			default: throw new ArgumentException ();
+			}
 		}
 
 		public void textAlign (Constants align, Constants yAlign)
 		{
-			text_align = align;
-			text_y_align = yAlign;
+			// FIXME: yAlign is not considered
+			textAlign (align);
 		}
 
 		public void textLeading (double value)
@@ -165,9 +158,7 @@ namespace ProcessingCli
 
 		public double textWidth (string s)
 		{
-			TextBlock tb = CreateTextBlock (s, 0, 0);
-			tb.Measure (new Size (Host.Width, Host.Height));
-			return tb.DesiredSize.Width;
+			return HostPaint.MeasureText (s);
 		}
 
 		public double textAscent ()

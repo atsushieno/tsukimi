@@ -41,4 +41,19 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="StandardLibrary.ArrayFunctions.cs" />
+    <Compile Include="StandardLibrary.Color.cs" />
+    <Compile Include="StandardLibrary.Conversion.cs" />
+    <Compile Include="StandardLibrary.Files.cs" />
+    <Compile Include="StandardLibrary.HiddenAPI.cs" />
+    <Compile Include="StandardLibrary.Math.cs" />
+    <Compile Include="StandardLibrary.Miscellaneous.cs" />
+    <Compile Include="StandardLibrary.PImage.cs" />
+    <Compile Include="StandardLibrary.Shapes.cs" />
+    <Compile Include="StandardLibrary.StringFunctions.cs" />
+    <Compile Include="StandardLibrary.Transform.cs" />
+    <Compile Include="StandardLibrary.Typography.cs" />
+    <Compile Include="StandardLibrary.cs" />
+  </ItemGroup>
 </Project>

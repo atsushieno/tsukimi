@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Android.Graphics;
 using PString = System.String;
 
 namespace ProcessingCli
@@ -12,30 +8,20 @@ namespace ProcessingCli
 
 	public class PImage
 	{
-		Image img;
-		BitmapImage source;
+		Bitmap img;
 		List<PImage> masks;
 
-		internal PImage (BitmapImage bitmap)
+		internal PImage (Bitmap bitmap)
 		{
-			img = new Image ();
-			img.ImageFailed += delegate(object sender, ExceptionRoutedEventArgs e) {
-				Console.WriteLine ("############ ImageFailed: {0} {1}", e.OriginalSource, e.ErrorException);
-			};
-			source = bitmap;
+			img = bitmap;
 		}
 
 		internal PImage (Color [] pixels)
 		{
 		}
 
-		internal Image Image {
+		internal Bitmap Image {
 			get { return img; }
-		}
-
-		internal void SetSource ()
-		{
-			img.Source = source;
 		}
 		
 		internal List<PImage> Masks {
@@ -48,12 +34,12 @@ namespace ProcessingCli
 
 		public double width {
 			get { return img.Width; }
-			set { img.Width = value; }
+			set { throw new NotImplementedException (); }
 		}
 
 		public double height {
 			get { return img.Height; }
-			set { img.Height = value; }
+			set { throw new NotImplementedException (); }
 		}
 
 		public Color [] pixels {
@@ -89,7 +75,7 @@ namespace ProcessingCli
 		{
 			var maskAlpha = new Color [maskArray.Length];
 			for (int i = 0; i < maskAlpha.Length; i++)
-				maskAlpha [i] = Color.FromArgb ((byte) maskArray [i], 0, 0, 0);
+				maskAlpha [i] = new Color ((byte) 0, (byte) 0, (byte) 0, (byte) maskArray [i]);
 			mask (new PImage (maskAlpha));
 		}
 	}
