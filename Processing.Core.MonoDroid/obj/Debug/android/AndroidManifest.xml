@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="Processing.Core.MonoDroid">
+  <application android:name="mono.android.app.Application" android:debuggable="true">
+    <provider android:name="mono.MonoRuntimeProvider" android:initOrder="2147483647" android:authorities="Processing.Core.MonoDroid.__mono_init__" />
+    <receiver android:name="mono.android.Seppuku">
+      <intent-filter>
+        <action android:name="mono.android.intent.action.SEPPUKU" />
+        <category android:name="mono.android.intent.category.SEPPUKU.Processing.Core.MonoDroid" />
+      </intent-filter>
+    </receiver>
+    <activity android:name="mono.android.__FastDevLauncher" android:label="Processing.Core.MonoDroid Launcher" android:noHistory="true">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-sdk android:minSdkVersion="8" />
+</manifest>

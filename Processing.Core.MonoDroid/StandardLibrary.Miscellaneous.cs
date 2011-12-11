@@ -142,7 +142,7 @@ namespace ProcessingCli
 
 		public static Stream OpenRead (string s)
 		{
-			return ProcessingApplication.Current.Assets.Open (s);
+			return ProcessingApplication.Current.activity.Assets.Open (s);
 		}
 		
 		public static Stream OpenWrite (string s)

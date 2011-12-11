@@ -55,14 +55,23 @@ namespace ProcessingCli
 		{
 			w.WriteLine ("using System;");
 			w.WriteLine ("using System.Linq;");
+#if __MONODROID
+			w.WriteLine ("using Android.App;");
+			w.WriteLine ("using Android.Graphics;");
+#else
 			w.WriteLine ("using System.Windows;");
 			w.WriteLine ("using System.Windows.Controls;");
 			w.WriteLine ("using System.Windows.Media;");
+#endif
 			w.WriteLine ("using ProcessingCli;");
 			w.WriteLine ("namespace {0}", namespace_name);
 			w.WriteLine ("{");
 
+#if __MONODROID
+			w.WriteLine ("public partial class App : ProcessingActivity");
+#else
 			w.WriteLine ("public partial class App : ProcessingApplication");
+#endif
 			w.WriteLine ("{");
 			w.WriteLine ("public App () : base (() => Run ())");
 			w.WriteLine ("{");
@@ -226,7 +235,11 @@ namespace ProcessingCli
 			case "float":
 				return "double";
 			case "color":
+#if MONODROID
+				return "Color";
+#else
 				return "System.Windows.Media.Color";
+#endif
 			default:
 				return name;
 			}

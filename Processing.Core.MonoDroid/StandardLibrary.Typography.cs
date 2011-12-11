@@ -122,7 +122,6 @@ namespace ProcessingCli
 		}
 
 		// FIXME: they are not supported.
-		Constants text_align, text_y_align;
 		double text_leading;
 
 		public void textAlign (Constants align)
@@ -143,6 +142,7 @@ namespace ProcessingCli
 
 		public void textLeading (double value)
 		{
+			// FIXME: text_leading is unused
 			text_leading = value;
 		}
 

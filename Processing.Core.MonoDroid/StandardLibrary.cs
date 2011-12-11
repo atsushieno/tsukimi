@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Android.App;
+using Android.Content;
 using Android.Graphics;
 using Android.Text;
 using Android.Views;
@@ -36,12 +37,11 @@ using ColorMode = System.Int32;
 
 namespace ProcessingCli
 {
-	public partial class ProcessingApplication : Activity
+	
+	public partial class ProcessingActivity : Activity
 	{
-		public static ProcessingApplication Current { get; set; }
-		
 		Action run;
-		public ProcessingApplication (Action run)
+		public ProcessingActivity (Action run)
 		{
 			this.run = run;
 		}
@@ -49,8 +49,79 @@ namespace ProcessingCli
 		protected override void OnCreate (Android.OS.Bundle savedInstanceState)
 		{
 			base.OnCreate (savedInstanceState);
-			run ();
+			var view = new ProcessingApplication (this, run, this.BaseContext);
+			var lp = new ViewGroup.LayoutParams (ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+			view.LayoutParameters = lp;
+			view.Holder.AddCallback (view);
+			this.SetContentView (view);
 		}
+
+		protected static void OnApplicationSetup (ProcessingApplication app)
+		{
+			app.OnApplicationSetup ();
+		}
+		
+		/*
+		public void SetHost (ProcessingApplication view)
+		{
+			if (this.view != null)
+				throw new InvalidOperationException ("Internal error: SetHost() must not be called twice");
+			this.view = view;
+		}
+		*/
+	}
+	
+	public partial class ProcessingApplication : SurfaceView, ISurfaceHolderCallback
+	{
+		public static ProcessingApplication Current { get; set; }
+		
+		internal ProcessingActivity activity;
+		Action run;
+		
+		public ProcessingApplication (ProcessingActivity activity, Action run, Context context)
+			: base (context)
+		{
+			Current = this;
+			this.activity = activity;
+			this.run = run;
+		}
+		
+		public ProcessingApplication view {
+			get { return this; }
+		}
+
+		#region ISurfaceHolderCallback implementation
+		void Android.Views.ISurfaceHolderCallback.SurfaceChanged (Android.Views.ISurfaceHolder holder, Android.Graphics.Format format, int width, int height)
+		{
+		}
+	
+		void Android.Views.ISurfaceHolderCallback.SurfaceCreated (Android.Views.ISurfaceHolder holder)
+		{
+			var rect = holder.SurfaceFrame;
+			var bmp = Bitmap.CreateBitmap (rect.Width (), rect.Height (), Bitmap.Config.Argb8888);
+			host = new Canvas (bmp);
+			HostPaint.SetStyle (Paint.Style.Fill);
+			HostPaint.Color = Color.Red.ToArgb ();
+			Host.DrawRect (host.ClipBounds, HostPaint);
+#if false
+			var h = holder.LockCanvas ();
+			run ();
+			holder.UnlockCanvasAndPost (h);
+#else
+			run ();
+			var h = holder.LockCanvas ();
+			h.DrawBitmap (bmp, new Matrix (), HostPaint);
+			holder.UnlockCanvasAndPost (h);
+#endif
+			if (timer != null)
+				timer.Change (0, 1000 / 60);
+			Android.Widget.Toast.MakeText (Context, "done " + Color.Blue.ToArgb (), Android.Widget.ToastLength.Short).Show ();
+		}
+	
+		void Android.Views.ISurfaceHolderCallback.SurfaceDestroyed (Android.Views.ISurfaceHolder holder)
+		{
+		}
+		#endregion
 		
 		Timer timer;
 		
@@ -65,7 +136,7 @@ namespace ProcessingCli
 				host = view.Holder.LockCanvas ();
 				action ();
 				view.Holder.UnlockCanvasAndPost (host);
-			});
+			}, null, Timeout.Infinite, 1000);
 		}
 
 		// FIXME: those enum constants are not valid approach,
@@ -115,20 +186,12 @@ namespace ProcessingCli
 		public const int HSB = 2;
 		
 		Canvas host;
-		SurfaceView view;
 		public Canvas Host { // set by application
 			get { return host; }
 		}
 		TextPaint paint = new TextPaint ();
 		public TextPaint HostPaint {
 			get { return paint; }
-		}
-			
-		public void SetHost (SurfaceView view)
-		{
-			if (this.view != null)
-				throw new InvalidOperationException ("Internal error: SetHost() must not be called twice");
-			this.view = view;
 		}
 		
 		public override bool OnTouchEvent (MotionEvent e)
@@ -137,12 +200,7 @@ namespace ProcessingCli
 			return base.OnTouchEvent (e);
 		}
 
-		protected static void OnApplicationSetup (ProcessingApplication app)
-		{
-			app.OnApplicationSetup ();
-		}
-
-		protected virtual void OnApplicationSetup ()
+		public virtual void OnApplicationSetup ()
 		{
 		}
 
@@ -442,7 +500,7 @@ namespace ProcessingCli
 
 		public PImage loadImage (string uri, string extension)
 		{
-			return new PImage (BitmapFactory.DecodeStream (Assets.Open (uri)));
+			return new PImage (BitmapFactory.DecodeStream (activity.Assets.Open (uri)));
 			// FIXME: extension is ignored so far
 		}
 
